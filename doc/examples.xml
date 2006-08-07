@@ -1,0 +1,450 @@
+<chapter id="examples">
+  <title id="examples.title">Examples</title>
+  <section>
+  <para>
+     These examples (will eventually) show most of <application>FOMUS</application>'s functionality and hopefully eliminate the need to spend
+     countless hours figuring out settings, how to create objects, etc..  Examples using different interfaces 
+     (see <link linkend="usage" endterm="usage.title"/>) are given.
+     The outputs were all generated using <application>LilyPond</application> 2.8.
+  </para>
+  </section>
+  <section>
+    <title>Lisp Examples</title>
+      <example>
+        <title id="example.simp.ex">Simple Example</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_simp_ex.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.accents">Staccato and Accent Marks</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25))
+		       :marks (case (random 3)
+				(0 nil)
+				(1 '(:staccato))
+				(2 '(:accent))))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_accents.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.qtones">Quartertones</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :quartertones t
+ :parts
+ (list
+  (make-part
+   :name "Flute"
+   :instr :flute
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 70 (/ (random 4) 2)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_qtones.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.poly.slurs">Polyphony with Slurs</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop for v from 1 to 2
+	 nconc (loop
+		for off from 0 to 10 by 1/2
+		collect (make-note :off off
+				   :dur (if (< off 10) 1/2 1)
+				   :note (+ 60 (random 25))
+				   :voice v
+				   :marks (when (= (random 3) 0)
+					    '(:startslur-))))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_poly_slurs.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.pno.chords">Piano Chords</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :ensemble-type :orchestra
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop repeat 3
+	 nconc (loop
+		for off from 0 to 10 by 1/2
+		collect (make-note :off off
+				   :dur (if (< off 10) 1/2 1)
+				   :note (+ 48 (random 25))
+				   :voice '(1 2)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_pno_chords.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.chords2">Quantizing/Chords</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop repeat 10
+	 for off = (random 30.0)
+	 and dur = (1+ (random 3.0))
+	 collect (make-note :off off :dur dur :note (+ 60 (random 25)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_chords.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.mark.objs">Mark Objects</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :partid :flute
+	  :name "Flute"
+	  :instr :flute
+	  :events (loop for o from 0 to 20 by 1/2
+			collect (make-note :off o :dur 1/2 :note 72)))
+	 (make-part
+	  :partid :tuba
+	  :name "Tuba"
+	  :instr :tuba
+	  :events (loop for o from 0 to 20 by 1/2
+			collect (make-note :off o :dur 1/2 :note 48))))
+ :events (loop repeat 10
+	       collect (make-mark :partid (case (random 2) (0 :flute) (1 :tuba))
+				  :off (random 20.0)
+				  :marks '(:accent))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_mark_objs.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.perc1">Percussion 1</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :name "Percussion"
+	  :instr (list :percussion :percs (list (make-perc :woodblock :note 'e4)
+						(make-perc :snaredrum :note 'a3)))
+	  :events (loop for o from 0 to 20 by 1/2 collect
+			(make-note :off o :dur 1/2
+				   :note (case (random 2)
+					   (0 :woodblock)
+					   (1 :snaredrum)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_perc1.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.perc2">Percussion 2</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :name "Percussion"
+	  :instr (list :percussion :percs (list (make-perc :woodblock :voice 1 :note 'e4)
+						(make-perc :snaredrum :voice 2 :note 'a3)))
+	  :events (loop for o from 0 to 20 by 1/2 collect
+			(make-note :off o :dur 1/2
+				   :note (case (random 2)
+					   (0 :woodblock)
+					   (1 :snaredrum)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_perc2.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.perc.autodurs">Percussion with Automatic Durations</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :name "Snare Drum"
+	  :instr '(:percussion :percs ((:snare-drum :note a3)))
+	  :events (loop for o from 0 to 40 by 1/2 when (= (random 2) 0) collect
+			(make-note :off o
+				   :note :snare-drum)))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_perc_autodurs.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.orch.sco">Semi-Orchestra Score</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :ensemble-type :orchestra
+ :global (list (make-timesig :off 0 :time '(3 4)))
+ :parts (list
+	 (make-part
+	  :name "Flute 1"
+	  :instr :flute
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :partid 'fl2
+	  :name "Flute 2"
+	  :instr :flute
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :partid 'cl1
+	  :name "Clarinet 1"
+	  :instr :bf-clarinet
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Clarinet 2"
+	  :instr :bf-clarinet
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Violin 1"
+	  :instr :violin
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Violin 2"
+	  :instr :violin
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Cello 1"
+	  :instr :cello
+	  :events (list (make-note :off 0 :dur 1 :note 48)))
+	 (make-part
+	  :name "Cello 2"
+	  :instr :cello
+	  :events (list (make-note :off 0 :dur 1 :note 48)))
+	 (make-part
+	  :name "Tuba"
+	  :instr :tuba
+	  :events (list (make-note :off 0 :dur 1 :note 36)))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_orch_sco.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+  </section>
+  <section>
+    <title>Common Music Examples</title>
+      <example>
+        <title id="example.cm.poly1">2 Part Polyphony</title>
+	<programlisting>
+<![CDATA[
+(defparameter *part* (new fms:part :instr :piano :partid 'pno))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+	   output (new fms:note
+		    :off (now)
+		    :voice voice
+		    :partid 'pno
+		    :note (between minp maxp)
+		    :dur 1/2)
+	   wait 1/2))
+
+(events (list (polygen 1 20 60 80) (polygen 2 20 40 60)) "/tmp/fomus.ly" :parts *part* :view t)
+]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_cm_poly1.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>      
+      <example>
+        <title id="example.cm.poly2">2 Part Polyphony (FOMUS Chooses the Voice)</title>
+	<programlisting>
+<![CDATA[
+(defparameter *part* (new fms:part :instr '(:piano :simultlim 1) :partid 'pno))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+	   output (new fms:note
+		    :off (now)
+		    :voice voice
+		    :partid 'pno
+		    :note (between minp maxp)
+		    :dur 1/2)
+	   wait 1/2))
+
+(events (list (polygen '(1 2) 20 50 80) (polygen '(1 2) 20 40 70)) "/tmp/fomus.ly" :parts *part* :view t)]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_cm_poly2.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>      
+      <example>
+        <title id="example.cm.poly3pt">3 Part Polyphony</title>
+	<programlisting>
+<![CDATA[
+(defparameter *part* (new fms:part :instr '(:piano :simultlim 1) :partid 'pno))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+	   output (new fms:note
+		    :off (now)
+		    :voice voice
+		    :partid 'pno
+		    :note (between minp maxp)
+		    :dur 1/2)
+	   wait 1/2))
+
+(events (list (polygen '(1 2 3) 20 50 70) (polygen '(1 2 3) 20 50 70) (polygen '(1 2 3) 20 50 70))
+	"/tmp/fomus.ly" :parts *part* :view t)]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_cm_poly3pt.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>      
+      <example>
+        <title id="example.cm.poly6pt">6 Part Polyphony</title>
+	<programlisting>
+<![CDATA[
+(defparameter *parts*
+  (list (new fms:part :name "Violin 1" :instr :violin :partid 'vlns
+	     :props '((:distr (v2 2) (v3 3) (v4 4) (v5 5) (v6 6))))
+	(new fms:part :name "Violin 2" :instr :violin :partid 'v2)
+	(new fms:part :name "Violin 3" :instr :violin :partid 'v3)
+	(new fms:part :name "Violin 4" :instr :violin :partid 'v4)
+	(new fms:part :name "Violin 5" :instr :violin :partid 'v5)
+	(new fms:part :name "Violin 6" :instr :violin :partid 'v6)))
+
+(defun polygen (voice len minp maxp)
+  (process repeat len
+	   output (new fms:note
+		    :off (now)
+		    :voice voice
+		    :partid 'vlns
+		    :note (between minp maxp)
+		    :dur 1/2)
+	   wait 1/2))
+
+(events (list (polygen '(1 2 3 4 5 6) 20 55 70)
+	      (polygen '(1 2 3 4 5 6) 20 60 75)
+	      (polygen '(1 2 3 4 5 6) 20 65 80)
+	      (polygen '(1 2 3 4 5 6) 20 70 85)
+	      (polygen '(1 2 3 4 5 6) 20 75 90)
+	      (polygen '(1 2 3 4 5 6) 20 80 95))
+	"/tmp/fomus.ly" :parts *parts* :quality 3 :view t)]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_cm_poly6pt.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>      
+  </section>
+</chapter>

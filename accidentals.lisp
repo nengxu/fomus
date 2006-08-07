@@ -1,0 +1,418 @@
+;; -*- lisp -*-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;**************************************************************************************************
+;; FOMUS
+;; accidentals.lisp
+;;**************************************************************************************************
+
+(in-package :fomus)
+(compile-settings)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; ACCIDENTALS
+
+(declaim (type symbol *auto-accs-mod*))
+(defparameter *auto-accs-mod* t)
+(declaim (inline auto-accs-fun))
+(defun auto-accs-fun () (if (truep *auto-accs-mod*) :nokey1 *auto-accs-mod*))
+
+(declaim (type boolean *auto-accidentals* *auto-cautionary-accs*))
+(defparameter *auto-accidentals* t)
+(defparameter *auto-cautionary-accs* nil)
+
+;; numbers to determine importance of accidentals
+(declaim (type (real 1) *max-acc-beat-dist-mul*))
+(defparameter *max-acc-beat-dist-mul* 2) ; number of beats of rest before not caring about interval spelling
+(declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float *acc-dist-score*))
+(defparameter *acc-dist-score* (float 1/3))
+
+(declaim (type #-(or openmcl allegro) (float (0)) #+(or openmcl allegro) float *acc-beat-dist* *acc-octave-dist*))
+(defparameter *acc-beat-dist* (float 3/2)) ; number of beats where beat distance score = acc-dist-score
+(defparameter *acc-octave-dist* (float 2)) ; number of octaves where octave distance score = acc-dist-score (default is 1.0 octaves = 2 beats = 2/3 of total score)
+
+;; don't need to check if beat distance is past max
+(declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float *acc-beat-dist-sc* *acc-octave-dist-sc*))
+(declaim (special *acc-beat-dist-sc* *acc-octave-dist-sc*))
+(defun nokey-notedist (tie note1 off1 eoff1 note2 off2 eoff2)
+  (declare (type boolean tie) (type rational note1 note2) (type (real 0) off1 eoff1 off2 eoff2))
+  (if tie 3.0
+      (distance (expt *acc-beat-dist-sc* (max (- off2 eoff1) (- off1 eoff2) 0.0))
+		(expt *acc-octave-dist-sc* (* (diff note1 note2) (float 1/12))))))
+
+;; allowed qualities for ea. diatonic interval
+(declaim (type (vector cons) +nokey-niceints1+ +nokey-niceints2+ +nokey-penalty+)
+	 (type (vector integer) +nokey-harmints+))
+(defparameter +nokey-niceints1+ (vector '(0) '(-1 1) '(-1 1) '(0 2) '(-2 0) '(-1 1) '(-1 1))) ; diatonic spelling
+(defparameter +nokey-niceints2+ (vector '(-2 2) '(-2 2) '(-2 2) '(-2) '(2) '(-2 2) '(-2 2))) ; augmented/diminished intervals
+(defparameter +nokey-penalty+ (vector '(1) '(-1 1) '(-1) '(1) '(-1 1) '(-1 1) '(-1)))
+(defparameter +nokey-harmints+ (vector 0 1 1 2 2 3 4 4 5 5 6 6))
+
+(declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float
+	       *acc-diatonic-int-score* *acc-aug-dim-int-score* *acc-spelling-penalty* *acc-good-unison-score* *acc-bad-unison-score* *acc-similar-qtone-score*))
+(defparameter *acc-diatonic-int-score* (float 7/8))
+(defparameter *acc-aug-dim-int-score* (float 1/2))
+(defparameter *acc-spelling-penalty* (float 1/4))
+(defparameter *acc-good-unison-score* (float 1))
+(defparameter *acc-bad-unison-score* (float 3/8))
+(defparameter *acc-similar-qtone-score* (float 1/3))
+
+(defun nokey-notepen (n a)
+  (declare (type rational n) (type (or (integer -2 2) (integer -2 2)) a))
+  (* (mloop
+      for e of-type (integer -1 1) in (cons 0 (svref +nokey-penalty+ (notespelling n a)))
+      minimize (diff a e)) *acc-spelling-penalty*))
+(defun nokeyq-notepen (n a)
+  (declare (type rational n) (type (or (integer -2 2) (cons (integer -2 2) (rational -1/2 1/2))) a))
+  (* (mloop
+      for e of-type (integer -1 1) in (cons 0 (svref +nokey-penalty+ (qnotespelling n a)))
+      minimize (diff (car a) e)) *acc-spelling-penalty*))
+
+;; scores of 1 are perfect
+;; tie is if accidentals must be in same direction
+(defun nokey-intscore (tie note1 acc1 off1 eoff1 note2 acc2 off2 eoff2 &optional qt) ; returns 0 to 1 (or nil)
+  (declare (type boolean tie qt) (type (integer -2 2) acc1 acc2) (type rational note1 note2) (type (rational 0) off1 eoff1 off2 eoff2))
+  (multiple-value-bind (n1 a1 o1 eo1 n2 a2 o2 eo2)
+      (if (= off1 off2)
+	  (if (<= (- note1 acc1) (- note2 acc2))
+	      (values note1 acc1 off1 eoff1 note2 acc2 off2 eoff2)
+	      (values note2 acc2 off2 eoff2 note1 acc1 off1 eoff1))
+	  (if (< off1 off2)
+	      (values note1 acc1 off1 eoff1 note2 acc2 off2 eoff2)
+	      (values note2 acc2 off2 eoff2 note1 acc1 off1 eoff1)))
+    (declare (ignorable o1 eo1 o2 eo2))
+    (multiple-value-bind (i q) (interval n1 a1 n2 a2)
+      (let ((v (- (cond ((and tie (/= i (svref +nokey-harmints+ (mod (diff n1 n2) 12))) #|(or (and (< acc1 0) (> acc2 0)) (and (> acc1 0) (< acc2 0)))|#) 0.0)
+			((find q (svref +nokey-niceints1+ i)) *acc-diatonic-int-score*)
+			((and (= i 0)	; unisons special case
+			      (or 
+			       (and (>= a1 0) (= (- a2 a1) 1))
+			       (and (<= a1 0) (= (- a2 a1) -1))))
+			 (if (<= eo1 o2) *acc-good-unison-score* *acc-bad-unison-score*))
+			((find q (svref +nokey-niceints2+ i)) *acc-aug-dim-int-score*)
+			(t 0.0))
+		  (nokey-notepen n1 a1)
+		  (nokey-notepen n2 a2))))
+	(if qt v (max v 0.0))))))
+(defun nokeyq-intscore (tie note1 acc1 off1 eoff1 note2 acc2 off2 eoff2)
+  (declare (type boolean tie) (type (cons (integer -2 2) (rational -1/2 1/2)) acc1 acc2) (type rational note1 note2) (type (rational 0) off1 eoff1 off2 eoff2))
+  (let ((aa1 (car acc1)) (aa2 (car acc2))
+	(qa1 (cdr acc1)) (qa2 (cdr acc2)))
+    (let ((s (nokey-intscore tie (- note1 qa1) aa1 off1 eoff1 (- note2 qa2) aa2 off2 eoff2 t)))
+      (if (and (= qa1 0) (= qa2 0)) (max s 0.0)
+	  (let ((a1 (if (= qa1 0) aa1 qa1))
+		(a2 (if (= qa2 0) aa2 qa2)))
+	    (min (max (if (or (and (> a1 0) (< a2 0)) (and (< a1 0) (> a2 0)))
+			  (if tie 0.0
+			      (let ((m (if (and (/= qa1 0) (/= qa2 0)) *acc-similar-qtone-score* (* *acc-similar-qtone-score* 0.5))))
+				(if (= (qnotespelling note1 acc1) (qnotespelling note2 acc2)) (+ s m) (- s m)))) ; penalize different accs on different written notes
+			  s)
+		      0.0) 1.0))))))
+
+(declaim (type (integer 1) *acc-engine-heap*))
+(defparameter *acc-engine-heap* 30)
+
+;; depth-first search branching down only top score group (same scores)
+;; DESTRUCTIVE
+(defstruct (nokeynode (:copier nil) (:predicate nokeynodep))
+  (sc 0.0 :type #-(or allegro lispworks) (float 0) #+(or allegro lispworks) float)
+  (ret nil :type list)
+  (re 0 :type (integer 0))
+  (evs nil :type list)
+  (evc nil :type list)
+  (evd nil :type list)
+  (o 0 :type (rational 0))
+  (co 0 :type (integer 0))) ; sc = score-so-far (evt - evd), ret = return events, re = num. remaining, events from, evc = events to consider when redoing, evd = events to redo
+(defun acc-nokey (events choices spellfun penfun intscorefun name conv) ; events in one part
+  (declare (type list events choices)
+	   (type (function (rational (or (integer -2 2) (cons (integer -2 2) (rational -1/2 1/2)))) (values (or (integer 0 6) null) (or integer null))) spellfun)
+	   (type (function (boolean rational (or (integer -2 2) (cons (integer -2 2) (rational -1/2 1/2))) (rational 0) (rational 0)
+				    rational (or (integer -2 2) (cons (integer -2 2) (rational -1/2 1/2))) (rational 0) (rational 0))
+			   #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float) intscorefun)
+	   (type (or string null) name) (type (function ((or (cons (integer -2 2) (rational -1/2 1/2)) (integer -2 2))) cons) conv))
+  (let ((co 0)
+	(mxd (* *acc-beat-dist* *max-acc-beat-dist-mul*))
+	(cho (mapcar conv choices)))
+    (declare (type (integer 0) co))
+    (flet ((scorefun (no)		; optimistic score
+	     (declare (type nokeynode no))
+	     (cons (+ (nokeynode-sc no)
+		      (loop for e of-type (cons #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float *) in (nokeynode-evd no) sum (car e))
+		      (nokeynode-re no)) ; unexplored accidentals all scores of 1
+		   (nokeynode-co no)))
+	   (expandfun (no)
+	     (declare (type nokeynode no))
+	     (when (> (nokeynode-co no) co) ;; progress
+	       (setf co (nokeynode-co no))
+	       (print-dot))
+	     (loop
+	      with f of-type noteex = (first (nokeynode-evs no)) and lf = (rest (nokeynode-evs no))
+	      with o = (event-note* f) and oo = (event-off f)
+	      with nco = (if (or (null (nokeynode-o no)) (> oo (nokeynode-o no))) (1+ (nokeynode-co no)) (nokeynode-co no))
+	      for e of-type (or (integer -2 2) (cons (integer -2 2) (rational -1/2 1/2)))
+	      in (or (loop for a in (intersection
+				     (mapcar conv
+					     (let ((x (event-useracc f)))
+					       (if (and (listp x) (listp (rest x))) x
+						   (list x))))
+				     cho :test #'equal) ; e = lists of accs.
+			   when (funcall spellfun o a) collect a)
+		     (loop for a in cho if (funcall spellfun o a) collect a) ; ignore user's suggestion
+		     (error "No accidentals possible for note ~S at offset ~S, part ~S" (event-note f) (event-foff f) name))
+	      collect (let ((w (copy-event f :note (cons (event-note* f) e)))
+			    (s (nokeynode-sc no)))
+			(let ((d (cons w 
+				       (or (loop ; keep only relevant notes that will need rescoring (endoff > - ? beats)
+					    for e of-type (cons #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float note) in (nokeynode-evd no) ; e is (score . event)
+					    if (> (event-endoff (cdr e)) oo) ; endoff will = offset for grace notes!
+					    collect (cdr e)	; collect just the events
+					    else do (incf s (car e)))
+					   (let ((mx (mloop
+						      for e of-type (cons #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float note) in (nokeynode-evd no)
+						      maximize (event-endoff (cdr e)))))
+					     (setf s (nokeynode-sc no))
+					     (loop for e of-type (cons #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float note) in (nokeynode-evd no)
+						   if (>= (event-endoff (cdr e)) mx)
+						   collect (cdr e)
+						   else do (incf s (car e)))))))
+			      (c (cons w (let ((o (- oo mxd)))
+					   (remove-if (lambda (e)
+							(declare (type noteex e))
+							(<= (event-endoff e) o))
+						      (nokeynode-evc no))))))
+			  (make-nokeynode
+			   :sc s :evc c :o oo :co nco
+			   :evd (loop
+				 for e of-type noteex in d 
+				 collect (cons
+					  (let* ((eua (event-useracc e))
+						 (ne (event-note* e))
+						 (su (- 1.0 (funcall penfun ne eua))) (di 1.0))
+					    (declare (type #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float su di))
+					    (loop ; plus optimistic 1 scores for rest in range
+					     for e0 of-type noteex in lf
+					     while (<= (event-off e0) (event-off e))
+					     do (incf su) (incf di))
+					    (loop
+					     with eoe = (event-endoff e)
+					     and foe = (float (event-off e))
+					     and feoe = (float (event-endoff e))
+					     for e0 of-type noteex in c
+					     unless (eq e e0)
+					     do (let* ((ne0 (event-note* e0)) (eoe0 (event-endoff e0))
+						       (ti (and (event-acctie e) (event-acctie e0) (eq (event-acctie e) (event-acctie e0))))
+						       (x (nokey-notedist ti ne foe feoe ne0 (event-off e0) eoe0)))
+						  (incf su (* (funcall intscorefun ti
+								       ne eua (event-off e) eoe
+								       ne0 (event-useracc e0) (event-off e0) eoe0)
+							      x))
+						  (incf di x)))
+					    (/ su di))
+					  e))
+			   :re (1- (nokeynode-re no)) :ret (cons w (nokeynode-ret no))
+			   :evs lf)))))
+	   (scoregreaterfun (s1 s2) (declare (type (cons #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float *) s1 s2)) (> (car s1) (car s2)))
+	   (remscoregreaterfun (r1 r2)
+	     (declare (type (cons #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float (integer 0)) r1 r2))
+	     (if (= (cdr r1) (cdr r2)) (< (car r1) (car r2)) (< (cdr r1) (cdr r2))))
+	   (solutfun (no) (declare (type nokeynode no)) (null (nokeynode-evs no))))
+      (nokeynode-ret
+       (or (let ((*max-acc-beat-dist-mul* (1+ (* (- *max-acc-beat-dist-mul* 1) *quality*)))
+		 (*acc-engine-heap* (max (roundint (* *acc-engine-heap* *quality*)) 1))
+		 (*acc-beat-dist-sc* (expt *acc-dist-score* (/ *acc-beat-dist*)))
+		 (*acc-octave-dist-sc* (expt *acc-dist-score* (/ *acc-octave-dist*))))
+	     (bfs*-engine (list (make-nokeynode :re (length events) :evs events))	; should be sorted already
+			  #'scorefun
+			  #'expandfun
+			  #'solutfun
+			  :heaplim *acc-engine-heap*
+			  :scoregreaterfun #'scoregreaterfun
+			  :remscoregreaterfun #'remscoregreaterfun))
+	   (error "Cannot find valid note spellings for part ~S" name)))))) ; return events sorted
+
+(declaim (type boolean *use-double-accs*))
+(defparameter *use-double-accs* nil)
+
+;; Processed before chords exist and before voices are separated
+;; events in parts are sorted--function must return them sorted
+(defun accidentals (parts)
+  (loop
+   for e of-type partex in parts
+   unless (is-percussion e)
+   do (multiple-value-bind (evs rs) (split-list (part-events e) #'notep)
+	(setf (part-events e)
+	      (sort (nconc rs
+			   (case (auto-accs-fun)
+			     (:nokey1 (if *quartertones*
+					  (acc-nokey evs (if *use-double-accs* +acc-qtones-double+ +acc-qtones-single+)
+						     #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
+					  (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
+						     #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity)))
+			     (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
+		    #'sort-offdur)))))
+
+(defmacro set-note-precision (&body forms)
+  `(let ((*note-precision* 
+	  (case (auto-accs-fun)
+	    (:nokey1 (if *quartertones* 1/2 1))
+	    (otherwise 1))))
+    ,@forms))
+     
+(defun accidentals-generic (parts)
+  (flet ((so (d)
+	   (lambda (x y)
+	     (let ((ax (if (consp x) (car x) x))
+		   (ay (if (consp y) (car y) y)))
+	       (if (= (abs ax) (abs ay)) 
+		   (funcall d ax ay)
+		   (< (abs ax) (abs ay)))))))
+    (loop with cho = (if *quartertones*
+			 (mapcar #'convert-qtone +acc-qtones-double+)
+			 +acc-double+)
+	  with chof = (stable-sort (copy-list cho) (so #'<))
+	  and chos = (stable-sort (copy-list cho) (so #'>))
+	  for p of-type partex in parts
+	  unless (is-percussion p)
+	  do (loop for e of-type (or noteex restex) in (part-events p)
+		   do (let ((n (event-note* e)))
+			(setf (event-note e)
+			      (cons n (find-if (lambda (a) (if (consp a) (qnotespelling n a) (notespelling n a)))
+					       (append (event-useracc e) (let ((m (mod n 12))) (if (and (>= m 9/2) (<= m 7)) chos chof)))))))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CAUTIONARY ACCIDENTALS
+
+(declaim (type (real (0)) *max-caut-acc-dist*)
+	 (type boolean *caut-acc-ottavas*)
+	 (type (or boolean (integer 1)) *caut-acc-octaves*)
+	 (type (or boolean (integer 1 2)) *caut-acc-next-meas*))
+(defparameter *max-caut-acc-dist* 2)
+(defparameter *caut-acc-ottavas* t)
+(defparameter *caut-acc-octaves* 1) ; can be a number (for number of octaves above/below) or t for all
+
+(defparameter *caut-acc-next-meas* t)
+
+;; rests are removed already, before chords or ties
+(defun acc-nokey-cautaccs (meas)
+  (declare (type list meas))
+  (loop
+   with r of-type (integer -12 12) = 0
+   and as = (make-array 128 :element-type '(or null (cons (or boolean (integer -12 12)) noteex)) :initial-element nil)
+   and ad = (make-array 128 :element-type '(or null (cons (or boolean (integer -12 12)) noteex)) :initial-element nil)
+   for mo = -1 then mo0
+   for (mo0 . m) of-type ((real 0) . list) in meas do
+   (loop
+    for e of-type noteex in m
+    for o = (- (event-off e) *max-caut-acc-dist*) and w = (event-writtennote e)
+    when *caut-acc-ottavas* do
+    (cond ((or (getmark e :start8up-) (getmark e :8up)) (setf r 12))
+	  ((or (getmark e :start8down-) (getmark e :8down)) (setf r -12)))
+    if (and (= (event-acc e) 0) (= (event-addacc e) 0)) ; natural
+    do (flet ((ok (wh x)
+		(declare (type (array (or nil (cons (or boolean (integer -12 12)) noteex)) (128)) wh) (type integer x))
+		(and (>= (event-endoff (cdr (svref wh x))) o)
+		     (or (member *caut-acc-next-meas* '(t 2))
+			 (>= (event-off (cdr (svref wh x))) (if *caut-acc-next-meas* mo mo0))))))
+	 (loop
+	  with or = (loop with x = (* (if (truep *caut-acc-octaves*) 7 (or *caut-acc-octaves* 0)) 12) and r
+			  for ww from (- w x) to (+ w x) by 12
+			  when (and (>= ww 0) (< ww 128) (svref ad ww) (ok ad ww)) do (setf (svref ad ww) nil) (setf r t)
+			  finally (return r))
+	  for i from -24 to 24 by 12 ; possible ottava differences (8up = 12)
+	  do (let ((ww (- w i))) ; written note relative with respect to ottava difference
+	       (when (and (>= ww 0) (< ww 128) (svref as ww) (ok as ww) (= (- r (car (svref as ww))) i))
+		 (setf (svref as ww) nil or t))) 
+	  finally (let ((ma (list :cautacc (event-note* e))))
+		    (when (and or (not (getmark e ma))) (addmark e ma)))))
+    else do (setf (svref as w) (cons r e) (svref ad w) (cons r e)) ; save register/event if accidental
+    when (and *caut-acc-ottavas* (or (getmark e :end8up-) (getmark e :8up) (getmark e :end8down-) (getmark e :8down)))
+    do (setf r 0)))
+  (print-dot))
+
+;; cautaccs in difficult place in task list--consolidate parts and collect events by staves, not voices
+(defun cautaccs (parts)
+  (declare (type list parts))
+  (loop for pa of-type cons in (split-into-groups (remove-if #'is-percussion parts) #'part-userord) do
+	(let ((ms (apply #'mapcar (lambda (&rest ms) ; list of simultaneous measures for 1 part
+				    (cons (meas-off (first ms))
+					  (sort (loop for m of-type meas in ms nconc (delete-if-not #'notep (copy-list (meas-events m))))
+						#'sort-offdur)))
+			 (mapcar #'part-meas pa))))
+	  (case (auto-accs-fun)	; m is list of measures (everything is sorted)
+	    (:nokey1 (acc-nokey-cautaccs ms))
+	    (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))))
+
+(defun preproc-cautaccs (parts)
+  (declare (type list parts))
+  (loop for p of-type partex in parts do
+	(loop for e of-type (or noteex restex) in (part-events p)
+	      when (popmark e :cautacc) do (addmark e (list :cautacc (event-note* e)))) ; was note*
+	(print-dot)))
+
+(defparameter +keysig-eqs+
+  '((:fsmin . :f+min) (:csmin . :c+min) (:gsmin . :g+min) (:cfmaj . :c-maj) (:afmin . :a-min) (:fsmaj . :f+maj)
+    (:dsmin . :d+min) (:gfmaj . :g-maj) (:efmin . :e-min) (:csmaj . :c+maj) (:asmin . :a+min) (:dfmaj . :d-maj)
+    (:bfmin . :b-min) (:afmaj . :a-maj) (:efmaj . :e-maj) (:bfmaj . :b-maj)
+    (:cs . :c+) (:df . :d-) (:ds . :d+) (:ef . :e-) (:fs . :f+) (:gf . :g-) (:gs . :g+) (:af . :a-) (:as . :a+) (:bf . :b-)))
+(defun preproc-keysigs (timesigs)
+  (declare (type list timesigs))
+  (loop for ts of-type timesig-repl in timesigs
+	for k = (popprop ts :keysig)
+	when k do (addprop ts (cons :keysig (mapcar (lambda (x) (declare (type symbol x)) (or (lookup x +keysig-eqs+) x)) (rest k))))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; POST PROCESSING
+
+;; rests are removed already, after chords & ties
+;; events are events in 1 measure
+(defun acc-nokey-postaccs (events)
+  (declare (type cons events))
+  (let ((as (make-array 128 :element-type '(or null (cons (integer -2 2) (rational -1/2 1/2))) :initial-element nil))
+	(ac (make-array 128 :element-type '(or null (cons (integer -2 2) (rational -1/2 1/2))) :initial-element nil)))
+    (flet ((fixacc (e n a a2 tl)
+	     (declare (type noteex e) (type rational n) (type (integer -2 2) a) (type (rational -1/2 1/2) a2) (type boolean tl))
+	     (let ((w (- n a a2)))
+	       (if tl
+		   (setf (svref as w) (unless (and (= a 0) (= a2 0)) (cons a a2)) (svref ac w) t)
+		   (if (popmark e :forceacc)
+		       (progn
+			 (setf (svref as w) (cons a a2))
+			 (rmmark e (list :cautacc n)) ; was w
+			 (addmark e (list :showacc n)))
+		       (if (and (= a 0) (= a2 0))
+			   (when (svref as w) ; show the natural 
+			     (setf (svref as w) nil)
+			     (rmmark e (list :cautacc n)) ; was w
+			     (addmark e (list (if (svref ac w) :cautacc :showacc) n))) ; was w
+			   (if (equal (svref as w) (cons a a2))
+			       (unless (or (getmark e (list :cautacc n)) (getmark e (list :showacc n))) (addmark e (list :hideacc n))) ; was w
+			       (setf (svref as w) (cons a a2) (svref ac w) nil))))))))
+      (loop
+       for e of-type noteex in events
+       if (chordp e)
+       do (loop
+	   for n of-type rational in (event-notes* e)
+	   and a of-type (integer -2 2) in (event-accs e)
+	   and a2 of-type (rational -1/2 1/2) in (event-addaccs e)
+	   and tl of-type boolean in (event-tielt e)
+	   do (fixacc e n a a2 tl))
+       else do (fixacc e (event-note* e) (event-acc e) (event-addacc e) (event-tielt e)))))
+  (print-dot))
+
+;; post processing
+(defun postaccs (parts)
+  (declare (type list parts))
+  (if *acc-throughout-meas*
+      (loop for p of-type partex in parts unless (is-percussion p) do
+	    (loop for m of-type meas in (part-meas p) do
+		  (multiple-value-bind (evs rs) (split-list (meas-events m) #'notep)
+		    (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
+			  (case (auto-accs-fun)
+			    (:nokey1 (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))))
+			    (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
+		    (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur)))))
+      (loop for p of-type partex in parts unless (is-percussion p) do
+	    (loop for m of-type meas in (part-meas p) do
+		  (loop for e of-type (or noteex restex) in (meas-events m)
+			when (popmark e :forceacc) do (addmark e :showacc)))
+	    (print-dot))))
+

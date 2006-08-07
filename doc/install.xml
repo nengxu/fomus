@@ -1,0 +1,103 @@
+<chapter id="install">
+  <title id="install.title">Installation</title>
+  <section>
+    <title>Downloading</title>
+    <para>
+      <application>FOMUS</application> is available in tarball form <ulink url="http://common-lisp.net/project/fomus/download">here</ulink>.
+      Download the latest version and type something similar to the following at a UNIX prompt:
+    <example>
+      <title>Unzipping the Tarball</title>
+      <programlisting>
+<![CDATA[
+cd path_to_install_directory
+tar -zxf path_to_tarball/fomus-0.2.0.tgz]]>
+      </programlisting>
+    </example>
+    </para>
+    <para>
+      It is also available via anonymous CVS, hosted at <ulink url="http://common-lisp.net/">Common-Lisp.net</ulink>.
+      Type the following command at a UNIX prompt to download the latest version:
+    <example>
+      <title>Downloading from CVS</title>
+      <programlisting>
+<![CDATA[
+cd path_to_install_directory
+cvs -z3 -d :pserver:anonymous:anonymous@common-lisp.net:/project/fomus/cvsroot co fomus]]>
+      </programlisting>
+    </example>
+    </para>
+    <para>
+      Future updates will then only require typing <literal>cvs update</literal> in the <application>FOMUS</application> directory.
+    </para>
+  </section>
+  <section>
+    <title>Compiling/Loading</title>
+  <para>
+    The program may be compiled and loaded by loading the file <filename>load.lisp</filename>.
+    <example>
+      <title>Compiling and Loading</title>
+      <programlisting>
+<![CDATA[
+CL-USER> (load "path_to_fomus_directory/load.lisp")]]>
+      </programlisting>
+      <para>...</para>
+      <programlisting>
+<![CDATA[
+CL-USER> (use-package :fm)]]>
+      </programlisting>
+    </example>
+    The package name is <function>FOMUS</function>, and can also be referred to with the abbreviations <function>FMS</function> and <function>FM</function>.
+  </para>
+  <para>
+    A system definition file <filename>fomus.asd</filename> is also provided for use with <application><ulink url="http://www.cliki.net/asdf">ASDF</ulink></application>.
+    To use it, make sure <application>ASDF</application>'s central registry parameter contains the necessary path information and
+    load it using the <function>OPERATE</function> function (see the <application>ASDF</application> documentation for more information).
+  </para>
+  </section>
+  <section id="install.cmd">
+    <title id="install.cmd.title">Installing as an Executable</title>
+    <para>
+      The script file <filename>install.sh</filename> can be run at a UNIX command prompt to install <application>FOMUS</application> as a command-line
+      executable program.  At this point, this can only be done with <application>SBCL</application>, <application>CMUCL</application> and 
+      <application>OpenMCL</application> in a UNIX environment (it's been tested in OS X and Linux), though a look at the script should show how
+      to install it with other Lisps in any other environment. 
+      </para>
+      <para>
+       Type the following to get a list of installation options:
+      <example>
+        <title>Running the Installation Script 1</title>
+<![CDATA[
+cd path_to_install_directory
+./install.sh --help]]>
+      </example>
+      By default, the script tries to install the program into the subdirectories in <literal>/usr/local</literal>.  The commands for a default installation using SBCL 
+      would look like this:
+      <example>
+        <title>Running the Installation Script 2</title>
+<![CDATA[
+su -
+cd path_to_install_directory
+./install.sh --sbcl]]>
+      </example>
+      There is also an option for uninstalling.  To see how to use as an executable, see <link linkend="interface.cmd" endterm="interface.cmd.title"/> and
+      <link linkend="interface.text" endterm="interface.text.title"/>.
+    </para>
+  </section>
+  <section>
+    <title>Customizing the Installation</title>
+    <para>
+      By default, <application>FOMUS</application> compiles and loads all of the backends listed in this documentation.  You
+      can leave any one of these out by adding noe the following keywords to the <literal>*FEATURES*</literal> list (using <literal>PUSH</literal>
+      or <literal>PUSHNEW</literal>):
+      <simplelist>
+        <member><literal>:FOMUS-NOCMN</literal></member>
+        <member><literal>:FOMUS-NOLILYPOND</literal></member>
+        <member><literal>:FOMUS-NOMUSICXML</literal></member>
+        <member><literal>:FOMUS-NOMIDI</literal></member>
+      </simplelist>
+      These must be added before loading or compiling.
+      If you are recompiling with different keywords, be sure to delete all <filename>.fasl</filename> files first to insure 
+      that all parts of the program are consistent.
+    </para>
+  </section>
+</chapter>
