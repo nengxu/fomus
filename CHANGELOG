@@ -1,4 +1,7 @@
-	Part name fix in LilyPond and CMN backends
+	A few cosmetic changes
+	Fixed bug involving ottava symbols over single notes/chords
+	Fixed harmonic/flageolet bug in LilyPond
+	Part name fix in LilyPond and CMN backends (Kilian)
 
 v0.2.2
 	CLISP port nearly (or maybe all) complete (errors with loop macros--still testing, haven't tested in Winblows yet)

@@ -382,12 +382,15 @@
 								       when ha collect "\\harmonic"
 								       when hs collect "^\\flageolet"
 								       when nn collect " ")))
-						  (conc-strings
+						  (lynote (event-writtennote e) (event-acc e) (event-addacc e) ; 8/9/06
+							  (getmark e (list :cautacc (event-note* e)))
+							  (getmark e (list :showacc (event-note* e))))
+						  #|(conc-strings ; 8/9/06
 						   (lynote (event-writtennote e) (event-acc e) (event-addacc e)
 							   (getmark e (list :cautacc (event-note* e)))
 							   (getmark e (list :showacc (event-note* e))))
 						   (let ((ha (getmark e :harmonic)))
-						     (when ha (ecase (second ha) (:touched "\\harmonic") (:sounding "^\\flageolet"))))))
+						     (when ha (ecase (second ha) (:touched "\\harmonic") (:sounding "^\\flageolet")))))|#)
 					      (if fm (if (event-inv e) "\\skip " "R") (if (event-inv e) "s" "r")))
 					  (if fm (format nil "1*~A/~A" (timesig-num ts) (timesig-den ts))
 					      (multiple-value-bind (wd ds) (let ((m (or (getmark e :tremolo)
@@ -404,6 +407,9 @@
 						    (0 (format nil "~A" du))
 						    (1 (format nil "~A." du))
 						    (2 (format nil "~A.." du))))))
+					  (if (chordp e) "" ; 8/9/06
+					      (let ((ha (getmark e :harmonic)))
+						(or (when ha (ecase (second ha) (:touched "\\harmonic") (:sounding "^\\flageolet"))) "")))
 					  (if (getmark e :arpeggio) "\\arpeggio" "")
 					  (conc-stringlist
 					   (loop

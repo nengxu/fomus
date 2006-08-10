@@ -77,7 +77,8 @@
       (declare (type stream s))
       (princ "#Z" s)
       (if *prepend-fm*
-	  (format s "(FM:~A~{ ~S~})"
+	  (format s "(~A:~A~{ ~S~})"
+		  (if (eq *print-case* :downcase) "fm" "FM")
 		  ,(list 'quote class)
 		  ,(cons 'list sl))
 	  (prin1 ,(nconc (list 'list (list 'quote class)) sl)
@@ -92,7 +93,8 @@
       (declare (type stream s))
       (princ "#S" s)
       (if *prepend-fm*
-	  (format s "(FM:~A~{ ~S~})"
+	  (format s "(~A:~A~{ ~S~})"
+		  (if (eq *print-case* :downcase) "fm" "FM")
 		  ,(list 'quote class)
 		  ,(cons 'list sl))
 	  (prin1 ,(nconc (list 'list (list 'quote class)) sl)

@@ -105,7 +105,7 @@
 		 (loop for v of-type cons in (split-into-groups (part-events p) #'event-voice*)
 		       do (loop with x = (make-hash-table) and xx
 				for e of-type (or noteex restex) in (sort v #'sort-offdur)
-				when (truep replsym) do
+				when (or (truep replsym) (keywordp replsym)) do
 				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (gethash (second m) x))))
 				(loop for m of-type cons in (getmarks e startsym) do (setf (gethash (second m) x) (cons (event-off e) (list m))))
 				do
@@ -115,7 +115,7 @@
 					(push m (cdr z)) 
 					(push (cons n (cons (cons (car z) (event-off e)) (cdr z))) xx)
 					(remhash n x)))
-				unless (truep replsym) do
+				unless (or (truep replsym) (keywordp replsym)) do
 				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (gethash (second m) x))))
 				(loop for m of-type cons in (getmarks e startsym) do (setf (gethash (second m) x) (cons (event-off e) (list m))))
 				finally (loop with pr
