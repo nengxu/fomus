@@ -190,9 +190,10 @@
 		 (intern
 		  (conc-strings
 		   (string-upcase
-		    (conc-stringlist (loop for x across (part-name p)
-					   when (alpha-char-p x)
-					   collect (string x))))
+                    (conc-stringlist (when (part-name p)
+                                       (loop for x across (part-name p)
+                                          when (alpha-char-p x)
+                                          collect (string x)))))
 		   "-"
 		   (string (code-char (+ 64 de)))))))
 	  (let ((bv -1) (gv -1) (pv -1) (sv -1) (ouv -1) (odv -1) (w<v -1) (w>v -1) (tv -1) (rv -1) (iv -1) (uv -1) (rfun nil))

@@ -15,19 +15,19 @@ tar -zxf path_to_tarball/fomus-0.2.0.tgz]]>
     </example>
     </para>
     <para>
-      It is also available via anonymous CVS, hosted at <ulink url="http://common-lisp.net/">Common-Lisp.net</ulink>.
-      Type the following command at a UNIX prompt to download the latest version:
+      The development/unstable version is available via Subversion, hosted at <ulink url="http://common-lisp.net/">Common-Lisp.net</ulink>.
+      Type the following command at a UNIX prompt to download the latest version (you must have Subversion installed on your machine):
     <example>
-      <title>Downloading from CVS</title>
+      <title>Downloading from Subversion Repository</title>
       <programlisting>
 <![CDATA[
-cd path_to_install_directory
-cvs -z3 -d :pserver:anonymous:anonymous@common-lisp.net:/project/fomus/cvsroot co fomus]]>
+mkdir fomus
+svn checkout svn://common-lisp.net/project/fomus/svn/fomus/trunk fomus]]>
       </programlisting>
     </example>
     </para>
     <para>
-      Future updates will then only require typing <literal>cvs update</literal> in the <application>FOMUS</application> directory.
+      Future updates will then only require typing <literal>svn update</literal> in the <application>FOMUS</application> directory.
     </para>
   </section>
   <section>

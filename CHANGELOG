@@ -1,3 +1,5 @@
+	Part name fix in LilyPond and CMN backends
+
 v0.2.2
 	CLISP port nearly (or maybe all) complete (errors with loop macros--still testing, haven't tested in Winblows yet)
 	Can choose which backends to compile with or leave out of installation

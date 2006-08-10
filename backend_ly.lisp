@@ -252,13 +252,14 @@
 			  (when caut "?")
 			  (when show "!")))))
 		 (lyname (p)
-		   (incf de)
-		   (conc-strings
-		    (string-downcase
-		     (conc-stringlist (loop for x across (part-name p)
-					    when (alpha-char-p x)
-					    collect (string x))))
-		    (string (code-char (+ 64 de)))))
+                   (incf de)
+                   (conc-strings
+                    (string-downcase
+                     (conc-stringlist (when (part-name p)
+                                        (loop for x across (part-name p)
+                                           when (alpha-char-p x)
+                                           collect (string x)))))
+                    (string (code-char (+ 64 de)))))
 		 (lyclef (c)
 		   (lookup c +lilypond-clefs+)))
 	    (loop
