@@ -20,7 +20,8 @@ Immediate:
     Improvements:
       Allow forcing of staff choices (individual notes and entire voice)
       Improve staff and clef decisions
-      More speed improvements
+      More control over harmonics
+      More speed improvements (slower in OpenMCL?)
     Additions:
       Dynamic markings fixer (eliminate repeats)
       Specifying percussion from MIDI info

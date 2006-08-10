@@ -330,7 +330,7 @@
 
 (defun postproc-marksonoff (pts)
   (declare (type list pts))
-  (loop for (v . (a . b)) of-type (symbol . (symbol . symbol)) in +marks-on-off+ when (symbol-value v) do
+  (loop for (v . (a . b)) of-type (symbol . ((or symbol list) . (or symbol list))) in +marks-on-off+ when (or (null v) (symbol-value v)) do
 	(loop with o for p of-type partex in pts do
 	      (loop for m of-type meas in (part-meas p) do
 		    (loop for g of-type list in (meas-voices m) do
@@ -338,7 +338,7 @@
 			   for e of-type (or noteex restex) in g
 			   do (rmmark e b)
 			   if (getmark e a) do (if o (rmmark e a) (setf o t))
-			   else when (and o (notep e) (not (or-list (force-list (event-tielt e))))) do (addmark e b) (setf o nil))))
+			   else when (and o (or (null v) (and (notep e) (not (or-list (force-list (event-tielt e))))))) do (addmark e b) (setf o nil))))
 	      (print-dot))))
 
 ;; preproc-tremolos already

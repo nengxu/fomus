@@ -679,6 +679,8 @@
       (list* x (satisfies is-clef)))
     (let* ((x (unique* sy (member :notehead))))
       (list* x (member :harmonic :diamond :x :xcircle :triangle :slash)))	
+    (let* ((x (unique* sy (member :size))))
+      (list* x (member :small :tiny)))	
     (let* ((x (unique* sy :tremolo (member :tremolo :tremolofirst :tremolosecond))))
       (or* x (list* x) (list* x (rational (0))) (list* x (rational (0)) (member :notated)) (list* x (member :notated) (rational (0))))) ; tremolos
     (let* ((x (member :startslur-)))
@@ -736,7 +738,7 @@
 
 ;; include :staff but not :clef
 (defparameter +marks-rests+
-  '(:fermata :notehead :textnote :texttempo :textdyn :text :text- :endtext- :starttext-))
+  '(:fermata :notehead :textnote :texttempo :textdyn :text :text- :endtext- :starttext- :size))
 
 (defparameter +marks-first-rest+
   '(:textnote :texttempo :textdyn :text :text- :starttext-))
@@ -756,7 +758,7 @@
     :fermata :arpeggio :glissando :breath :tie :harmonic
     :stopped :open :staccato :staccatissimo
     :mordent :prall :trill :longtrill :longtrill- :righttoe :lefttoe :rightheel :leftheel
-    :thumb :downbow :upbow :portato :tenuto :marcato :accent :notehead
+    :thumb :downbow :upbow :portato :tenuto :marcato :accent :notehead :size
     :startslur- :slur- :endslur- :textnote :textdyn))
     
 (declaim (type boolean *auto-pizz/arco*))
@@ -775,7 +777,7 @@
     :upbow :downbow :thumb :leftheel :rightheel :lefttoe :righttoe
     :trill :prall :mordent  
     :pizz :arco :open :stopped (:breath :before) (:tie :before)
-    #|:notehead|# #|:harmonic|# :arpeggio (:glissando :before) (:portamento :before) ; special ones
+    :arpeggio (:glissando :before) (:portamento :before) ; special ones
     :cautacc :8up :8down :clef :longtrill :startlongtrill-))
 (defparameter +marks-last-tie+
   '(:endslur- :end8up- :end8down- :endtext- :endwedge< :endwedge> :endwedge<* :endwedge>*
@@ -794,7 +796,7 @@
   '(:mordent))
 
 (defparameter +marks-on-off+
-  '((*auto-pizz/arco* . (:pizz . :arco))))
+  '((*auto-pizz/arco* . (:pizz . :arco)) (nil . ((:size :small) . (:size :normal 2))) (nil . ((:size :tiny) . (:size :normal 1)))))
 
 (defparameter +marks-before-after+
   '((:glissando . :before) (:portamento . :before) (:breath . :after) (:tie . :after)))
@@ -809,7 +811,7 @@
     :upbow :downbow :thumb :leftheel :rightheel :lefttoe :righttoe 
     :trill :longtrill :startlongtrill- :prall :mordent 
     :pizz :arco :open :stopped :breath
-    :notehead :harmonic :arpeggio :glissando :portamento))
+    :notehead :harmonic :arpeggio :glissando :portamento :size))
 
 ;; spanners
 ;; startsym, contsym, endsym, replsym (nil = remove if on one note, t = can span one note, other symbols are replacements if on one note)
@@ -823,13 +825,13 @@
     (:startwedge>* :wedge>* :endwedge>* nil)
     (:startlongtrill- :longtrill- :endlongtrill- t 1))) ; forced lvl 1 for all
 (defparameter +marks-spanner-staves+
-  '((:start8up- :8up- :end8up- :8up)
+  '((:start8up- :8up- :end8up- :8up) ; put 1's here also?????
     (:start8down- :8down- :end8down- :8down)))
 
 (defparameter +marks-expand+
   '(((:longtrill . nil) . (:startlongtrill- . :endlongtrill-))))
 
-(defparameter +marks-defaultdir+
+(defparameter +marks-defaultdir+ ; default placements (up or down in relation to staff)
   '((:longtrill . :up) (:startlongtrill- . :up) (:texttempo . :up) (:textnote . :up) (:starttext- . :down)
     (:startwedge< . :down) (:startwedge> . :down) (:textdyn . :down) (:text . :down)))
 (defparameter +marks-long+ '(:startlongtrill-))
