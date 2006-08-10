@@ -1,4 +1,4 @@
-	A few cosmetic changes
+	Fixed bug where harmonics weren't being spread over tied notes
 	Fixed bug involving ottava symbols over single notes/chords
 	Fixed harmonic/flageolet bug in LilyPond
 	Part name fix in LilyPond and CMN backends (Kilian)

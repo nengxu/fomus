@@ -775,7 +775,7 @@
     :upbow :downbow :thumb :leftheel :rightheel :lefttoe :righttoe
     :trill :prall :mordent  
     :pizz :arco :open :stopped (:breath :before) (:tie :before)
-    :notehead :harmonic :arpeggio (:glissando :before) (:portamento :before) ; special ones
+    #|:notehead|# #|:harmonic|# :arpeggio (:glissando :before) (:portamento :before) ; special ones
     :cautacc :8up :8down :clef :longtrill :startlongtrill-))
 (defparameter +marks-last-tie+
   '(:endslur- :end8up- :end8down- :endtext- :endwedge< :endwedge> :endwedge<* :endwedge>*
