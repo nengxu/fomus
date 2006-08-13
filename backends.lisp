@@ -27,12 +27,14 @@
 (defun save-raw (filename parts)
   (declare (type list parts))
   (when (>= *verbose* 1) (out ";; Saving raw output file ~S...~%" filename))
-  (with-open-file (f filename :direction :output :if-exists :supersede)
-    (format f ";; -*-lisp-*-~%;; ~A v~A.~A.~A Raw Output File~%~%" +title+ (first +version+) (second +version+) (third +version+))
-    (prin1 +version+ f)
-    (fresh-line f)
-    (prin1 parts f)
-    (fresh-line f)))
+  (with-standard-io-syntax
+    (let ((*print-pretty* t))
+      (with-open-file (f filename :direction :output :if-exists :supersede)
+	(format f ";; -*-lisp-*-~%;; ~A v~A.~A.~A Raw Output File~%~%" +title+ (first +version+) (second +version+) (third +version+))
+	(prin1 +version+ f)
+	(fresh-line f)
+	(prin1 parts f)
+	(fresh-line f)))))
 
 (defun backend (backend filename dir parts options process play view)
   (declare

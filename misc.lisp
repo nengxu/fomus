@@ -58,12 +58,14 @@
   (declare (type list list))
   (car (last list)))
 
-(set-dispatch-macro-character
- #\# #\Z
- (lambda (s c n)
-   (declare (type stream s) (ignore c n))
-   (let ((r (read s t nil t)))
-     (apply #'make-instance r))))
+(if (get-dispatch-macro-character #\# #\Z)
+    (warn "Haven't installed #Z, cause this dispatch char had already been taken.")
+    (set-dispatch-macro-character
+     #\# #\Z
+     (lambda (s c n)
+       (declare (type stream s) (ignore c n))
+       (let ((r (read s t nil t)))
+	 (apply #'make-instance r)))))
 
 (declaim (type boolean *prepend-fm*))
 (defparameter *prepend-fm* nil)

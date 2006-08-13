@@ -1,6 +1,8 @@
 ;; EXAMPLES
 ;; This is currently being used as a scratch file for testing and debugging
 
+(in-package :fomus)
+
 (fomus
  :output '((:lilypond :view t) :data) 
  :verbose 1
