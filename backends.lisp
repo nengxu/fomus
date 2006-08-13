@@ -36,25 +36,36 @@
 	(prin1 parts f)
 	(fresh-line f)))))
 
+(defvar *registered-backends* (make-hash-table))
+
+(defun register-backend (backend callback)
+  (setf (gethash backend *registered-backends*) callback))
+
 (defun backend (backend filename dir parts options process play view)
-  (declare
-   (ignorable options process play view)
-   (type symbol backend) (type list parts) (type list options) (type boolean process) (type boolean view))
-  (unwind-protect
-       (case backend
-	 ((:data :fomus))
-	 ((:raw) (save-raw filename parts))
-	 #-fomus-nocmn
-	 (:cmn (save-cmn parts (format nil +cmn-comment+ +title+ (first +version+) (second +version+) (third +version+)) filename options process view))
-	 #-fomus-nolilypond
-	 (:lilypond (save-lilypond parts (format nil +lilypond-comment+ +title+ (first +version+) (second +version+) (third +version+)) filename options process view))
-	 #-fomus-nomusicxml
-	 (:musicxml (save-xml parts (format nil +xml-comment+ +title+ (first +version+) (second +version+) (third +version+)) filename options))
-	 #-fomus-nomusicxml
-	 (:musicxml-sibelius (save-xmlsibelius parts (format nil +xml-comment+ +title+ (first +version+) (second +version+) (third +version+)) filename options))
-	 #-fomus-nomusicxml
-	 (:musicxml-finale (save-xmlfinale parts (format nil +xml-comment+ +title+ (first +version+) (second +version+) (third +version+)) filename options))
-	 #-fomus-nomidi (:midi (save-midi parts filename options play))
-	 (otherwise (error "Invalid backend ~S" backend)))
-    (#+cmu unix:unix-chdir #+sbcl sb-posix:chdir #+openmcl ccl:cwd #+allegro excl:chdir #+lispworks hcl:change-directory #+clisp ext:cd (namestring dir))))
+  (flet ((format-comment (cstr)
+	   (format nil cstr +title+ (first +version+) (second +version+) (third +version+))))
+    (declare
+     (ignorable options process play view)
+     (type symbol backend) (type list parts) (type list options) (type boolean process) (type boolean view))
+    (unwind-protect
+	 (case backend
+	   ((:data :fomus))
+	   ((:raw) (save-raw filename parts))
+	   #-fomus-nocmn
+	   (:cmn (save-cmn (format-comment +cmn-comment+) parts filename options process view))
+	   #-fomus-nolilypond
+	   (:lilypond (save-lilypond parts (format-comment +lilypond-comment+) filename options process view))
+	   #-fomus-nomusicxml
+	   (:musicxml (save-xml parts (format-comment +xml-comment+) filename options))
+	   #-fomus-nomusicxml
+	   (:musicxml-sibelius (save-xmlsibelius parts (format-comment +xml-comment+) filename options))
+	   #-fomus-nomusicxml
+	   (:musicxml-finale (save-xmlfinale parts (format-comment +xml-comment+) filename options))
+	   #-fomus-nomidi (:midi (save-midi parts filename options play))
+	   (otherwise
+	    (let ((callback (gethash backend *registered-backends*)))
+	      (if callback
+		  (funcall callback parts +title+ +version+ filename options process view)
+		  (error "Invalid backend ~S" backend)))))
+      (#+cmu unix:unix-chdir #+sbcl sb-posix:chdir #+openmcl ccl:cwd #+allegro excl:chdir #+lispworks hcl:change-directory #+clisp ext:cd (namestring dir)))))
 
