@@ -46,7 +46,7 @@
 			     :directory
 			     #-(or lispworks clisp) dir
 			     #+(or lispworks clisp) (if (or (stringp dir) (pathnamep dir))
-							(pathname-directory #+(or unix linux darwin clisp) (conc-strings dir "/") #-(or unix linux darwin clisp) dir)
+							(pathname-directory #+(and (or unix linux darwin clisp) (not cygwin)) (conc-strings dir "/") #-(and (or unix linux darwin clisp) (not cygwin)) dir)
 							dir)
 			     :name name :type ext)))
 
@@ -140,10 +140,10 @@
 (defun find-exe (filename &optional subdir)
   (declare (ignorable subdir))
   (namestring*
-   (or #+(or linux darwin unix) (probe-file* (change-filename filename :dir "/usr/local/bin"))
-       #+(or linux darwin unix) (probe-file* (change-filename filename :dir "/usr/bin"))
-       #+(or linux darwin unix) (probe-file* (change-filename filename :dir "/bin"))
-       #+(or linux darwin unix) (probe-file* (change-filename filename :dir "/usr/X11R6/bin"))
+   (or #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/usr/local/bin"))
+       #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/usr/bin"))
+       #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/bin"))
+       #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/usr/X11R6/bin"))
        #+darwin (probe-file* (change-filename filename :dir "/sw/bin"))
        #+darwin (probe-file* (change-filename filename :dir "/Applications"))
        #+darwin
@@ -171,6 +171,19 @@
        #+(or mswindows win32)
        (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
 						   (directory* (format nil "/Program Files/~A/*/*/*" subdir) #+openmcl :directories #+openmcl t))))
+       #+(or mswindows win32 cygwin) (probe-file* (change-filename filename :dir "/cygdrive/c/Program Files"))
+       #+(or mswindows win32 cygwin)
+       (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
+						   (directory* (format nil "/cygdrive/c/Program Files/~A" subdir) #+openmcl :directories #+openmcl t))))
+       #+(or mswindows win32 cygwin)
+       (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
+						   (directory* (format nil "/cygdrive/c/Program Files/~A/*" subdir) #+openmcl :directories #+openmcl t))))
+       #+(or mswindows win32 cygwin)
+       (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
+						   (directory* (format nil "/cygdrive/c/Program Files/~A/*/*" subdir) #+openmcl :directories #+openmcl t))))
+       #+(or mswindows win32 cygwin)
+       (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
+						   (directory* (format nil "/cygdrive/c/Program Files/~A/*/*/*" subdir) #+openmcl :directories #+openmcl t))))
        #+(or mswindows win32) (probe-file* (change-filename filename :dir "/cygwin/usr/local/bin"))
        #+(or mswindows win32) (probe-file* (change-filename filename :dir "/cygwin/usr/bin"))
        #+(or mswindows win32) (probe-file* (change-filename filename :dir "/cygwin/bin"))

@@ -45,6 +45,7 @@
 			 (ext:run-program
 			  (or exe *lilypond-exe*)
 			  :arguments (append (or opts *lilypond-opts*) (list filename))
+			  :output nil
 			  :wait t))
 		       0)
 	  #+lispworks (ignore-errors
@@ -74,6 +75,7 @@
 				      (or view-exe *lilypond-view-exe*)
 				      :arguments (append (or view-opts *lilypond-view-opts*)
 							 (list (change-filename filename :ext (or out-ext *lilypond-out-ext*))))
+				      :output nil
 				      :wait nil))
 				   0)
 		      #+lispworks (ignore-errors

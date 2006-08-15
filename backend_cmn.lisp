@@ -151,6 +151,7 @@
 				      :arguments
 				      (append (or view-opts *cmn-view-opts*)
 					      (list (change-filename filename :ext (or out-ext +cmn-out-ext+))))
+				      :output nil
 				      :wait nil)) 0)
 		      #+lispworks (ignore-errors
 				    (system:call-system (format nil "~A~{ ~A~}" (or view-exe *cmn-view-exe*)
