@@ -229,9 +229,10 @@
 	indicating an extra note to appear above the base note.
 	Specifying <literal>:SOUNDING</literal> (the default) causes a small parenthesized notehead to appear while specifying
 	<literal>:TOUCHED</literal> causes a diamond notehead to appear.
+	The actual results may vary depending on the backend (extra editing may be required).
 	Notes are indicated with either a symbol or number, as in the <structfield><link linkend="note.note">NOTE</link></structfield>
 	slot in the <classname><link linkend="class.note">NOTE</link></classname> class.
-	(Accidentals are not specified here.)
+	(Extra accidentals are not specified here.)
       </para>
       <simplelist>
         <member><function><anchor id="mark.pizz"/>:PIZZ</function></member>

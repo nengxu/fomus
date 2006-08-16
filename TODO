@@ -5,6 +5,7 @@ Immediate:
     Bugs:
       Double brackets shouldn't appear in the same place (6 violins example)
       Send list of XML issues to Sibelius/Finale tech. support
+      In CLISP/Cygwin output from executables isn't suppressed (fixable?)
     Documentation:
       Separate MIDI files for different parts
       Proofreading

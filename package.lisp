@@ -55,7 +55,9 @@
 					; auxiliary accessors/functions
 					; caution: some only apply to OUTPUT .fms file extension objects, others only apply BEFORE calling fomus!
 	   "TIMESIG-OFF" "MEAS-VOICES"
-	   "ADDPROP" "GETPROP" "GETPROPS" "RMPROP" "COMBPROPS" "ADDMARK" "GETMARK" "GETMARKS" "RMMARK" "COMBMARKS"))
+	   "ADDPROP" "GETPROP" "GETPROPS" "RMPROP" "COMBPROPS" "ADDMARK" "GETMARK" "GETMARKS" "RMMARK" "COMBMARKS"
+
+	   "+TITLE+" "+VERSION+" "REGISTER-BACKEND"))
 
 (in-package :fomus)
 
