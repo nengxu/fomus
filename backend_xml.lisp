@@ -123,11 +123,12 @@
       (loop for e in +xml-head+ do (format f "~A~%" e))
       (format f "<!-- ~A -->~%" header)
       (flet ((msrt (x y) (cond
-			   ((find (cadr x) +marks-withacc+) nil)
-			   ((find (cadr y) +marks-withacc+) t)
-			   (t (let ((x2 (caddr x)) (y2 (caddr y)))
-				(cond ((and (numberp x2) (numberp y2)) (< x2 y2))
-				      (x2 t))))))
+			   ((find (cdr x) +marks-withacc+) nil) ; cadr 8/18/06
+			   ((find (cdr y) +marks-withacc+) t) ; cadr 8/18/06
+			   (t t)))
+	     (ssrt (x y) (let ((x2 (second x)) (y2 (second y))) ; caddr 8/18/06
+			   (cond ((and (numberp x2) (numberp y2)) (< x2 y2))
+				 (x2 t))))
 	     (getnum (n li) (loop for i from 1 to +xml-numlvls+	;; n is (lvl . voice)
 				  unless (find i (car li) :key #'car) do (push (cons i n) (car li)) (return i)))
 	     (remnum (n li) (prog1
@@ -412,13 +413,13 @@
 									   ((getmark e :arpeggio) '(("arpeggiate" nil))))))
 						       (eslr (when fi (loop for m in (sort (delete-duplicates
 											    (nconc (getmarks e :endslur-) (mapcar #'force-list (getmarks e :endgraceslur-)))
-											    :key #'cdr :test #'equal) #'msrt)
+											    :key #'cdr :test #'equal) #'ssrt)
 									    collect `("slur" (("type" "stop") ("number" ,(remnum (cons (second m) (event-voice* e))
 																 slrlvl)))))))
 						       (sslr (when fi (loop for m in (sort (delete-duplicates
 											    (nconc (getmarks e :startslur-) (mapcar #'force-list
 																    (getmarks e :startgraceslur-)))
-											    :key #'cdr :test #'equal) #'msrt)
+											    :key #'cdr :test #'equal) #'ssrt)
 									    collect `("slur" (("type" "start") ("number" ,(getnum (cons (second m) (event-voice* e))
 																  slrlvl))
 											      ,@(when (eq (third m) :dotted)

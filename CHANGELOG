@@ -1,3 +1,5 @@
+	Fixed bug with multiple marks on one note in MusicXML backend
+
 v0.2.3
 	REGISTER-BACKENDS function (Kilian)--removed +title+ +version+ from callback arguments and exported these (David)
 	Fixed more CLISP issues in Windows (viewing/compiling in LilyPond and CMN, finding executables)
