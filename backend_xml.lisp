@@ -200,7 +200,7 @@
 			  when fi collect `("backup" nil ("duration" nil ,(* (- (meas-endoff m) (meas-off m)) (timesig-beat* ts) dv)))
 			  nconc (loop
 				 with tv
-				 for e in v nconc
+				 for e in v and mfi = t then nil nconc
 				 (loop with ch = (chordp e)
 				       for fi = t then nil
 				       and no in (if (notep e) (if ch (event-writtennotes e) (list (event-writtennote e))) '(nil))
@@ -210,6 +210,14 @@
 				       and tr in (if (notep e) (if (consp (event-tiert e)) (event-tiert e) (list (event-tiert e))) '(nil))
 				       and tl in (if (notep e) (if (consp (event-tielt e)) (event-tielt e) (list (event-tielt e))) '(nil))
 				       do (prenconc (sort (mapcar #'rest (getmarks e :starttup)) #'> :key #'first) tv)
+				       nconc (when (and fi (not mfi))
+					       (loop for c in (getmarks e :clef) 
+						     for (s l o) = (lookup (second c) +xml-clefs+) collect
+						     `("attributes" nil
+						       ("clef" ,(when (> ns 1) `("number" ,(event-staff e)))
+							("sign" nil ,s)
+							,@(when l `(("line" nil ,l)))
+							,@(when o `(("clef-octave-change" nil ,o)))))))
 				       nconc (when fi (loop for x in (getmarks e :startwedge>) collect
 							    `("direction" ("placement" ,(if (eq (third x) :up) "above" "below"))
 							      ("direction-type" nil

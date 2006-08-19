@@ -1,3 +1,5 @@
+	Mid-measure clef changes in MusicXML
+
 v0.2.4
 	Fixed bug with multiple marks on one note in MusicXML backend
 
