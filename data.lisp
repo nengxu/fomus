@@ -287,7 +287,7 @@
 			  "Found ~S, expected list of PERC objects or (SYMBOL/(INTEGER 0 127) KEYWORD/ARGUMENT-PAIRS...) in PERCS slot" t))
      (instr-midiprgch-im (check* (or* null (integer 0 127) (list-of* (integer 0 127)))
 				 "Found ~S, expected NIL, (integer 0 127) or list of (integer 0 127) in MIDIPRGCH-IM slot" t))
-     (instr-midiprgch-ex (check* (or null (integer 0 127) (cons* (integer 0 127) key-arg-pairs*))
+     (instr-midiprgch-ex (check* (or* null (integer 0 127) (cons* (integer 0 127) key-arg-pairs*))
 				 "Found ~S, expected NIL, (integer 0 127) or ((integer 0 127) KEYWORD-ARGUMENT-PAIRS...) in MIDIPRGCH-EX slot" t)))))
 
 ;; tpose = mod. for sounding pitch

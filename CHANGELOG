@@ -1,3 +1,5 @@
+	Fixed small error with INSTR-MIDIPRGCH-EX slot when specifying an instrument with modifications
+
 v0.2.5
 	Mid-measure clef changes in MusicXML
 
