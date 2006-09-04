@@ -87,6 +87,100 @@
 			 (< (event-off (cdr ob1)) (event-off (cdr ob2)))))))
 	(format f "~%")))))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; CHUNK STRUCTURE
+
+(defstruct (fomuschunk (:copier nil) (:predicate fomuschunk))
+  (settings nil :type list)
+  (parts nil :type list))
+(defmethod print-object ((x fomuschunk) s)
+  (declare (type stream s))
+  (print-unreadable-object (x s :type t :identity t)))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; MERGE
+
+;; backup info to possibly be restored later by chunkmerger
+(defun backup-props (pts)
+  (declare (type list pts))
+  (loop with li
+	for p of-type partex in pts do 
+	(loop for m of-type meas in (part-meas p) do
+	      (loop with i
+		    for e of-type (or noteex restex) in (meas-events m) 
+		    when (notep e) do (setf i t)
+		    do (addmark e (cons :backup (event-marks e)))
+		    finally (when i (pushnew (cons (meas-off m) (meas-endoff m)) li :test #'equal)))
+	      (addprop m (cons :backup (meas-props m))))
+	(addprop p (cons :backup (part-props p)))
+	finally
+	(loop for p of-type partex in pts do
+	      (loop for m of-type meas in (part-meas p)
+		    when (find (cons (meas-off m) (meas-endoff m)) li :test #'equal)
+		    do (addprop m (append '(:backup :chunkrepl) (rest (popprop m :backup))))))))
+
+;; unbackup backuped props & marks
+(defun unbackup-props (p)
+  (declare (type partex p))
+  (copy-part p :props (rest (getprop p :backup)) :events
+	     (loop for m of-type meas in (part-meas p) collect
+		   (copy-meas m :props (rest (getprop m :backup)) :events
+			      (loop for e of-type (or noteex restex) in (meas-events m) collect
+				    (copy-event e :marks (rest (getmark e :backup))))))))
+  
+(defun postproc-parts (pts)
+  (declare (type list pts))		  
+  (when (>= *verbose* 2) (out "~&; Post processing..."))
+  (clean-clefs pts) #+debug (fomus-proc-check pts 'cleanclefs)
+  (postaccs pts) #+debug (fomus-proc-check pts 'postaccs)
+  (postproc pts) #+debug (fomus-proc-check pts 'postproc)
+  (setf pts (sort-parts pts)) #+debug (fomus-proc-check pts 'sortparts)
+  (group-parts pts) #+debug (fomus-proc-check pts 'groupparts)
+  (postpostproc-sortprops pts) #+debug (fomus-proc-check pts 'sortprops)
+  (when (>= *verbose* 1) (format t "~&")))  
+
+(defun fomus-merge (chunks)
+  (declare (type list chunks))
+  (when (>= *verbose* 2) (out "~&; Assembling chunks..."))
+  ;; gather settings (1st or last in chunks list?) and bind them (if not specified in this fomus call?)--still postproc operations to do and some backends check them
+  (let* ((cmpl (mapcar #'unbackup-props
+		       (stable-sort (mapcan #'copy-list chunks)	; sorted combination of all parts
+				    (lambda (x y)
+				      (declare (type partex x y))
+				      (loop with xc = 0 and yc = 0
+					    for ch of-type list in chunks
+					    for xp = (position x ch :key #'part-partid) and yp = (position y ch :key #'part-partid)
+					    when (and xp yp) do (if (< xp yp) (incf yc) (incf xc))
+					    finally (when (/= xc yc) (return (< xc yc)))))
+				    :key #'part-partid)))
+	 ;; turn last barlines into single or double barlines?
+	 (pts (loop for (p1 . re) of-type (partex . list) on cmpl collect
+		    (loop for p2 of-type partex in re 
+			  when (eql (part-partid p1) (part-partid p2)) do
+			  (setf (part-events p1)
+				(sort (delete-duplicates 
+				       (stable-sort (nconc (copy-list (part-meas p1)) (copy-list (part-meas p2)))
+						    (lambda (x y)
+						      (declare (type meas x y))
+						      (when (and (find-if #'notep (meas-events x)) (find-if #'notep (meas-events y))
+								 (> (meas-endoff x) (meas-off y)) (< (meas-off x) (meas-endoff y)))
+							(error "Overlapping/conflicting notation between chunks at offset ~S, part ~S"
+							       (float (max (meas-off x) (meas-off y))) (part-name p1)))
+						      (and (getprop x :chunkrepl) (not (getprop y :chunkrepl))))) ; empty measures go to end
+				       :from-end t
+				       :test (lambda (m1 m2)
+					       (declare (type meas m1 m2))
+					       (and (> (meas-endoff m1) (meas-off m2)) (< (meas-off m1) (meas-endoff m2)))))
+				      #'meas-off))
+			  finally 
+			  (let ((h (get-holes (mapcar (lambda (m) (declare (type meas m)) (cons (meas-off m) (meas-endoff m))) (part-meas p1)) 0 0)))
+			    (when h (error "Measure misalignment between chunks at offset ~S, part ~S" (min-list (mapcar #'car h)) (part-name p1))))
+			  (return p1)))))
+    ;; prepostproc-parts (prepostproc preparation)
+    (postproc-parts pts)
+    ;; ...
+    ))
+
 ;; keysigs not implemented yet
 ;; returns data structure ready for output via backends
 (defun fomus-proc (svdata dir)
@@ -223,14 +317,8 @@
 		  (distr-rests pts) #+debug (fomus-proc-check pts 'distrrests)
 		  (when (or *auto-multivoice-rests* *auto-multivoice-notes*)
 		    (comb-notes pts) #+debug (fomus-proc-check pts 'combnotes))
-		  (clean-clefs pts) #+debug (fomus-proc-check pts 'cleanclefs)
-		  (when (>= *verbose* 2) (out "~&; Post processing..."))
-		  (postaccs pts) #+debug (fomus-proc-check pts 'postaccs)
-		  (postproc pts) #+debug (fomus-proc-check pts 'postproc)
-		  (setf pts (sort-parts pts)) #+debug (fomus-proc-check pts 'sortparts)
-		  (group-parts pts) #+debug (fomus-proc-check pts 'groupparts)
-		  (postpostproc-sortprops pts) #+debug (fomus-proc-check pts 'sortprops)
-		  (when (>= *verbose* 1) (format t "~&"))
+		  (backup-props pts)
+		  (postproc-parts pts)
 		  pts)))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -253,6 +341,11 @@
 		   (declare (type symbol ba) (type boolean process view))
 		   (backend ba
 			    (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba +backendexts+))) dir))
-			    dir r (rest xx) (or process view) play view))))))
-  t)
+			    dir r (rest xx) (or process view) play view))))
+      (make-fomuschunk
+       :settings (map nil (lambda (s)
+			    (declare (type cons s))
+			    (cons (first s) (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))
+		      +settings+)
+       :parts r))))
 

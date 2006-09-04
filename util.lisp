@@ -148,10 +148,13 @@
 ;;    when (notany (lambda (e) (declare (type (integer 2) e)) (= (mod i e) 0)) pl)
 ;;    collect i into pl
 ;;    finally (return pl)))
+
 (defun notexpof2s (ubound)
   (declare (type (integer 2) ubound))
   (cons 2 (loop for i from 3 to ubound unless (integerp (/ i 2)) collect i)))
 
+;; list = list of conses (start, end), o1 = start, o2 = end (can be <= o1 if don't care)
+;; returns list of conses
 (defun get-holes (list o1 o2)
   (declare (type list list) (type real o1 o2))
   (loop

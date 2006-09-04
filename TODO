@@ -7,6 +7,7 @@ Immediate:
       Send list of XML issues to Sibelius/Finale tech. support
       In CLISP/Cygwin output from executables isn't suppressed (fixable?)
     Documentation:
+      Examples of file input
       Separate MIDI files for different parts
       Proofreading
       More examples (eventually indexed and covering most/all features)
@@ -24,6 +25,7 @@ Immediate:
       More control over harmonics
       More speed improvements (slower in OpenMCL?)
     Additions:
+      Onset-to-onset durations
       Dynamic markings fixer (eliminate repeats)
       Specifying percussion from MIDI info
       Automatic percussion instrument changes

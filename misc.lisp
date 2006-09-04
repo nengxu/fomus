@@ -540,6 +540,7 @@
 	collect x into r and do (incf c)
 	finally (return (make-array c :element-type 'character :initial-contents r))))
 
+(declaim (inline distance))
 (defun distance (x y)
   (declare (type real x y))
   (sqrt (+ (* x x) (* y y))))

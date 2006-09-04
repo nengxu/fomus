@@ -28,9 +28,6 @@
    (partid :type (or symbol real list) :accessor timesig-partids :initform nil :initarg :partids) ; list of part ids, nil = default (all parts)
    (repl :type (or timesig-repl list) :accessor timesig-repl :initform nil :initarg :repl))) ; replacement time signatures for before meter change (nil = generate automatically)
 
-;; (defclass keysig (event-base) ; stub class--to implement
-;;   ())
-
 (defclass mark (event-base) ; these just get dumped into notes after voices are assigned!--voice is like rest voice, list indicates all voices get mark
   ((off :type (or (real 0) cons))
    (marks :type list :accessor event-marks :initform nil :initarg :marks)
