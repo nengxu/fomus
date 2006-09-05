@@ -124,7 +124,13 @@
 	 (loop
 	  for re = (read f nil 'eof) until (eq re 'eof)
 	  if (listp re) nconc (git (first re) (rest re))
-	  else nconc (with-input-from-string (st (read-line f))
+	  else nconc (with-input-from-string (st (loop
+						  with st = (read-line f)
+						  for s = (string-right-trim " " st)
+						  while (char= (aref s (1- (length s))) #\\)
+						  do (setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f)))
+						  finally (return st)))
+		       
 		       (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect e)))))))))
 
 (defun fomus-file (filename &optional args)

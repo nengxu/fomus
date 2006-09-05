@@ -11,7 +11,7 @@
   <section>
     <title>Lisp Examples</title>
       <example>
-        <title id="example.simp.ex">Simple Example</title>
+        <title id="example.simp">Simple Example</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -447,4 +447,123 @@
 	</blockquote>
       </example>      
   </section>
+  <section>
+    <title>Text Input File Examples</title>
+      <example>
+        <title id="example.txtsimp">Simple Text Input Example</title>
+	<programlisting>
+<![CDATA[
+INIT :output :lilypond
+INIT :filename "/mydir/output"
+
+PART 1 :name "Piano" :instr :piano
+
+NOTE 1 :voice 1 :off 0 :dur 1/2 :note 54
+NOTE 1 :voice 1 :off 1/2 :dur 1/2 :note 60
+NOTE 1 :voice 1 :off 1 :dur 1/2 :note 51
+NOTE 1 :voice 1 :off 3/2 :dur 1/2 :note 61
+NOTE 1 :voice 1 :off 2 :dur 1/2 :note 61
+NOTE 1 :voice 1 :off 5/2 :dur 1/2 :note 61
+NOTE 1 :voice 1 :off 3 :dur 1/2 :note 58
+NOTE 1 :voice 1 :off 7/2 :dur 1/2 :note 65
+NOTE 1 :voice 1 :off 4 :dur 1/2 :note 65
+NOTE 1 :voice 1 :off 9/2 :dur 1/2 :note 58
+NOTE 1 :voice 1 :off 5 :dur 1/2 :note 56
+NOTE 1 :voice 1 :off 11/2 :dur 1/2 :note 50
+NOTE 1 :voice 1 :off 6 :dur 1/2 :note 65
+NOTE 1 :voice 1 :off 13/2 :dur 1/2 :note 62
+NOTE 1 :voice 1 :off 7 :dur 1/2 :note 55
+NOTE 1 :voice 1 :off 15/2 :dur 1/2 :note 49
+NOTE 1 :voice 1 :off 8 :dur 1/2 :note 70
+NOTE 1 :voice 1 :off 17/2 :dur 1/2 :note 72
+NOTE 1 :voice 1 :off 9 :dur 1/2 :note 62
+NOTE 1 :voice 1 :off 19/2 :dur 1/2 :note 54
+NOTE 1 :voice 1 :off 10 :dur 1 :note 68]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_txt_simp_ex.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.txtaccents">Staccato and Accent Marks</title>
+	<programlisting>
+<![CDATA[
+INIT :output (:lilypond :view t)
+INIT :filename "/tmp/output"
+
+PART 1 :name "Piano" :instr :piano
+
+NOTE 1 :voice 1 :off 0 :dur 0.5 :note 53 :marks (:staccato)
+NOTE 1 :voice 1 :off 0.5 :dur 0.5 :note 53 :marks (:accent)
+NOTE 1 :voice 1 :off 1 :dur 0.5 :note 55 :marks (:staccato)
+NOTE 1 :voice 1 :off 1.5 :dur 0.5 :note 62
+NOTE 1 :voice 1 :off 2 :dur 0.5 :note 49
+NOTE 1 :voice 1 :off 2.5 :dur 0.5 :note 50
+NOTE 1 :voice 1 :off 3 :dur 0.5 :note 52 :marks (:staccato)
+NOTE 1 :voice 1 :off 3.5 :dur 0.5 :note 61
+
+NOTE 1 :voice 1 :off 4 :dur 0.5 :note 57
+NOTE 1 :voice 1 :off 4.5 :dur 0.5 :note 63
+NOTE 1 :voice 1 :off 5 :dur 0.5 :note 61 :marks (:staccato)
+NOTE 1 :voice 1 :off 5.5 :dur 0.5 :note 72 :marks (:staccato)
+NOTE 1 :voice 1 :off 6 :dur 0.5 :note 51
+NOTE 1 :voice 1 :off 6.5 :dur 0.5 :note 58
+NOTE 1 :voice 1 :off 7 :dur 0.5 :note 51
+NOTE 1 :voice 1 :off 7.5 :dur 0.5 :note 70 :marks (:accent)
+
+NOTE 1 :voice 1 :off 8 :dur 0.5 :note 52 :marks (:staccato)
+NOTE 1 :voice 1 :off 8.5 :dur 0.5 :note 59 :marks (:accent)
+NOTE 1 :voice 1 :off 9 :dur 0.5 :note 54 :marks (:staccato)
+NOTE 1 :voice 1 :off 9.5 :dur 0.5 :note 68
+NOTE 1 :voice 1 :off 10 :dur 1 :note 48 :marks (:staccato)]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_txt_accents.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.txtperc">Percussion</title>
+	<programlisting>
+<![CDATA[
+;; the "#S" notation is slightly ugly--this will be fixed eventually
+;; also, the "\" line-continuation character will work in version 0.2.7
+PART prc :name "Percussion" :instr (:percussion :percs (#S(perc :sym :woodblock :staff 1 :voice 1 :note e4 :autodur t :midinote-im nil :midinote-ex nil) \
+                                                        #S(perc :sym :snaredrum :staff 1 :voice 1 :note a3 :autodur t :midinote-im nil :midinote-ex nil)))
+
+NOTE prc :voice 1 :off 0 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 1/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 1 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 3/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 5/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 3 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 7/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 4 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 9/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 5 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 11/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 6 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 13/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 7 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 15/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 8 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 17/2 :dur 1/2 :note :snaredrum
+NOTE prc :voice 1 :off 9 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 19/2 :dur 1/2 :note :woodblock
+NOTE prc :voice 1 :off 10 :dur 1/2 :note :snaredrum]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_txt_perc.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+   </section>
 </chapter>
