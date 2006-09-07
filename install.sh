@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if [[ ! -e fomus.asd ]]
+if [[ ! -e "fomus.asd" ]]
 then
     echo "You must run this script from the FOMUS directory"
     exit 1
@@ -60,20 +60,20 @@ do
   esac
 done
 
-if [[ $PREFIX = "" ]]
+if [[ -z "$PREFIX" ]]
 then
-    PREFIX=/usr/local
+    PREFIX="/usr/local"
 fi
-if [[ $BINDIR = "" ]]
+if [[ -z "$BINDIR" ]]
 then
-    BINDIR=$PREFIX/bin
+    BINDIR="$PREFIX/bin"
 fi
-if [[ $LIBDIR = "" ]]
+if [[ -z "$LIBDIR" ]]
 then
-    LIBDIR=$PREFIX/lib
+    LIBDIR="$PREFIX/lib"
 fi
 
-if [[ $UNINST = "1" ]]
+if [[ "$UNINST" = "1" ]]
 then
     echo
     echo "Uninstalling..."
@@ -86,9 +86,9 @@ then
     exit 0
 fi
 
-if [[ $LISP = "" ]]
+if [[ -z "$LISP" ]]
 then
-    echo "No Lisp was specified (use --sbcl, --cmucl or --openmcl)"
+    echo "No Lisp was specified (use --sbcl, --cmucl or --openmcl, or type --help for more options)"
     exit 1
 fi
 
@@ -120,7 +120,7 @@ case $LISP in
 	EVALARG="-e"
 	EXITCMD="(quit)"
 	COREARG="-I"
-	DUMPCMD='(ccl:save-application "fomus.img" :purify t)'	
+	DUMPCMD='(ccl:save-application "fomus.img" :purify t)'
 	;;
 esac
 
@@ -129,31 +129,49 @@ then
     rm fomus.img
 fi
 
-if [[ $CMDIR != "" ]]
+if [[ -n "$CMDIR" ]]
 then
     $LISPEXE $EXTRAARG $LOADARG "$CMDIR/$LOADCM" $EVALARG $EXITCMD
     INCCM1=$LOADARG
     INCCM2="$CMDIR/$LOADCM"
 fi
-if [[ $CMNDIR != "" ]]
+if [[ -n "$CMNDIR" ]]
 then
     $LISPEXE $EXTRAARG $LOADARG "$CMNDIR/$LOADCMN" $EVALARG $EXITCMD
     INCCMN1=$LOADARG
     INCCMN2="$CMNDIR/$LOADCMN"
 fi
-$LISPEXE $EXTRAARG $LOADARG "load.lisp" $EVALARG $EXITCMD
+INSTFLAG='(intern "INSTALL" :common-lisp-user)'
+$LISPEXE $EXTRAARG $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG $EXITCMD
 
-$LISPEXE $EXTRAARG $INCCM1 $INCCM2 $INCCMN1 $INCCMN2 $LOADARG "load.lisp" $EVALARG "$DUMPCMD"
+$LISPEXE $EXTRAARG $INCCM1 $INCCM2 $INCCMN1 $INCCMN2 $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG "$DUMPCMD"
 
-if [[ ! -e fomus.img ]]
+if [[ ! -e "fomus.img" ]]
 then
     echo
     echo "Couldn't create FOMUS Lisp image :("
     exit 1
 fi
 
-echo "#!/bin/sh" > fomus.sh
-echo "$LISPEXE $COREARG \"$LIBDIR/fomus.img\" $EXTRAARG $EVALARG \"(fm::fomus-exe \\\"\$1\\\" \\\"\$HOME/.fomus\\\")\"" >> fomus.sh
+echo '#!/bin/sh' > fomus.sh
+echo 'us="Usage: fomus [-lxfscmv] [-q val] [-o basefilename] filename"' >> fomus.sh
+echo 'while getopts lxfscmvq:o: opt; do' >> fomus.sh
+echo '    case $opt in' >> fomus.sh
+echo '        l) o="l$o";;' >> fomus.sh
+echo '        x) o="x$o";;' >> fomus.sh
+echo '        f) o="f$o";;' >> fomus.sh
+echo '        s) o="s$o";;' >> fomus.sh
+echo '        c) o="c$o";;' >> fomus.sh
+echo '        m) o="m$o";;' >> fomus.sh
+echo '        v) o="v$o";;' >> fomus.sh
+echo '        o) n="$OPTARG";;' >> fomus.sh
+echo '        q) q="$OPTARG";;' >> fomus.sh
+echo '        ?) echo $us; exit 2;;' >> fomus.sh
+echo '    esac' >> fomus.sh
+echo 'done' >> fomus.sh
+echo 'shift $(($OPTIND - 1))' >> fomus.sh
+echo 'if [[ $# -ne 1 ]]; then echo $us; exit 2; fi' >> fomus.sh
+echo "$LISPEXE $COREARG \"$LIBDIR/fomus.img\" $EXTRAARG $EVALARG \"(fm::fomus-exe \\\"\$1\\\" \\\"\$HOME/.fomus\\\" \\\"\$o\\\" \\\"\$n\\\" \\\"\$q\\\")\"" >> fomus.sh
 
 echo
 echo "Installing..."

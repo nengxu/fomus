@@ -41,6 +41,6 @@
 
    (:file "interface" :depends-on ("main"))
 
-   (:file "final" :depends-on ("util" "version") :in-order-to ((load-op (load-op "interface"))))
+   (:file "final" :depends-on ("version" "interface") :in-order-to ((load-op (load-op "interface"))))
 
    ))

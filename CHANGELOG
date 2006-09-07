@@ -1,3 +1,6 @@
+	.fms files may contain "\" characters to read several lines as one line
+	Improved command line interface (added some options)
+	Fixed install.sh bugs
 	Started adding functionality for merging results of several fomus calls together
 
 v0.2.6

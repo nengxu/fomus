@@ -50,11 +50,23 @@
   (find-cm) (find-cmn))
 
 (eval-when (:load-toplevel :execute)
-  (load-initfile))
+  (unless (find-symbol "INSTALL" :common-lisp-user) (load-initfile)))
 
-(defun fomus-exe (filename initfile)
-  (load-initfile initfile nil)
-  (catcherr (fomus-text filename nil #'fomus-textexec))
+(defun fomus-exe (filename initfile opts basename quality)
+  (catcherr
+   (load-initfile initfile nil)
+   (let* ((v (when (find #\v opts) t))
+	  (o (nconc (when (string/= quality "") (list :quality (ignore-errors (read-from-string quality))))
+		    (when (string/= basename "") (list :filename basename))
+		    (let ((x (nconc
+			      (when (find #\l opts) (list (list :lilypond :view v)))
+			      (when (find #\c opts) (list (list :lilypond :view v)))
+			      (when (find #\m opts) (list (list :fomus)))
+			      (cond ((find #\f opts) (list (list :musicxml-finale)))
+				    ((find #\s opts) (list (list :musicxml-sibelius)))
+				    ((find #\x opts) (list (list :musicxml)))))))
+		      (when x (cons :output x))))))
+     (fomus-text filename o #'fomus-textexec)))
   (fresh-line)
   (finish-output)
   #+cmu (ext:quit) #+sbcl (sb-ext:quit) #+openmcl (ccl:quit))

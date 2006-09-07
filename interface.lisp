@@ -130,8 +130,8 @@
 						  while (char= (aref s (1- (length s))) #\\)
 						  do (setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f)))
 						  finally (return st)))
-		       
 		       (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect e)))))))))
 
 (defun fomus-file (filename &optional args)
   (fomus-text filename args #'fomus-textret))
+
