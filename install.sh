@@ -143,7 +143,6 @@ then
 fi
 INSTFLAG='(intern "INSTALL" :common-lisp-user)'
 $LISPEXE $EXTRAARG $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG $EXITCMD
-
 $LISPEXE $EXTRAARG $INCCM1 $INCCM2 $INCCMN1 $INCCMN2 $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG "$DUMPCMD"
 
 if [[ ! -e "fomus.img" ]]
