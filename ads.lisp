@@ -33,8 +33,11 @@
 
 (defpackage :ads
   (:use :cl :iterate)
-  (:export #:make-int-var #:post #:ads
-	   #:example))
+  (:export #:make-int-var-from-to #:make-int-var-domain
+	   #:post #:ads
+	   #:example
+	   #:acc-nokey2
+	   ))
 
 (in-package :ads)
 
@@ -58,8 +61,11 @@
 (defun var-update-proj-cost (var)
   (setf (var-proj-cost var) (var-compute-proj-cost var)))
 
-(defun make-int-var (from to)
+(defun make-int-var-from-to (from to)
   (make-var :domain (iter (for i from from to to) (collect i))))
+
+(defun make-int-var-domain (domain)
+  (make-var :domain domain))
 
 ;;; constraint
 (defstruct constraint
@@ -78,7 +84,7 @@
   (flet ((var-syms (num)
 	   (iter
 	     (for i from 1 to num)
-	     (collect (intern (format nil "V~A" i))))))
+	     (collect (intern (format nil "V~A" i) "ADS")))))
     (let* ((var-syms (var-syms (length vars)))
 	   (c (make-constraint
 	       :vars vars
@@ -145,10 +151,7 @@
     (warn "Sorry, assuming (= 100 reset-percentage)"))
   (let ((constraints (collect-constraints vars)))
     ;; initial random config
-    ;; (dolist (v vars) (var-set-randomly v))
-    (setf (var-value (first vars)) 5)
-    (setf (var-value (second vars)) 5)
-    (setf (var-value (third vars)) 2)
+    (dolist (v vars) (var-set-randomly v))    
     (dolist (c constraints) (constraint-update-cost c))
     (dolist (v vars) (var-update-proj-cost v))
     ;; the big search loop
@@ -160,7 +163,7 @@
       (for global-cost = (iter
 			   (for c in constraints)
 			   (summing (constraint-cost c))))
-      (print-info vars global-cost)
+      ;; (print-info vars global-cost)
       (consistency-check vars constraints global-cost) ; only for debugging
       ;; (print (list 'tabu-count tabu-count))
       ;;       (print (list 'var-proj-cost
@@ -187,8 +190,8 @@
 	      (iter
 		(for c in constraints)
 		(summing (constraint-cost c))))
-	(print '+resetting-vars)
-	(print-info vars global-cost)
+	;; (print '+resetting-vars)
+	;; 	(print-info vars global-cost)
 	(consistency-check vars constraints global-cost)) ; only for debugging
       ;; move
       (let ((worst-var (iter
@@ -236,12 +239,24 @@
 		     (dolist (v (constraint-vars c))
 		       (adjoining v into dirty-vars))
 		     (finally (mapc #'var-update-proj-cost dirty-vars))))))
-      (finally (return (values best-sol best-cost))))))
+      (finally (when best-sol
+		 (iter
+		   (for v in vars)
+		   (for x in best-sol)
+		   (setf (var-value v) x)))
+	       (dolist (c constraints) (constraint-update-cost c))
+	       (dolist (v vars) (var-update-proj-cost v))
+	       (setq global-cost (iter
+				   (for c in constraints)
+				   (summing (constraint-cost c))))
+	       (consistency-check vars constraints global-cost)
+	       (return (values (mapcar #'var-value vars)
+			       global-cost))))))
 
 (defun example ()
-  (let ((l (list (make-int-var 1 5)
-		 (make-int-var 1 5)
-		 (make-int-var 1 5))))
+  (let ((l (list (make-int-var-from-to 1 5)
+		 (make-int-var-from-to 1 5)
+		 (make-int-var-from-to 1 5))))
     ;; smallest distance as possible
     ;; between first and second
     (post
@@ -261,6 +276,108 @@
 	   (- 10 sum)))
      (first l) (second l) (third l))
     (ads l)))
-
 ;; the optimal sol is (5 5 1), 6
 ;; which is already reached sometimes
+
+(defun cartesian-prod (list1 list2)
+  (iter
+    top
+    (for e1 in list1)
+    (iter
+      (for e2 in list2)
+      (in top (collect (list e1 e2))))))
+
+(defun acc-nokey2 (evs)
+  (let* ((midis (mapcar #'fm:event-note evs))
+	 (domain-data (iter
+			(for m in midis)
+			(collect
+			    (iter
+			      (for acc in '(0 -1 1))
+			      (for white-note = (fm::notespelling m acc))
+			      (when white-note
+				;; (list m white-note acc)
+				(collect (list m white-note acc)))))))
+	 (vars (iter
+		 (for d in domain-data)
+		 (collect (make-int-var-from-to 0 (1- (length d)))))))
+    ;; (print domain-data)
+    ;;     (print vars)
+    ;; constraint ivs
+    (iter
+      (for a in vars)
+      (for b in (cdr vars))
+      (for adata in domain-data)
+      (for bdata in (cdr domain-data))
+      (for cart = (cartesian-prod (var-domain a) (var-domain b)))
+      (for costs = (coerce
+		    (iter
+		      top
+		      (for b-ind in (var-domain b))
+		      (for bd = (nth b-ind bdata))
+		      (iter
+			(for a-ind in (var-domain a))
+			(for ad = (nth a-ind adata))
+			(for (values iv-value iv-quality) = (fm::interval
+							     (first ad) (third ad)
+							     (first bd) (third bd)))
+			;; would be nice to do pattern-matching on (list iv-value iv-quality)
+			(for cost = (case iv-quality
+				      ((-2 2)
+				       (if (= -2 iv-quality)
+					   (case iv-value (4 0) (otherwise 1))
+					   (case iv-value (3 0) (otherwise 1))))
+				      ((-3 3) 20)
+				      (otherwise 0)))
+			(in top (collect cost))))
+		    'vector))
+      (post `(svref ,costs (+ v1 (* ,(length (var-domain a)) v2)))
+	    a b))
+    ;; constrain individual pitches
+    (iter
+      (for v in vars)
+      (for data in domain-data)
+      (for cost = (coerce
+		   (iter
+		     (for (m wn acc) in data)
+		     (collect
+			 ;; of course that is not the way
+			 ;; to express this
+			 ;; probably this data exists already
+			 ;; in accidentals.lisp, just was not sure
+			 ;; how to use it
+			 (cond
+			   ;; avoid b#
+			   ((and (= wn 6)
+				 (= acc 1))
+			    5)
+			   ;; cb
+			   ((and (= wn 0)
+				 (= acc -1))
+			    5)
+			   ;; fb
+			   ((and (= wn 3)
+				 (= acc -1))
+			    5)
+			   ;; etc
+			   (t 0))))
+		   'vector))
+      (post  `(svref ,cost v1) v))
+    (multiple-value-bind (inds cost)
+	(ads vars
+	     :tabu-tenure 5
+	     :max-iterations 30000
+	     :reset-limit 5)
+      (print (list 'cost cost))      
+      (iter	
+	(for ind in inds)
+	(for data in domain-data)
+	(for entry = (nth ind data))
+	(for ev in evs)
+	(for proj in (mapcar #'var-proj-cost vars))
+	(setf (fm:event-note ev) (cons (first entry) (third entry)))
+	(unless (zerop proj)
+	  (push `(:text ,(princ-to-string proj)) (fm:event-marks ev)))))
+    evs))
+
+

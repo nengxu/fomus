@@ -247,6 +247,7 @@
 						     #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
 					  (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
 						     #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity)))
+			     (:nokey2 (ads:acc-nokey2 evs))
 			     (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
 		    #'sort-offdur)))))
 
@@ -408,6 +409,8 @@
 		    (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
 			  (case (auto-accs-fun)
 			    (:nokey1 (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))))
+			    ;; TODO dont know what to do here
+			    (:nokey2 nil)
 			    (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
 		    (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur)))))
       (loop for p of-type partex in parts unless (is-percussion p) do
