@@ -75,8 +75,8 @@
 (declaim (type (vector boolean) +nokey-quality+))
 (defparameter +interval-quality+ (vector nil t t nil nil t t))
 
-;; return a white note or nil if not possible
-(defun notespelling (note acc)		; acc = -2/-1/0/1/2
+;; return a white note (0-6) or nil if not possible
+(defun notespelling (note acc)		; note = midi, acc = -2/-1/0/1/2
   (declare (type rational note) (type (integer -2 2) acc))
   (multiple-value-bind (o n) (floor (- note acc) 12)
     (let ((x (svref +note-to-white+ n)))
