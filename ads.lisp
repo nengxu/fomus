@@ -33,17 +33,18 @@
 
 (defpackage :ads
   (:use :cl :iterate)
-  (:export #:make-int-var #:post #:ads))
+  (:export #:make-int-var #:post #:ads
+	   #:example))
 
 (in-package :ads)
 
 (setf *print-circle* t)	; for safety - not that I am really reading all this #1# stuff...
 
-;; (declaim (optimize (speed 0) (safety 3) (debug 3)))
-
 ;;; var
 (defstruct var
-  domain constraints value (tabu 0) (proj-cost most-positive-fixnum))
+  domain constraints value (tabu 0)
+  proj-cost		; caching the cost projection on this variable
+  )
 
 (defun var-set-randomly (var)
   (setf (var-value var)
@@ -54,19 +55,24 @@
     (for c in (var-constraints var))
     (summing (constraint-cost c))))
 
+(defun var-update-proj-cost (var)
+  (setf (var-proj-cost var) (var-compute-proj-cost var)))
+
 (defun make-int-var (from to)
   (make-var :domain (iter (for i from from to to) (collect i))))
 
 ;;; constraint
 (defstruct constraint
   vars costfn
-  cost			      ; when solving, the actual computed cost
+  cost				    ; caching the actual computed cost
   )
 
-(defun constraint-compute (constraint)
-  (setf (constraint-cost constraint)
-	(apply (constraint-costfn constraint)
-	       (constraint-vars constraint))))
+(defun constraint-compute-cost (constraint)
+  (apply (constraint-costfn constraint)
+	 (constraint-vars constraint)))
+
+(defun constraint-update-cost (constraint)
+  (setf (constraint-cost constraint) (constraint-compute-cost constraint)))
 
 (defun post (form &rest vars)
   (flet ((var-syms (num)
@@ -95,15 +101,56 @@
       (for c in (var-constraints v))
       (in top (adjoining c)))))
 
+(defun print-info (vars global-cost)
+  (terpri)
+  (princ (list '***var-value
+	       (iter
+		 (for v in vars)
+		 (collect (if (zerop (var-tabu v))
+			      (format nil " ~a" (var-value v))
+			      (format nil "^~a" (var-value v)))))
+	       'global-cost
+	       global-cost
+	       'proj-cost
+	       (mapcar #'var-proj-cost vars))))
+
+(defun consistency-check (vars constraints global-cost)
+  (let* ((constraints-costs (iter
+			      (for c in constraints)
+			      (collect (constraint-compute-cost c))))
+	 (gc (apply #'+ constraints-costs))
+	 (vars-projs (iter
+		       (for var in vars)
+		       (collect
+			   (iter
+			     (for c in (var-constraints var))
+			     (for cost = (nth (position c constraints) constraints-costs))
+			     (summing cost))))))
+    (assert (= gc global-cost))
+    (iter
+      (for c in constraints)
+      (for cost in constraints-costs)
+      (assert (= (constraint-cost c) cost)))
+    (iter
+      (for var in vars)
+      (for proj in vars-projs)
+      (assert (= proj (var-proj-cost var))))))
+
 (defun ads (vars &key
-	    (tabu-tenure 5)
+	    (tabu-tenure 3)
 	    (max-iterations 20)		; later this will be 100000
 	    (reset-limit (length vars)) ; number of tabu variables that will cause
-	    (reset-percentage 50)) ; a percentage of those to be randomly reset
+	    (reset-percentage 100)) ; a percentage of those to be randomly reset
+  (unless (= 100 reset-percentage)
+    (warn "Sorry, assuming (= 100 reset-percentage)"))
   (let ((constraints (collect-constraints vars)))
     ;; initial random config
-    (dolist (v vars) (var-set-randomly v))
-    (dolist (c constraints) (constraint-compute c))    
+    ;; (dolist (v vars) (var-set-randomly v))
+    (setf (var-value (first vars)) 5)
+    (setf (var-value (second vars)) 5)
+    (setf (var-value (third vars)) 2)
+    (dolist (c constraints) (constraint-update-cost c))
+    (dolist (v vars) (var-update-proj-cost v))
     ;; the big search loop
     (iter
       (with best-sol)
@@ -113,14 +160,12 @@
       (for global-cost = (iter
 			   (for c in constraints)
 			   (summing (constraint-cost c))))
-      (print (list '***var-value
-		   (mapcar #'var-value vars)
-		   'cost
-		   global-cost))
+      (print-info vars global-cost)
+      (consistency-check vars constraints global-cost) ; only for debugging
       ;; (print (list 'tabu-count tabu-count))
       ;;       (print (list 'var-proj-cost
-      ;; 		   (mapcar #'(lambda (x) (if (= x most-positive-fixnum) 'inf x))
-      ;; 			   (mapcar #'var-proj-cost vars))))
+      ;;		   (mapcar #'(lambda (x) (if (= x most-positive-fixnum) 'inf x))
+      ;;			   (mapcar #'var-proj-cost vars))))
       ;;       (print (list 'var-tabu (mapcar #'var-tabu vars)))
       ;; when cost is 0 we have a perfect solution
       (when (zerop global-cost)
@@ -129,7 +174,6 @@
 	(terminate))
       ;; reset
       (when (<= reset-limit tabu-count)
-	reset-percentage		; should be used here
 	(when (< global-cost best-cost)
 	  (setf best-cost global-cost
 		best-sol (mapcar #'var-value vars)))
@@ -137,15 +181,15 @@
 	  (var-set-randomly v)
 	  (setf (var-tabu v) 0))
 	(setf tabu-count 0)
-	(dolist (c constraints) (constraint-compute c))
-	(dolist (v vars) (setf (var-proj-cost v) (var-compute-proj-cost v)))
-	(print '+resetting-vars)	
-	(print (list '***var-value
-		     (mapcar #'var-value vars)
-		     'cost
-		     (iter
-		       (for c in constraints)
-		       (summing (constraint-cost c))))))
+	(dolist (c constraints) (constraint-update-cost c))
+	(dolist (v vars) (var-update-proj-cost v))
+	(setq global-cost
+	      (iter
+		(for c in constraints)
+		(summing (constraint-cost c))))
+	(print '+resetting-vars)
+	(print-info vars global-cost)
+	(consistency-check vars constraints global-cost)) ; only for debugging
       ;; move
       (let ((worst-var (iter
 			 (for v in vars)
@@ -159,34 +203,39 @@
 			      (decf (var-tabu v))
 			      (decf tabu-count))
 			    ;; (print (list 'looking 'at (var-value v)))
-			    (finding v maximizing (var-compute-proj-cost v)))))))
+			    (finding v maximizing (var-proj-cost v)))))))
 	(unless worst-var (error "no var is movable"))
 	;; (print (list 'worst-var (var-value worst-var)))
 	(iter
 	  (with old-value = (var-value worst-var))
-	  (with proj)
 	  (for possible-move in (var-domain worst-var))
 	  (setf (var-value worst-var) possible-move)
-	  (dolist (c (var-constraints worst-var)) (constraint-compute c))
-	  (finding possible-move minimizing (setf proj (var-compute-proj-cost worst-var))
-		   into move)
-	  (finally (cond
-		     ((< proj (var-proj-cost worst-var))
-		      (setf (var-value worst-var) move
-			    (var-proj-cost worst-var) proj
-			    ;; its tabu in the next iteration
-			    (var-tabu worst-var) 2)
-		      (incf tabu-count)
-		      (print (list 'moving 'to move))
-		      (iter
-			(for c in (var-constraints worst-var))
-			(constraint-compute c)))
-		     (t
-		      (print 'tabu)
-		      (setf (var-value worst-var) old-value
-			    (var-tabu worst-var) tabu-tenure)
-		      (incf tabu-count)
-		      (dolist (c (var-constraints worst-var)) (constraint-compute c)))))))
+	  (dolist (c (var-constraints worst-var)) (constraint-update-cost c))
+	  (for proj = (var-compute-proj-cost worst-var))
+	  (finding (cons possible-move proj) minimizing proj into move-proj)
+	  (finally (destructuring-bind (move . proj) move-proj
+		     (cond
+		       ;; found better move
+		       ((< proj (var-proj-cost worst-var))
+			(setf (var-value worst-var) move
+			      (var-proj-cost worst-var) proj
+			      ;; its tabu in the next iteration
+			      (var-tabu worst-var) 2)
+			(incf tabu-count)
+			;; (print (list 'moving 'to m))
+			)
+		       ;; no better move
+		       (t
+			;; (print 'tabu)
+			(setf (var-value worst-var) old-value
+			      (var-tabu worst-var) tabu-tenure)
+			(incf tabu-count))))
+		   (iter
+		     (for c in (var-constraints worst-var))
+		     (constraint-update-cost c)
+		     (dolist (v (constraint-vars c))
+		       (adjoining v into dirty-vars))
+		     (finally (mapc #'var-update-proj-cost dirty-vars))))))
       (finally (return (values best-sol best-cost))))))
 
 (defun example ()
@@ -213,5 +262,5 @@
      (first l) (second l) (third l))
     (ads l)))
 
-;; the optimal sol is ((5 5 1) 6)
+;; the optimal sol is (5 5 1), 6
 ;; which is already reached sometimes
