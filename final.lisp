@@ -52,12 +52,13 @@
 (eval-when (:load-toplevel :execute)
   (unless (find-symbol "INSTALL" :common-lisp-user) (load-initfile)))
 
-(defun fomus-exe (filename initfile opts basename quality)
+(defun fomus-exe (filename initfile opts basename quality verbosity)
   (catcherr
    (load-initfile initfile nil)
-   (let* ((v (when (find #\v opts) t))
+   (let* ((v (when (find #\w opts) t))
 	  (o (nconc (when (string/= quality "") (list :quality (ignore-errors (read-from-string quality))))
 		    (when (string/= basename "") (list :filename basename))
+		    (when (string/= verbosity "") (list :verbosity (ignore-errors (read-from-string verbosity))))
 		    (let ((x (nconc
 			      (when (find #\l opts) (list (list :lilypond :view v)))
 			      (when (find #\c opts) (list (list :lilypond :view v)))

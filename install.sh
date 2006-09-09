@@ -153,24 +153,19 @@ then
 fi
 
 echo '#!/bin/sh' > fomus.sh
-echo 'us="Usage: fomus [-lxfscmv] [-q val] [-o basefilename] filename"' >> fomus.sh
+echo 'us="Usage: fomus [-lxfscmw] [-o basefilename] [-v value] [-q value] filename"' >> fomus.sh
 echo 'while getopts lxfscmvq:o: opt; do' >> fomus.sh
 echo '    case $opt in' >> fomus.sh
-echo '        l) o="l$o";;' >> fomus.sh
-echo '        x) o="x$o";;' >> fomus.sh
-echo '        f) o="f$o";;' >> fomus.sh
-echo '        s) o="s$o";;' >> fomus.sh
-echo '        c) o="c$o";;' >> fomus.sh
-echo '        m) o="m$o";;' >> fomus.sh
-echo '        v) o="v$o";;' >> fomus.sh
+echo '        [lxfscmw]) o="$opt$o";;' >> fomus.sh
 echo '        o) n="$OPTARG";;' >> fomus.sh
+echo '        v) v="$OPTARG";;' >> fomus.sh
 echo '        q) q="$OPTARG";;' >> fomus.sh
 echo '        ?) echo $us; exit 2;;' >> fomus.sh
 echo '    esac' >> fomus.sh
 echo 'done' >> fomus.sh
 echo 'shift $(($OPTIND - 1))' >> fomus.sh
 echo 'if [[ $# -ne 1 ]]; then echo $us; exit 2; fi' >> fomus.sh
-echo "$LISPEXE $COREARG \"$LIBDIR/fomus.img\" $EXTRAARG $EVALARG \"(fm::fomus-exe \\\"\$1\\\" \\\"\$HOME/.fomus\\\" \\\"\$o\\\" \\\"\$n\\\" \\\"\$q\\\")\"" >> fomus.sh
+echo "$LISPEXE $COREARG \"$LIBDIR/fomus.img\" $EXTRAARG $EVALARG \"(fm::fomus-exe \\\"\$1\\\" \\\"\$HOME/.fomus\\\" \\\"\$o\\\" \\\"\$n\\\" \\\"\$q\\\" \\\"\$v\\\")\"" >> fomus.sh
 
 echo
 echo "Installing..."

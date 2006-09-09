@@ -20,6 +20,9 @@
 (defparameter *parts* nil)
 (defparameter *events* nil)
 
+(declaim (type list *chunks*))
+(defparameter *chunks* nil)
+
 #+debug
 (defun fomus-proc-check (pts n)
   (loop
@@ -125,8 +128,9 @@
   (copy-part p :props (rest (getprop p :backup)) :events
 	     (loop for m of-type meas in (part-meas p) collect
 		   (copy-meas m :props (rest (getprop m :backup)) :events
-			      (loop for e of-type (or noteex restex) in (meas-events m) collect
-				    (copy-event e :marks (rest (getmark e :backup))))))))
+			      (loop for v of-type list in (meas-events m) nconc
+				    (loop for e of-type (or noteex restex) in v collect
+					  (copy-event e :marks (rest (getmark e :backup)))))))))
   
 (defun postproc-parts (pts)
   (declare (type list pts))		  
@@ -139,92 +143,63 @@
   (postpostproc-sortprops pts) #+debug (fomus-proc-check pts 'sortprops)
   (when (>= *verbose* 1) (format t "~&")))  
 
-;; (defun fomus-merge (chunks)
-;;   (declare (type list chunks))
-;;   (when (>= *verbose* 2) (out "~&; Assembling chunks..."))
-;;   ;; gather settings (1st or last in chunks list?) and bind them (if not specified in this fomus call?)--still postproc operations to do and some backends check them
-;;   (let* ((cmpl (mapcar #'unbackup-props
-;; 		       (stable-sort (mapcan #'copy-list chunks)	; sorted combination of all parts
-;; 				    (lambda (x y)
-;; 				      (declare (type partex x y))
-;; 				      (loop with xc = 0 and yc = 0
-;; 					    for ch of-type list in chunks
-;; 					    for xp = (position x ch :key #'part-partid) and yp = (position y ch :key #'part-partid)
-;; 					    when (and xp yp) do (if (< xp yp) (incf yc) (incf xc))
-;; 					    finally (when (/= xc yc) (return (< xc yc)))))
-;; 				    :key #'part-partid)))
-;; 	 ;; turn last barlines into single or double barlines?
-;; 	 (pts (loop for (p1 . re) of-type (partex . list) on cmpl collect
-;; 		    (loop for p2 of-type partex in re 
-;; 			  when (eql (part-partid p1) (part-partid p2)) do
-;; 			  (setf (part-events p1)
-;; 				(sort (delete-duplicates 
-;; 				       (stable-sort (nconc (copy-list (part-meas p1)) (copy-list (part-meas p2)))
-;; 						    (lambda (x y)
-;; 						      (declare (type meas x y))
-;; 						      (when (and (find-if #'notep (meas-events x)) (find-if #'notep (meas-events y))
-;; 								 (> (meas-endoff x) (meas-off y)) (< (meas-off x) (meas-endoff y)))
-;; 							(error "Overlapping/conflicting notation between chunks at offset ~S, part ~S"
-;; 							       (float (max (meas-off x) (meas-off y))) (part-name p1)))
-;; 						      (and (getprop x :chunkrepl) (not (getprop y :chunkrepl))))) ; empty measures go to end
-;; 				       :from-end t
-;; 				       :test (lambda (m1 m2)
-;; 					       (declare (type meas m1 m2))
-;; 					       (and (> (meas-endoff m1) (meas-off m2)) (< (meas-off m1) (meas-endoff m2)))))
-;; 				      #'meas-off))
-;; 			  finally 
-;; 			  (let ((h (get-holes (mapcar (lambda (m) (declare (type meas m)) (cons (meas-off m) (meas-endoff m))) (part-meas p1)) 0 0)))
-;; 			    (when h (error "Measure misalignment between chunks at offset ~S, part ~S" (min-list (mapcar #'car h)) (part-name p1))))
-;; 			  (return p1)))))
-;;     ;; prepostproc-parts (prepostproc preparation)
-;;     (postproc-parts pts)
-;;     ;; ...
-;;     ))
-
-(defun fomus-merge (chunks)
-  (declare (type list chunks))
-  (when (>= *verbose* 2) (out "~&; Assembling chunks..."))
+(defmacro set-fomusproc (&body forms)
+  `(let ((*max-tuplet* (force-list *max-tuplet*))
+	 (*old-objects* (make-hash-table)))
+    ,@forms)) ; normalize some parameters
+  
+(defun fomus-merge ()
+  (when (>= *verbose* 1) (out "~&; Assembling chunks..."))
   ;; gather settings (1st or last in chunks list?) and bind them (if not specified in this fomus call?)--still postproc operations to do and some backends check them
   ;; turn last barlines into single or double barlines? 
-  (let ((pts (loop with al ; and lo = (loop for ch of-type list in chunks maximize (loop for p of-type partex in ch maximize (meas-endoff (last-element (part-meas p)))))
-		   for (p1 . re) of-type (partex . list) on (mapcar #'unbackup-props (loop for e of-type list in chunks append e))
-		   unless (find (part-partid p1) al) collect
-		   (loop for p2 of-type partex in re 
-			 when (eql (part-partid p1) (part-partid p2)) do
-			 (setf (part-events p1)
-			       (sort (delete-duplicates 
-				      (stable-sort (nconc (copy-list (part-meas p1)) (copy-list (part-meas p2)))
-						   (lambda (x y)
-						     (declare (type meas x y))
-						     (let ((xn (find-if #'notep (meas-events x)))
-							   (yn (find-if #'notep (meas-events y))))
-						       (when (and xn yn (> (meas-endoff x) (meas-off y)) (< (meas-off x) (meas-endoff y)))
-							 (error "Overlapping/conflicting notation between chunks at offset ~S, part ~S"
-								(float (max (meas-off x) (meas-off y))) (part-name p1)))
-						       (and xn (not yn))))) ; empty measures go to end
-				      :from-end t
-				      :test (lambda (m1 m2)
-					      (declare (type meas m1 m2))
-					      (and (> (meas-endoff m1) (meas-off m2)) (< (meas-off m1) (meas-endoff m2)))))
-				     #'meas-off))
-			 finally 
-			 ;; stick in extra measures
-			 (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p1)
-			       collect m1
-			       when (and m2 (> (meas-off m2) (meas-endoff m1))) ; if at end, tack on multiple measures (extend last measure)
-			       collect (let ((ts (make-timesig #|...|#)))
-					 (multiple-value-bind (ev di) (split-engine-byscore (list (list (make-rest :off (meas-endoff m1)
-														   :dur (- (meas-off m2) (meas-endoff m1)))))
-											    (meas-endoff m1) (meas-off m2) ts)
-					   (make-meas :timesig ts :off (meas-endoff m1) :endoff (meas-off m2) :events ev :props '(:measrest) :div di)))
-			       ; finally
-			       #|...|#)
-			 (push (part-partid p1) al)
-			 (return p1)))))
-    ;; prepostproc-parts (prepostproc preparation)
-    (postproc-parts pts)	       ; should also reorder the parts
-    ;; ...
-    ))
+  (set-fomusproc
+    (track-progress +progress-int+
+      (let ((pts (loop with al and lo = (loop for ch of-type fomuschunk in *chunks*
+					      maximize (loop for p of-type partex in (fomuschunk-parts ch) maximize (meas-endoff (last-element (part-meas p)))))
+		       for (p1 . re) of-type (partex . list) on (mapcar #'unbackup-props (loop for ch of-type fomuschunk in *chunks* append (fomuschunk-parts ch)))
+		       unless (find (part-partid p1) al) collect
+		       (loop for p2 of-type partex in re 
+			     when (eql (part-partid p1) (part-partid p2)) do
+			     (setf (part-events p1)
+				   (sort (delete-duplicates 
+					  (stable-sort (nconc (copy-list (part-meas p1)) (copy-list (part-meas p2)))
+						       (lambda (x y)
+							 (declare (type meas x y))
+							 (let ((xn (find-if #'notep (meas-events x)))
+							       (yn (find-if #'notep (meas-events y))))
+							   (when (and xn yn (> (meas-endoff x) (meas-off y)) (< (meas-off x) (meas-endoff y)))
+							     (error "Overlapping/conflicting notation between chunks at offset ~S, part ~S"
+								    (float (max (meas-off x) (meas-off y))) (part-name p1)))
+							   (and xn (not yn)))))	; empty measures go to end
+					  :from-end t
+					  :test (lambda (m1 m2)
+						  (declare (type meas m1 m2))
+						  (and (> (meas-endoff m1) (meas-off m2)) (< (meas-off m1) (meas-endoff m2)))))
+					 #'< :key #'meas-off))
+			     finally
+			     (flet ((nm (mo1 mo2 ts1)
+				      (let ((ts (let* ((tt (* (timesig-beat* ts1) (- mo2 mo1)))
+						       (nu (numerator tt))
+						       (de (denominator tt)))
+						  (loop while (< de tt) do (setf nu (* nu 2) de (* de 2)))
+						  (copy-timesig ts1 :off mo1 :time (cons nu de) :div nil))))
+					(multiple-value-bind (ev di) (split-engine-byscore (list (list (make-rest :off mo1 :dur (- mo2 mo1)))) mo1 mo2 ts)
+					  ;;(debugn "~S" ev)
+					  (make-meas :timesig ts :off mo1 :endoff mo2 :events ev :props '(:measrest) :div di)))))
+			       (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p1)
+				     collect m1
+				     when (and m2 (> (meas-off m2) (meas-endoff m1)))
+				     collect (nm (meas-endoff m1) (meas-off m2) (meas-timesig m1)) into re
+				     finally
+				     (return (nconc re (loop with nb = (timesig-nbeats (meas-timesig m1))
+							     for o from (meas-endoff m1) below lo by nb collect
+							     (nm o (min (+ o nb) lo) (meas-timesig m1)))))))
+			     (push (part-partid p1) al)
+			     (return p1)))))
+	;; prepostproc-parts (prepostproc preparation)
+	(postproc-parts pts)	       ; should also reorder the parts
+	;; ...
+	))))
 
 ;; keysigs not implemented yet
 ;; returns data structure ready for output via backends
@@ -234,8 +209,7 @@
   (when (and (numberp *verbose*) (>= *verbose* 2)) (out "~&; Checking types..."))
   (check-setting-types)
   (check-settings)
-  (let ((*max-tuplet* (force-list *max-tuplet*))
-	(*old-objects* (make-hash-table))) ; normalize some parameters
+  (set-fomusproc
     (set-instruments
       (set-note-precision
 	(set-quality
@@ -379,7 +353,9 @@
 	     #+openmcl (ccl:mac-default-directory)
 	     #+allegro (excl:current-directory)
 	     #+lispworks (hcl:get-working-directory)))
-    (let ((r (fomus-proc (remove-if-not (lambda (x) (member x '(:data :fomus))) (force-list2some *output*) :key (lambda (x) (first (force-list x)))) dir)))
+    (let ((r (if *chunks*
+		 (fomus-merge)
+		 (fomus-proc (remove-if-not (lambda (x) (member x '(:data :fomus))) (force-list2some *output*) :key (lambda (x) (first (force-list x)))) dir))))
       (loop for x of-type (or symbol cons) in (force-list2some *output*)
 	    do (let ((xx (force-list x)))
 		 (destructuring-bind (ba &key filename process play view &allow-other-keys) xx

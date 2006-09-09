@@ -32,7 +32,10 @@
 	#+(or cmu sbcl) (muffwarn (fm)) #-(or cmu sbcl) (fm))))
 
 (defun fomus (&rest args)
-  (if (stringp (first args)) (fomus-text (first args) (rest args) #'fomus-textexec) (apply #'run-fomus args)))
+  (typecase (first args)
+    (string (fomus-text (first args) (rest args) #'fomus-textexec))
+    (list (apply #'run-fomus :chunks (first args) (rest args)))
+    (t (apply #'run-fomus args))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INTERFACE MULTIPLE FUNCTION CALL

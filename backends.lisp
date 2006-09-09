@@ -48,7 +48,8 @@
     (unwind-protect
 	 (case backend
 	   ((:data :fomus))
-	   ((:raw) (save-raw filename parts))
+	   (:raw (save-raw filename parts))
+	   ((:none :chunk) nil)
 	   #-fomus-nocmn
 	   (:cmn (save-cmn parts (format-comment +cmn-comment+) filename options process view))
 	   #-fomus-nolilypond

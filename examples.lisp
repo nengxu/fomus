@@ -4,22 +4,39 @@
 (in-package :fomus)
 
 (fomus
- :output '( (:data)) 
- :verbose 1
- :ensemble-type :orchestra
- :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1)))
- :parts
- (list
-  (make-part
-   :name "Piano"
-   :instr '(:piano :simultlim 1)
-   :events
-   (loop
-    with x = 0
-    for off from 0 to 10 by 1/2
-    collect (make-note :off off
-		       :dur (if (< off 10) 1/2 1)
-		       :note (+ 48 (random 25)))))))
+ (list (fomus
+	:output '(:none) 
+	:verbose 1
+	:ensemble-type :orchestra
+	:global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1)))
+	:parts
+	(list
+	 (make-part
+	  :name "Piano"
+	  :instr '(:piano :simultlim 1)
+	  :events
+	  (loop
+	   for off from 0 to 4 by 1/2
+	   collect (make-note :off off
+			      :dur (if (< off 10) 1/2 1)
+			      :note (+ 48 (random 25)))))))
+       (fomus
+	:output '(:none) 
+	:verbose 1
+	:ensemble-type :orchestra
+	:global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1)))
+	:parts
+	(list
+	 (make-part
+	  :name "Piano"
+	  :instr '(:piano :simultlim 1)
+	  :events
+	  (loop
+	   for off from 5 to 10 by 1/2
+	   collect (make-note :off off
+			      :dur (if (< off 10) 1/2 1)
+			      :note (+ 48 (random 25))))))))
+ :output '(:lilypond :view t))
 
 (fomus
  :output '(:lilypond :view t)

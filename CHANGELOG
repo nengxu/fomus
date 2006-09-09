@@ -1,7 +1,7 @@
-	.fms files may contain "\" characters to read several lines as one line
+	Added functionality for merging results of several fomus calls into one score (chunks)
+	".fms" files may contain "\" characters for reading several lines as one line
 	Improved command line interface (added some options)
 	Fixed install.sh bugs
-	Started adding functionality for merging results of several fomus calls together
 
 v0.2.6
 	Fixed small error with INSTR-MIDIPRGCH-EX slot when specifying an instrument with modifications

@@ -569,6 +569,7 @@
     (:global (or* null (list-of* (type* +timesig-type+))) "list of TIMESIG objects")
     (:parts (list-of* (type* +part-type+)) "list of PART objects")
     (:events (or* null (list-of* (or* (type* +note-type+) (type* +rest-type+) (type* +mark-type+)))) "list of NOTE or REST objects")
+    (:chunks (or null list))
     
     (:check-ranges boolean) (:transpose boolean) (:input-beat-value (or null (real (0))))
     (:instruments (or* null (list-of* (or* (type* +instr-type+) (cons* symbol (key-arg-pairs* ,@+instr-keys+))))) "list of INSTR objects")
