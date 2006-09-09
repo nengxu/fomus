@@ -1,4 +1,5 @@
-	Added functionality for merging results of several fomus calls into one score (chunks)
+	("Experimental") Adaptive search (Kilian)
+	("Experimental") Functionality for merging results of several fomus calls into one score (chunks)
 	".fms" files may contain "\" characters for reading several lines as one line
 	Improved command line interface (added some options)
 	Fixed install.sh bugs

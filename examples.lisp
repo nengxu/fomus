@@ -36,7 +36,7 @@
 	   collect (make-note :off off
 			      :dur (if (< off 10) 1/2 1)
 			      :note (+ 48 (random 25))))))))
- :output '(:lilypond :view t))
+ :output '(:raw (:lilypond :view t)))
 
 (fomus
  :output '(:lilypond :view t)

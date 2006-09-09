@@ -199,7 +199,7 @@
 	;; prepostproc-parts (prepostproc preparation)
 	(postproc-parts pts)	       ; should also reorder the parts
 	;; ...
-	))))
+	pts))))
 
 ;; keysigs not implemented yet
 ;; returns data structure ready for output via backends
