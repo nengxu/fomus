@@ -86,39 +86,52 @@
 (defprint-class part id partid name abbrev instr events props opts)
 (defprint-class meas id off endoff timesig div events props)
 
+;; from text file to internal
+(defun uglify (in)
+  (if (listp in)
+      (let ((x (first in)))
+	(if (and (symbolp x) (let ((y (symbol-name x))) (string= y "MAKE-" :end1 (min 5 (length y)))))
+	    (apply x (mapcar #'uglify (rest in)))
+	    (mapcar #'uglify in)))
+      in))
+;; from internal to text file--outputs a string
+(defun deuglify (out)
+  (if (and (symbolp (type-of out)) (eq (symbol-package (type-of out)) (find-package :fomus))) ; a fomus structure
+      (format nil "(MAKE-~A)" (out-format out))
+      (if (listp out) (princ-to-string (mapcar #'deuglify out)) (prin1-to-string out))))
+
 (defgeneric out-format (ob))
 (defmethod out-format ((ob part))
-  (format nil "PART ~S~A :name ~S~A :instr ~S~A~A"
-	  (part-partid ob) (if (obj-id ob) (format nil " :id ~S" (obj-id ob)) "") (part-name ob)
+  (format nil "PART ~S~A :name ~S~A :instr ~A~A~A"
+	  (part-partid ob) (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "") (part-name ob)
 	  (if (part-abbrev ob) (format nil " :abbrev ~S" (part-abbrev ob)) "")
-	  (part-instr ob) (if (part-props ob) (format nil " :props ~S" (part-props ob)) "")
+	  (deuglify (part-instr ob)) (if (part-props ob) (format nil " :props ~S" (part-props ob)) "")
 	  (if (part-opts ob) (format nil " :opts ~S" (part-opts ob)) "")))
 (defmethod out-format ((ob timesig))
   (format nil "TIMESIG~A~A :off ~S :time ~S~A~A~A~A~A"
-	  (if (obj-id ob) (format nil " :id ~S" (obj-id ob)) "") (if (timesig-partids ob) (format nil " :partids ~S" (timesig-partids ob)) "")
+	  (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "") (if (timesig-partids ob) (format nil " :partids ~S" (timesig-partids ob)) "")
 	  (timesig-off ob) (timesig-time ob) (if (timesig-comp ob) (format nil " :comp ~S" (timesig-comp ob)) "")
 	  (if (timesig-beat ob) (format nil " :beat ~S" (timesig-beat ob)) "") (if (timesig-div ob) (format nil " :div ~S" (timesig-div ob)) "")
-	  (if (timesig-repl ob) (format nil " :repl ~S" (timesig-repl ob)) "")
+	  (if (timesig-repl ob) (format nil " :repl ~A" (deuglify (timesig-repl ob))) "")
 	  (if (timesig-props ob) (format nil " :props ~S" (timesig-props ob)) "")))
-;; (defmethod out-format ((ob timesig-repl))
-;;   (format nil "TIMESIG-REPL~A :TIME ~S~A~A~A~A"
-;; 	  (if (obj-id ob) (format nil " :ID ~S" (obj-id ob)) "") (timesig-time ob)
-;; 	  (if (timesig-comp ob) (format nil " :COMP ~S" (timesig-comp ob)) "") (if (timesig-beat ob) (format nil " :BEAT ~S" (timesig-beat ob)) "")
-;; 	  (if (timesig-div ob) (format nil " :DIV ~S" (timesig-div ob)) "") (if (timesig-props ob) (format nil " :PROPS ~S" (timesig-props ob)) "")))
+(defmethod out-format ((ob timesig-repl))
+  (format nil "TIMESIG-REPL~A :time ~S~A~A~A~A"
+	  (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "") 
+	  (timesig-time ob) (if (timesig-comp ob) (format nil " :comp ~S" (timesig-comp ob)) "")
+	  (if (timesig-beat ob) (format nil " :beat ~S" (timesig-beat ob)) "") (if (timesig-div ob) (format nil " :div ~S" (timesig-div ob)) "")
+	  (if (timesig-props ob) (format nil " :props ~S" (timesig-props ob)) "")))
 (defmethod out-format ((ob note))
   (format nil "NOTE ~S~A :voice ~S :off ~S :dur ~S :note ~S~A"
-	  (event-partid ob) (if (obj-id ob) (format nil " :id ~S" (obj-id ob)) "")
+	  (event-partid ob) (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "")
 	  (event-voice ob) (event-off ob) (event-dur ob) (event-note ob) (if (event-marks ob) (format nil " :marks ~S" (event-marks ob)) "")))
 (defmethod out-format ((ob rest))
   (format nil "REST ~S~A :voice ~S :off ~S :dur ~S~A"
-	  (event-partid ob) (if (obj-id ob) (format nil " :id ~S" (obj-id ob)) "") (event-voice ob) (event-off ob)
+	  (event-partid ob) (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "") (event-voice ob) (event-off ob)
 	  (event-dur ob) (if (event-marks ob) (format nil " :marks ~S" (event-marks ob)) "")))
 (defmethod out-format ((ob mark))
   (format nil "MARK ~S~A :voice ~S :off ~S :marks ~S"
-	  (event-partid ob) (if (obj-id ob) (format nil " :id ~S" (obj-id ob)) "") (event-off ob) (event-voice ob) (event-marks ob)))
-;; (defmethod out-format ((ob cons)) (declare (ignore mk))
-;; 	   ((format nil "'(~{ ~A~})" (loop for e in ob collect (out-format e t)))))
-(defmethod out-format ((ob t)) (prin1-to-string ob))
+	  (event-partid ob) (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "") (event-off ob) (event-voice ob) (event-marks ob)))
+(defmethod out-format ((ob t)) (princ-to-string (deuglify ob)))
 (defmethod out-format :around ((ob t)) (remove-newlines (call-next-method)))
 
 (declaim (inline make-timesig make-timesig-repl make-part make-mark make-note make-rest make-meas))

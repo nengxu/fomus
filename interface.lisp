@@ -33,16 +33,21 @@
 
 (defun fomus (&rest args)
   (typecase (first args)
-    (string (fomus-text (first args) (rest args) #'fomus-textexec))
-    (list (apply #'run-fomus :chunks (first args) (rest args)))
+    ((or string pathname) (fomus-text (first args) (rest args) #'fomus-textexec))
+    (list (apply #'run-fomus :chunks
+		 (mapcar (lambda (x)
+			   (typecase x
+			     (fomuschunk x)
+			     ((or string pathname) (fomus-text x (rest args) #'fomus-textexec))
+			     (otherwise (error "Expected LIST of STRING or FOMUSCHUNK"))))
+			 (first args))
+		 (rest args)))
     (t (apply #'run-fomus args))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INTERFACE MULTIPLE FUNCTION CALL
 
 (declaim (type list *fomus-global* *fomus-parts* *fomus-events*))
-;; (defparameter *fomus-timesigs* nil)
-;; (defparameter *fomus-keysigs* nil)
 (defparameter *fomus-global* nil)
 (defparameter *fomus-parts* nil)
 (defparameter *fomus-events* nil)
@@ -126,14 +131,14 @@
 		  (otherwise (error "Invalid tag ~S" rs)))))
 	 (loop
 	  for re = (read f nil 'eof) until (eq re 'eof)
-	  if (listp re) nconc (git (first re) (rest re))
+	  if (listp re) nconc (git (first re) (uglify (rest re)))
 	  else nconc (with-input-from-string (st (loop
 						  with st = (read-line f)
 						  for s = (string-right-trim " " st)
 						  while (char= (aref s (1- (length s))) #\\)
 						  do (setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f)))
 						  finally (return st)))
-		       (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect e)))))))))
+		       (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e))))))))))
 
 (defun fomus-file (filename &optional args)
   (fomus-text filename args #'fomus-textret))

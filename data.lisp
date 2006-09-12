@@ -159,9 +159,9 @@
   (declare (type perc perc) (type (or symbol real) sym) (type (integer 1) staff) (type (integer 1) voice) (type (or symbol integer) note)
 	   (type boolean autodur) (type (or null (integer 0 127) cons) midinote-im) (type (or null (integer 0 127)) midinote-ex))
   (make-perc-aux :sym sym :staff staff :note note :voice voice :autodur autodur :midinote-im midinote-im :midinote-ex midinote-ex))
-;; (defmethod out-format ((ob perc))
-;;   (format nil "PERC :SYM ~S :STAFF ~S :VOICE ~S :NOTE ~S :AUTODUR ~S :MIDINOTE-IM ~S :MIDINOTE-EX ~S"
-;; 	  (perc-sym ob) (perc-staff ob) (perc-voice ob) (perc-note ob) (perc-autodur ob) (perc-midinote-im ob) (perc-midinote-ex ob)))
+(defmethod out-format ((ob perc))
+  (format nil "PERC ~S :staff ~S :voice ~S :note ~S :autodur ~S :midinote-im ~S :midinote-ex ~S"
+	  (perc-sym ob) (perc-staff ob) (perc-voice ob) (perc-note ob) (perc-autodur ob) (perc-midinote-im ob) (perc-midinote-ex ob)))
 
 (declaim (type cons +perc-type+))
 (defparameter +perc-type+
@@ -257,10 +257,10 @@
 	   (type list percs) (type (or null (integer 0 127) cons) midiprgch-im) (type (or null (integer 0 127) cons) midiprgch-ex))
   (make-instr-aux :sym sym :clefs clefs :staves staves :minp minp :maxp maxp :simultlim simultlim :tpose tpose :cleflegls cleflegls
 			   :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex))
-;; (defmethod out-format ((ob instr))
-;;   (format nil "INSTR :SYM ~S :CLEFS ~S :STAVES ~S :MINP ~S :MAXP ~S :SIMULTLIM ~S :TPOSE ~S :CLEFLEGLS ~S :8UPLEGLS ~S :8DNLEGLS ~S :PERCS ~S :MIDIPRGCH-IM ~S :MIDIPRGCH-EX ~S"
-;; 	  (instr-sym ob) (instr-clefs ob) (instr-staves ob) (instr-minp ob) (instr-maxp ob) (instr-simultlim ob) (instr-tpose ob)
-;; 	  (instr-cleflegls ob) (instr-8uplegls ob) (instr-8dnlegls ob) (instr-percs ob) (instr-midiprgch-im ob) (instr-midiprgch-ex ob)))
+(defmethod out-format ((ob instr))
+  (format nil "INSTR ~S :clefs ~S :staves ~S :minp ~S :maxp ~S :simultlim ~S :tpose ~S :cleflegls ~S :8uplegls ~S :8dnlegls ~S :percs ~A :midiprgch-im ~S :midiprgch-ex ~S"
+	  (instr-sym ob) (instr-clefs ob) (instr-staves ob) (instr-minp ob) (instr-maxp ob) (instr-simultlim ob) (instr-tpose ob)
+	  (instr-cleflegls ob) (instr-8uplegls ob) (instr-8dnlegls ob) (deuglify (instr-percs ob)) (instr-midiprgch-im ob) (instr-midiprgch-ex ob)))
 
 (declaim (type cons +instr-type+))
 (defparameter +instr-type+

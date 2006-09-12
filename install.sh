@@ -153,19 +153,37 @@ then
 fi
 
 echo '#!/bin/sh' > fomus.sh
-echo 'us="Usage: fomus [-lxfscmw] [-o basefilename] [-v value] [-q value] filename"' >> fomus.sh
-echo 'while getopts lxfscmvq:o: opt; do' >> fomus.sh
+echo 'usage () {' >> fomus.sh
+echo '    echo "Usage: fomus [-lxfscmw] [-o basefilename] [-v value] [-q value] filename [filename]..."' >> fomus.sh
+echo '    echo' >> fomus.sh
+echo '    echo "  -l                         Output to LilyPond"' >> fomus.sh
+echo '    echo "  -x                         Output to MusicXML"' >> fomus.sh
+echo '    echo "  -f                         Output to MusicXML w/ Finale kludges"' >> fomus.sh
+echo '    echo "  -s                         Output to MusicXML w/ Sibelius kludges"' >> fomus.sh
+echo '    echo "  -c                         Output to CMN"' >> fomus.sh
+echo '    echo "  -m                         Output to FOMUS input file"' >> fomus.sh
+echo '    echo' >> fomus.sh
+echo '    echo "  -w                         View output"' >> fomus.sh
+echo '    echo "  -o                         Base filename (w/o extension)"' >> fomus.sh
+echo '    echo "  -v                         Verbosity level (0, 1 or 2, default = 1 or value in .fomus file)"' >> fomus.sh
+echo '    echo "  -q                         Quality value (real number, default = 1 or value in .fomus file)"' >> fomus.sh
+echo '    echo' >> fomus.sh
+echo '    echo "Report bugs to <fomus-devel@common-lisp.net>."' >> fomus.sh
+echo '}' >> fomus.sh
+echo 'while getopts lxfscmwo:v:q: opt; do' >> fomus.sh
 echo '    case $opt in' >> fomus.sh
 echo '        [lxfscmw]) o="$opt$o";;' >> fomus.sh
 echo '        o) n="$OPTARG";;' >> fomus.sh
 echo '        v) v="$OPTARG";;' >> fomus.sh
 echo '        q) q="$OPTARG";;' >> fomus.sh
-echo '        ?) echo $us; exit 2;;' >> fomus.sh
+echo '        ?) usage; exit 2;;' >> fomus.sh
 echo '    esac' >> fomus.sh
 echo 'done' >> fomus.sh
 echo 'shift $(($OPTIND - 1))' >> fomus.sh
-echo 'if [[ $# -ne 1 ]]; then echo $us; exit 2; fi' >> fomus.sh
-echo "$LISPEXE $COREARG \"$LIBDIR/fomus.img\" $EXTRAARG $EVALARG \"(fm::fomus-exe \\\"\$1\\\" \\\"\$HOME/.fomus\\\" \\\"\$o\\\" \\\"\$n\\\" \\\"\$q\\\" \\\"\$v\\\")\"" >> fomus.sh
+echo 'if [[ $# -ne 1 ]]; then usage; exit 2; fi' >> fomus.sh
+echo 'fls="\"$1\""' >> fomus.sh
+echo 'while [[ -n "$2" ]]; do fls="$fls \"$2\""; shift; done' >> fomus.sh
+echo "$LISPEXE $COREARG \"$LIBDIR/fomus.img\" $EXTRAARG $EVALARG \"(fm::fomus-exe \\\"\$HOME/.fomus\\\" \\\"\$o\\\" \\\"\$n\\\" \\\"\$q\\\" \\\"\$v\\\" \$fls)\"" >> fomus.sh
 
 echo
 echo "Installing..."

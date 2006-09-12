@@ -969,3 +969,4 @@
     (or (find prog *instruments* :key #'instr-midiprgch-im :test (lambda (x p) (find x (force-list p))))
 	(find prog +instruments+ :key #'instr-midiprgch-im :test (lambda (x p) (find x (force-list p))))
 	default)))
+

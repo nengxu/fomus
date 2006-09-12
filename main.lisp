@@ -116,11 +116,6 @@
 		    finally (when i (pushnew (cons (meas-off m) (meas-endoff m)) li :test #'equal)))
 	      (addprop m (cons :backup (meas-props m))))
 	(addprop p (cons :backup (part-props p)))))
-;; 	finally
-;; 	(loop for p of-type partex in pts do
-;; 	      (loop for m of-type meas in (part-meas p)
-;; 		    when (find (cons (meas-off m) (meas-endoff m)) li :test #'equal)
-;; 		    do (addprop m (append '(:backup :chunkrepl) (rest (popprop m :backup))))))))
 
 ;; unbackup backuped props & marks
 (defun unbackup-props (p)
@@ -149,7 +144,7 @@
     ,@forms)) ; normalize some parameters
   
 (defun fomus-merge ()
-  (when (>= *verbose* 1) (out "~&; Assembling chunks..."))
+  (when (>= *verbose* 1) (out "~&; Merging chunks..."))
   ;; gather settings (1st or last in chunks list?) and bind them (if not specified in this fomus call?)--still postproc operations to do and some backends check them
   ;; turn last barlines into single or double barlines? 
   (set-fomusproc
@@ -256,7 +251,7 @@
 		      (destructuring-bind (&key (filename (change-filename *filename* :ext "fms")) &allow-other-keys)
 			  (rest (force-list e))
 			(save-indata (namestring (merge-pathnames filename dir)) pts mks)))
-		(unless *output* (error "No backends specified"))
+		;(unless *output* (error "No backends specified"))
 		(setf *old-objects* nil)
 		(track-progress +progress-int+
 		  (preproc-keysigs *timesigs*)
