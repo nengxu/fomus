@@ -247,7 +247,7 @@
 						     #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
 					  (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
 						     #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity)))
-			     (:nokey2 (ads:acc-nokey2 evs))
+			     ;(:nokey2 (ads:acc-nokey2 evs))
 			     (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
 		    #'sort-offdur)))))
 

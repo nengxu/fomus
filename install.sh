@@ -24,6 +24,9 @@ do
       --cmucl)
 	  LISP=cmucl
 	  ;;
+      --clisp)
+	  LISP=clisp
+	  ;;
       --openmcl)
 	  LISP=openmcl
 	  ;;
@@ -51,7 +54,7 @@ do
 	  echo "./install.sh --uninstall --prefix=/mybasedir                            --uninstall from /mybaseinstalldir"
 	  echo "./install.sh --uninstall --prefix=/mybasedir --bindir=/mybasedir/mybin  --uninstall from /mybaseinstalldir and special bin directory"
 	  echo
-	  echo "Lisp options are --sbcl, --cmucl and --openmcl"
+	  echo "Lisp options are --sbcl, --cmucl, --openmcl and --clisp"
 	  echo
 	  echo "If you get stuck in Lisp while compiling, try the following command:"
 	  echo "(cl-user::quit)"
@@ -95,7 +98,7 @@ fi
 LOADCM="src/cm.lisp"
 LOADCMN="cmn-all.lisp"
 
-case $LISP in
+case "$LISP" in
     sbcl)
 	LISPEXE=sbcl
 	LOADARG="--load"
@@ -122,6 +125,14 @@ case $LISP in
 	COREARG="-I"
 	DUMPCMD='(ccl:save-application "fomus.img" :purify t)'
 	;;
+    clisp)
+	LISPEXE=clisp
+	EVALARG="-x"
+	EXITCMD="(quit)"
+	COREARG="-M"
+	EXTRAARG="-q"
+	DUMPCMD='(ext:saveinitmem "fomus.img")'
+	;;
 esac
 
 if [[ -e fomus.img ]]
@@ -131,19 +142,35 @@ fi
 
 if [[ -n "$CMDIR" ]]
 then
-    $LISPEXE $EXTRAARG $LOADARG "$CMDIR/$LOADCM" $EVALARG $EXITCMD
-    INCCM1=$LOADARG
-    INCCM2="$CMDIR/$LOADCM"
+    if [[ "$LISP" = 'clisp' ]]; then
+	$LISPEXE $EXTRAARG $EVALARG "(progn (load \"$CMDIR/$LOADCM\") $EXITCMD)"
+	INCCM="(load \"$CMDIR/$LOADCM\")"
+    else
+	$LISPEXE $EXTRAARG $LOADARG "$CMDIR/$LOADCM" $EVALARG $EXITCMD
+	INCCM1=$LOADARG
+	INCCM2="$CMDIR/$LOADCM"
+    fi
 fi
 if [[ -n "$CMNDIR" ]]
 then
-    $LISPEXE $EXTRAARG $LOADARG "$CMNDIR/$LOADCMN" $EVALARG $EXITCMD
-    INCCMN1=$LOADARG
-    INCCMN2="$CMNDIR/$LOADCMN"
+    if [[ "$LISP" = 'clisp' ]]; then
+	$LISPEXE $EXTRAARG $EVALARG "(progn (load \"$CMNDIR/$LOADCMN\") $EXITCMD)"
+	INCCMN="(load \"$CMNDIR/$LOADCMN\")"
+    else    
+	$LISPEXE $EXTRAARG $LOADARG "$CMNDIR/$LOADCMN" $EVALARG $EXITCMD
+	INCCMN1=$LOADARG
+	INCCMN2="$CMNDIR/$LOADCMN"
+    fi
 fi
+
 INSTFLAG='(intern "INSTALL" :common-lisp-user)'
-$LISPEXE $EXTRAARG $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG $EXITCMD
-$LISPEXE $EXTRAARG $INCCM1 $INCCM2 $INCCMN1 $INCCMN2 $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG "$DUMPCMD"
+if [[ "$LISP" = 'clisp' ]]; then
+    $LISPEXE $EXTRAARG $EVALARG "(progn $INSTFLAG (load \"load.lisp\") $EXITCMD)"
+    $LISPEXE $EXTRAARG $EVALARG "(progn $INCCM $INCCMN $INSTFLAG (load \"load.lisp\") $DUMPCMD $EXITCMD)"
+else
+    $LISPEXE $EXTRAARG $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG $EXITCMD
+    $LISPEXE $EXTRAARG $INCCM1 $INCCM2 $INCCMN1 $INCCMN2 $EVALARG "$INSTFLAG" $LOADARG "load.lisp" $EVALARG "$DUMPCMD"
+fi
 
 if [[ ! -e "fomus.img" ]]
 then
@@ -156,17 +183,17 @@ echo '#!/bin/sh' > fomus.sh
 echo 'usage () {' >> fomus.sh
 echo '    echo "Usage: fomus [-lxfscmw] [-o basefilename] [-v value] [-q value] filename [filename]..."' >> fomus.sh
 echo '    echo' >> fomus.sh
-echo '    echo "  -l                         Output to LilyPond"' >> fomus.sh
-echo '    echo "  -x                         Output to MusicXML"' >> fomus.sh
-echo '    echo "  -f                         Output to MusicXML w/ Finale kludges"' >> fomus.sh
-echo '    echo "  -s                         Output to MusicXML w/ Sibelius kludges"' >> fomus.sh
-echo '    echo "  -c                         Output to CMN"' >> fomus.sh
-echo '    echo "  -m                         Output to FOMUS input file"' >> fomus.sh
+echo '    echo "  -l        Output to LilyPond"' >> fomus.sh
+echo '    echo "  -x        Output to MusicXML"' >> fomus.sh
+echo '    echo "  -f        Output to MusicXML w/ Finale kludges"' >> fomus.sh
+echo '    echo "  -s        Output to MusicXML w/ Sibelius kludges"' >> fomus.sh
+echo '    echo "  -c        Output to CMN"' >> fomus.sh
+echo '    echo "  -m        Output to FOMUS input file"' >> fomus.sh
 echo '    echo' >> fomus.sh
-echo '    echo "  -w                         View output"' >> fomus.sh
-echo '    echo "  -o                         Base filename (w/o extension)"' >> fomus.sh
-echo '    echo "  -v                         Verbosity level (0, 1 or 2, default = 1 or value in .fomus file)"' >> fomus.sh
-echo '    echo "  -q                         Quality value (real number, default = 1 or value in .fomus file)"' >> fomus.sh
+echo '    echo "  -w        View output"' >> fomus.sh
+echo '    echo "  -o        Base filename (w/o extension)"' >> fomus.sh
+echo '    echo "  -v        Verbosity level (0, 1 or 2, default = 1 or value in .fomus file)"' >> fomus.sh
+echo '    echo "  -q        Quality value (real number, default = 1 or value in .fomus file)"' >> fomus.sh
 echo '    echo' >> fomus.sh
 echo '    echo "Report bugs to <fomus-devel@common-lisp.net>."' >> fomus.sh
 echo '}' >> fomus.sh

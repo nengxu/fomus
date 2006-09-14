@@ -86,6 +86,9 @@
 (defprint-class part id partid name abbrev instr events props opts)
 (defprint-class meas id off endoff timesig div events props)
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; UGLIFICATION
+
 ;; from text file to internal
 (defun uglify (in)
   (if (listp in)
@@ -99,6 +102,9 @@
   (if (and (symbolp (type-of out)) (eq (symbol-package (type-of out)) (find-package :fomus))) ; a fomus structure
       (format nil "(MAKE-~A)" (out-format out))
       (if (listp out) (princ-to-string (mapcar #'deuglify out)) (prin1-to-string out))))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; FORMATTING
 
 (defgeneric out-format (ob))
 (defmethod out-format ((ob part))
@@ -133,6 +139,14 @@
 	  (event-partid ob) (if (obj-id ob) (format nil " :id ~A" (deuglify (obj-id ob))) "") (event-off ob) (event-voice ob) (event-marks ob)))
 (defmethod out-format ((ob t)) (princ-to-string (deuglify ob)))
 (defmethod out-format :around ((ob t)) (remove-newlines (call-next-method)))
+
+(defmethod out-format ((ob perc))
+  (format nil "PERC ~S :staff ~S :voice ~S :note ~S :autodur ~S :midinote-im ~S :midinote-ex ~S"
+	  (perc-sym ob) (perc-staff ob) (perc-voice ob) (perc-note ob) (perc-autodur ob) (perc-midinote-im ob) (perc-midinote-ex ob)))
+(defmethod out-format ((ob instr))
+  (format nil "INSTR ~S :clefs ~S :staves ~S :minp ~S :maxp ~S :simultlim ~S :tpose ~S :cleflegls ~S :8uplegls ~S :8dnlegls ~S :percs ~A :midiprgch-im ~S :midiprgch-ex ~S"
+	  (instr-sym ob) (instr-clefs ob) (instr-staves ob) (instr-minp ob) (instr-maxp ob) (instr-simultlim ob) (instr-tpose ob)
+	  (instr-cleflegls ob) (instr-8uplegls ob) (instr-8dnlegls ob) (deuglify (instr-percs ob)) (instr-midiprgch-im ob) (instr-midiprgch-ex ob)))
 
 (declaim (inline make-timesig make-timesig-repl make-part make-mark make-note make-rest make-meas))
 (defun make-timesig (&rest args) (apply #'make-instance 'timesig args))

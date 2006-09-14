@@ -67,7 +67,7 @@
 	(map nil (lambda (s)
 		   (declare (type cons s))
 		   (unless (find (first s) *indata-ignore*)
-		     (format f "INIT ~S ~A~%" (first s) (out-format (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))))
+		     (format f "INIT ~S ~A~%" (first s) (deuglify (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))))
 	     +settings+)
 	(format f "~%")
 	(map nil (lambda (p0 id) (let ((p (or (gethash p0 *old-objects*) p0))) (format f "~A~%" (out-format (copy-part p :partid id))))) parts pd) 
