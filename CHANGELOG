@@ -1,3 +1,4 @@
+	Can compile command-line interface w/ CLISP
 	("Experimental") Adaptive search (Kilian)
 	("Experimental") Functionality for merging results of several fomus calls into one score (chunks)
 	".fms" files may contain "\" characters for reading several lines as one line
