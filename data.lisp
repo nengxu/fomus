@@ -635,7 +635,7 @@
 (declaim (type cons +notemark-type+))
 (defparameter +notemark-type+
   '(or*
-    (let* ((x (unique* sy (member :arco :pizz
+    (let* ((x (unique* sy (member :ignore :arco :pizz
 				  :start8down- :8down- :end8down- :8down :start8up- :8up- :end8up- :8up
 				  :startwedge> :startwedge< :wedge< :wedge> :endwedge< :endwedge>
 				  :startwedge>* :startwedge<* :wedge<* :wedge>* :endwedge<* :endwedge>*

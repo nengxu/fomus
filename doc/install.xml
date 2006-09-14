@@ -69,7 +69,7 @@ CL-USER> (use-package :fm)]]>
     <title id="install.cmd.title">Installing as an Executable</title>
     <para>
       The script file <filename>install.sh</filename> can be run at a UNIX command prompt to install <application>FOMUS</application> as a command-line
-      executable program.  At this point, this can only be done with <application>SBCL</application>, <application>CMUCL</application> and 
+      executable program.  At this point, this can only be done with <application>SBCL</application>, <application>CMUCL</application>, <application>CLISP</application> and 
       <application>OpenMCL</application> in a UNIX environment (it's been tested in OS X and Linux), though a look at the script should show how
       to install it with other Lisps in any other environment. 
       </para>

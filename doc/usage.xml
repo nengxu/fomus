@@ -271,7 +271,7 @@ note 1 :off 1 :dur 1 :note 62]]>
       Keyword/argument pairs passed to this function override the settings stored in the input file.
     </para>
     <para> 
-      The <function>FOMUS-FILE</function> function may be used to parse an input file and return the objects without processing them:
+      The <function>FOMUS-FILE</function> function may be used to parse an input file and return the objects specified in that file without processing them:
       <para><function>(FOMUS-FILE <userinput>filename</userinput> &amp;key <userinput>value</userinput> ...)</function></para>
       Four return values are returned: a list of <classname><link linkend="class.part">PART</link></classname> objects, a sorted list of 
       <classname><link linkend="class.note">NOTE</link></classname>, <classname><link linkend="class.rest">REST</link></classname> and
@@ -302,8 +302,8 @@ note 1 :off 1 :dur 1 :note 62]]>
       <application>FOMUS</application>.  Parts and time signatures may also defined in <application>CM</application> 
       with the <literal>NEW</literal> macro and passed with all of <application>FOMUS</application>'s settings to <function>EVENTS</function>.
       A description of this interface is given
-      <application><ulink url="http://commonmusic.sf.net/doc/dict/fomus-file-cls.html">here</ulink></application> in
-      <application>Common Music</application>'s online documentation.  Several examples are given below:
+      <application><ulink url="http://commonmusic.sf.net/doc/dict/fomus-file-cls.html">here</ulink></application> in the
+      <application>Common Music</application> online documentation.  Several examples are given below:
     </para>
       <example>
         <title>FOMUS Usage 10</title>
@@ -332,9 +332,54 @@ note 1 :off 1 :dur 1 :note 62]]>
         <title>FOMUS Usage 12</title>
 	<programlisting>
 <![CDATA[
-fomus my_data_file]]>
+fomus my_data_file.fms]]>
 	</programlisting>
       </example>
+      <para>
+        Type <literal>fomus -h</literal> to display the command format and list all of the available options.  Examples of the file format are
+	given in <link linkend="interface.text" endterm="interface.text.title"/> and <link linkend="examples.textinput" endterm="examples.textinput.title"/>.
+      </para>
+  </section>
+  <section id="interface.chunks">
+    <title id="interface.chunks.title">Chunks</title>
+    <para>
+      <appliation>FOMUS</appliation> can "splice" together the outputs of two or more runs of the <function><link linkend="function.fomus">FOMUS</link></function>
+      command.  This allows sections or parts to be produced separately and put together into a complete score.  Each section or part 
+      (referred to here as a "chunk") can then be produced with different arguments.  
+    </para>
+    <para>
+      Support for this is considered unstable at the moment.  Bugs (there are probably at least a few) will be squashed and more enhancements will be added shortly.
+      <application>FOMUS</application> outputs a chunk object automatically on each successful run.  
+      A chunk is actually all of the measures in the processed output that contain anything other than measure rests.
+      Chunks can only be merged together if there are no such overlapping measures.  (At the moment, chunks can't be "relocated" or given an offset--this 
+      obvious features will be added soon.)  <application>FOMUS</application> can also tell 
+    </para>
+    <para>
+      There are several ways to tell <application>FOMUS</application> to merge chunks.  Several examples are given here:
+      <example>
+        <title>FOMUS Usage 13</title>
+	<programlisting>
+<![CDATA[
+(fomus (list (fomus ...arguments_for_chunk1...) (fomus ...arguments_for_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)]]>
+	</programlisting>
+      </example>
+      <example>
+        <title>FOMUS Usage 14</title>
+	<programlisting>
+<![CDATA[
+(fomus (list (fomus ...arguments_for_chunk1...) "path_to/myfomusfile_chunk2.fms") :filename "path_to/myoutputfile" :output :cmn)]]>
+	</programlisting>
+      </example>
+      <example>
+        <title>FOMUS Usage 15</title>
+	<programlisting>
+<![CDATA[
+fomus -lw "path_to/myfomusfile_chunk1.fms" "path_to/myfomusfile_chunk2.fms" "path_to/myfomusfile_chunk3.fms"]]>
+	</programlisting>
+      </example>
+      In each case, two or three chunks are produced from either another <function><link linkend="function.fomus">FOMUS</link></function>
+      command or from reading and parsing an input file.
+    </para>
   </section>
   <section>
     <title>Other Interface Functions</title>

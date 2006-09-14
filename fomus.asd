@@ -19,7 +19,7 @@
 
    (:file "splitrules" :depends-on ("data"))
    
-   (:file "accidentals" :depends-on ("util" "ads"))
+   (:file "accidentals" :depends-on ("util" #|"ads"|#))
    (:file "beams" :depends-on ("util"))
    (:file "marks" :depends-on ("util"))
    (:file "other" :depends-on ("util"))
@@ -42,5 +42,5 @@
    (:file "interface" :depends-on ("main"))
 
    (:file "final" :depends-on ("version" "interface") :in-order-to ((load-op (load-op "interface"))))
-   (:file "ads" :depends-on ("package"))
+   ;(:file "ads" :depends-on ("package"))
    ))

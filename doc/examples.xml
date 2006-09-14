@@ -447,8 +447,41 @@
 	</blockquote>
       </example>      
   </section>
-  <section>
-    <title>Text Input File Examples</title>
+  <section id="examples.textinput">
+    <title id="examples.textinput.title">Text Input File Examples</title>
+    <para>
+      The following may be reproduced by saving the example to a file and using the so-called text file or command line interfaces
+      to process them (see <link linkend="interface.text" endterm="interface.text.title"/> and <link linkend="interface.cmd" endterm="interface.cmd.title"/>
+      for more information).  When an output isn't specified in the file, this must be given in the command.  Some examples are:
+    </para>
+      <example>
+        <title>Text Input Commands (From Lisp)</title>
+	<programlisting>
+<![CDATA[
+(fomus "/directory/file.fms") ; use values in file
+
+(fomus "/directory/file.fms" :output :musicxml) ; output to MusicXML format
+
+(fomus "/directory/file.fms" :output '(:lilypond :view t)) ; output to LilyPond and open for viewing]]>
+	</programlisting>
+      </example>
+      <example>
+        <title>Text Input Commands (Command Line)</title>
+	<programlisting>
+<![CDATA[
+# print help message
+fomus -h
+
+# use values in file
+fomus /directory/file.fms
+
+# output to MusicXML
+fomus -x /directory/file.fms
+
+# output to LilyPond and open for viewing
+fomus -lw /directory/file.fms]]>
+	</programlisting>
+      </example>
       <example>
         <title id="example.txtsimp">Simple Text Input Example</title>
 	<programlisting>
@@ -531,10 +564,8 @@ NOTE 1 :voice 1 :off 10 :dur 1 :note 48 :marks (:staccato)]]>
         <title id="example.txtperc">Percussion</title>
 	<programlisting>
 <![CDATA[
-;; the "#S" notation is slightly ugly--this will be fixed eventually
-;; also, the "\" line-continuation character will work in version 0.2.7
-PART prc :name "Percussion" :instr (:percussion :percs (#S(perc :sym :woodblock :staff 1 :voice 1 :note e4 :autodur t :midinote-im nil :midinote-ex nil) \
-                                                        #S(perc :sym :snaredrum :staff 1 :voice 1 :note a3 :autodur t :midinote-im nil :midinote-ex nil)))
+PART prc :name "Percussion" :instr (:percussion :percs ((MAKE-PERC :sym :woodblock :staff 1 :voice 1 :note e4 :autodur t :midinote-im nil :midinote-ex nil) \
+                                                        (MAKE-PERC :sym :snaredrum :staff 1 :voice 1 :note a3 :autodur t :midinote-im nil :midinote-ex nil)))
 
 NOTE prc :voice 1 :off 0 :dur 1/2 :note :woodblock
 NOTE prc :voice 1 :off 1/2 :dur 1/2 :note :woodblock
@@ -561,6 +592,38 @@ NOTE prc :voice 1 :off 10 :dur 1/2 :note :snaredrum]]>
 	<blockquote>
 	<mediaobject>
 	  <imageobject><imagedata fileref="ex_txt_perc.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
+      <example>
+        <title id="example.canning">Example by Rob Canning</title>
+	<programlisting>
+<![CDATA[
+init :output (:lilypond :view t)
+
+part 1 :name "Piano" :instr :piano
+(note 1 :off 0 :dur 0.25 :note 82 :marks ((:ignore)))
+(note 1 :off 0.25 :dur 0.25 :note 87 :marks ((:ignore)))
+(note 1 :off 0.5 :dur 0.25 :note 48 :marks (:staccato))
+(note 1 :off 0.75 :dur 0.25 :note 76 :marks ((:ignore)))
+(note 1 :off 1 :dur 0.25 :note 83 :marks (:marcato))
+(note 1 :off 1.25 :dur 0.25 :note 51 :marks (:accent))
+(note 1 :off 1.5 :dur 0.25 :note 82 :marks ((:ignore)))
+(note 1 :off 1.75 :dur 0.25 :note 76 :marks (:endslur- (:fermata)))
+(note 1 :off 2 :dur 0.5 :note 57 :marks ((:ignore)))
+(note 1 :off 2.5 :dur 0.25 :note 45 :marks (:portato))
+(note 1 :off 2.75 :dur 0.25 :note 50 :marks (:marcato))
+(note 1 :off 3 :dur 0.25 :note 36 :marks ((:ignore)))
+(note 1 :off 3.25 :dur 0.25 :note 51 :marks (:accent))
+(note 1 :off 3.5 :dur 0.25 :note 46 :marks ((:ignore)))
+(note 1 :off 3.75 :dur 0.25 :note 51 :marks ((:ignore)))
+(note 1 :off 4 :dur 0.25 :note 79 :marks (:staccato))
+(note 1 :off 4.25 :dur 8 :note 40 :marks (:startslur- (:textnote "id=479")))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_canning.jpg" format="JPG"/></imageobject>
 	  <caption>Output</caption> 
 	</mediaobject>
 	</blockquote>
