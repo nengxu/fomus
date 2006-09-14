@@ -243,15 +243,33 @@
 	<programlisting>
 <![CDATA[
 init :output (:lilypond :view t)
+(init
+ :filename "outfile"
+ :quality 2)
+
 ;; remark
 part 1 :name "Piano" :instr :piano
+
 note 1 :off 0 :dur 1 :note 60
-note 1 :off 1 :dur 1 :note 62]]>
+note 1 :off 1 :dur 1 :note 62 \
+     :marks (:accent) ; remark
+(note 1	
+      :off 2 
+      :dur 1
+      :note 64
+      :marks (:marcato (:textnote "Text")))]]>
 	</programlisting>
       </example>
-      Each element is read using the Lisp <function>READ</function> command (nothing is evaluated).
+      Each element is read using the Lisp <function>READ</function> command (nothing is evaluated), with the exception of expressions that begin with
+      <function>MAKE-</function>.  These are evaluated to avoid having to specify <application>FOMUS</application> classes and/or structures with
+      <literal>#S</literal> or <literal>#Z</literal> syntax (the Z reader macro is defined by <application>FOMUS</application>).
       <literal>INIT</literal> lines specify values for <application>FOMUS</application> settings and can contain multiple keyword/arguments on a line.
       As many <literal>INIT</literal> lines as needed may appear.
+      The <literal>\</literal> character may be used at the end of a line to concatenate it with the following line.
+      Also, as shown in the example above, any "entry" may be surrounded by a set of parenthesis to indicate that all elements inside them are read/parsed together 
+      (like an ordinary Lisp expression)--this can also be used to spread entries across several lines.
+      </para>
+      <para>
       To process this file, use the <function>FOMUS</function> command as follows:
       <para><function>(<anchor id="function.fomus2"/>FOMUS <userinput>filename</userinput> &amp;key <userinput>value</userinput> ...)</function></para>
       <example>
@@ -343,7 +361,7 @@ fomus my_data_file.fms]]>
   <section id="interface.chunks">
     <title id="interface.chunks.title">Chunks</title>
     <para>
-      <appliation>FOMUS</appliation> can "splice" together the outputs of two or more runs of the <function><link linkend="function.fomus">FOMUS</link></function>
+      <application>FOMUS</application> can "splice" together the outputs of two or more runs of the <function><link linkend="function.fomus">FOMUS</link></function>
       command.  This allows sections or parts to be produced separately and put together into a complete score.  Each section or part 
       (referred to here as a "chunk") can then be produced with different arguments.  
     </para>
@@ -352,10 +370,13 @@ fomus my_data_file.fms]]>
       <application>FOMUS</application> outputs a chunk object automatically on each successful run.  
       A chunk is actually all of the measures in the processed output that contain anything other than measure rests.
       Chunks can only be merged together if there are no such overlapping measures.  (At the moment, chunks can't be "relocated" or given an offset--this 
-      obvious features will be added soon.)  <application>FOMUS</application> can also tell 
+      obvious features will be added soon.)  <application>FOMUS</application> considers parts with matching 
+      <structfield><link linkend="note.partid">PARTID</link></structfield> values to be the same and will match them accordingly.  Chunks may contain
+      parts that aren't in other chunks--<application>FOMUS</application> assembles all unique parts into one score and reorders them again after merging.
     </para>
     <para>
-      There are several ways to tell <application>FOMUS</application> to merge chunks.  Several examples are given here:
+      There are several ways to tell <application>FOMUS</application> to merge chunks.  Some examples are given here in both
+      Lisp and command-line syntax:
       <example>
         <title>FOMUS Usage 13</title>
 	<programlisting>

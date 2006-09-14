@@ -136,7 +136,8 @@
   (setf pts (sort-parts pts)) #+debug (fomus-proc-check pts 'sortparts)
   (group-parts pts) #+debug (fomus-proc-check pts 'groupparts)
   (postpostproc-sortprops pts) #+debug (fomus-proc-check pts 'sortprops)
-  (when (>= *verbose* 1) (format t "~&")))  
+  (when (>= *verbose* 1) (format t "~&"))
+  pts)  
 
 (defmacro set-fomusproc (&body forms)
   `(let ((*max-tuplet* (force-list *max-tuplet*))
@@ -146,11 +147,10 @@
 (defun fomus-merge ()
   (when (>= *verbose* 1) (out "~&; Merging chunks..."))
   ;; gather settings (1st or last in chunks list?) and bind them (if not specified in this fomus call?)--still postproc operations to do and some backends check them
-  ;; turn last barlines into single or double barlines? 
   (set-fomusproc
     (track-progress +progress-int+
-      (let ((pts (loop with al and lo = (loop for ch of-type fomuschunk in *chunks*
-					      maximize (loop for p of-type partex in (fomuschunk-parts ch) maximize (meas-endoff (last-element (part-meas p)))))
+      (let ((pts (loop with al and lo = (mloop for ch of-type fomuschunk in *chunks*
+					       maximize (mloop for p of-type partex in (fomuschunk-parts ch) maximize (meas-endoff (last-element (part-meas p)))))
 		       for (p1 . re) of-type (partex . list) on (mapcar #'unbackup-props (loop for ch of-type fomuschunk in *chunks* append (fomuschunk-parts ch)))
 		       unless (find (part-partid p1) al) collect
 		       (loop for p2 of-type partex in re 
@@ -179,7 +179,6 @@
 						  (loop while (< de tt) do (setf nu (* nu 2) de (* de 2)))
 						  (copy-timesig ts1 :off mo1 :time (cons nu de) :div nil))))
 					(multiple-value-bind (ev di) (split-engine-byscore (list (list (make-rest :off mo1 :dur (- mo2 mo1)))) mo1 mo2 ts)
-					  ;;(debugn "~S" ev)
 					  (make-meas :timesig ts :off mo1 :endoff mo2 :events ev :props '(:measrest) :div di)))))
 			       (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p1)
 				     collect m1
@@ -194,7 +193,7 @@
 	;; prepostproc-parts (prepostproc preparation)
 	(postproc-parts pts)	       ; should also reorder the parts
 	;; ...
-	pts))))
+	#|pts|#))))
 
 ;; keysigs not implemented yet
 ;; returns data structure ready for output via backends
@@ -251,7 +250,7 @@
 		      (destructuring-bind (&key (filename (change-filename *filename* :ext "fms")) &allow-other-keys)
 			  (rest (force-list e))
 			(save-indata (namestring (merge-pathnames filename dir)) pts mks)))
-		;(unless *output* (error "No backends specified"))
+		(unless *output* (error "No backends specified"))
 		(setf *old-objects* nil)
 		(track-progress +progress-int+
 		  (preproc-keysigs *timesigs*)
@@ -332,8 +331,7 @@
 		  (when (or *auto-multivoice-rests* *auto-multivoice-notes*)
 		    (comb-notes pts) #+debug (fomus-proc-check pts 'combnotes))
 		  (backup-props pts)
-		  (postproc-parts pts)
-		  pts)))))))))
+		  (postproc-parts pts))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MAIN

@@ -248,8 +248,23 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining note spellings.
-  	  Current possible values are <literal>T</literal> and <literal>:NOKEY1</literal>.
+  	  Current possible values are <literal>T</literal>, <literal>:NOKEY1</literal> and <literal>:NOKEY2</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:NOKEY1</literal>.
+	  <variablelist>
+          <varlistentry>
+            <term><literal>:NOKEY1</literal></term>
+            <listitem>
+	          Runs through score from left to right and uses a best-first search algorithm with a limited heap (depending on the value of the 
+		  <varname><link linkend="setting.quality">QUALITY</link></varname> setting).
+            </listitem>
+          </varlistentry>
+          <varlistentry>
+            <term><literal>:NOKEY2</literal></term>
+           <listitem>
+  	        (Experimental) Algorithm by Kilian Sprotte using an adaptive search approach.
+            </listitem>
+          </varlistentry>
+          </variablelist>
   	</para>
         </listitem>
       </varlistentry>

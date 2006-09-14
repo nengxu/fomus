@@ -116,7 +116,8 @@
 	(*fomus-global* nil)
 	(*fomus-parts* nil)
 	(*fomus-events* nil))
-    (when (and (numberp *verbose*) (>= *verbose* 1)) (out ";; Loading input file ~S...~%" filename))
+    (destructuring-bind (&key (verbose *verbose*) &allow-other-keys) args
+      (when (and (numberp verbose) (>= verbose 1)) (out ";; Loading input file ~S...~%" filename)))
     (funcall exe
      (with-open-file (f filename :direction :input)
        (flet ((git (rs rrs)

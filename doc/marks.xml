@@ -307,6 +307,16 @@
         <member><function>(<anchor id="mark.tie"/>:TIE &amp;optional <literal>:BEFORE</literal>|<literal>:AFTER</literal>)</function></member>
       </simplelist>
     </section>  
+    <section>
+      <title>Other</title>
+      <para>
+      	  The <function><link linkend="mark.ignore">:IGNORE</link></function> has no effect.  It is intended to be useful for automatically generating
+	<application>FOMUS</application> input files.
+      </para>
+      <simplelist>
+        <member><function><anchor id="mark.ignore"/>:IGNORE</function></member>
+      </simplelist>
+    </section>  
   </section>
   <section>
     <title>TIMESIG Properties</title>

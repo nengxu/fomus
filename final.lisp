@@ -59,7 +59,7 @@
       (let* ((v (when (find #\w opts) t))
 	     (o (nconc (when (string/= quality "") (list :quality (ignore-errors (read-from-string quality))))
 		       (when (string/= basename "") (list :filename basename))
-		       (when (string/= verbosity "") (list :verbosity (ignore-errors (read-from-string verbosity))))
+		       (when (string/= verbosity "") (list :verbose (ignore-errors (read-from-string verbosity))))
 		       (let ((x (nconc
 				 (when (find #\l opts) (list (list :lilypond :view v)))
 				 (when (find #\c opts) (list (list :cmn :view v)))
