@@ -147,8 +147,8 @@
                 (SETQ TEMP2685
                         (LIST
                          (IF (ZEROP (VAR-TABU V))
-                             (FORMAT NIL " ~a" (VAR-VALUE V))
-                             (FORMAT NIL "^~a" (VAR-VALUE V)))))
+                             (FORMAT NIL " ~A" (VAR-VALUE V))
+                             (FORMAT NIL "^~A" (VAR-VALUE V)))))
                 (SETQ END-POINTER2684
                         (IF RESULT2682 (SETF (CDR END-POINTER2684) TEMP2685)
                             (SETQ RESULT2682 TEMP2685)))
@@ -260,7 +260,7 @@
         &KEY (TABU-TENURE 3) (MAX-ITERATIONS 20) (RESET-LIMIT (LENGTH VARS))
         (RESET-PERCENTAGE 100))
   (UNLESS (= 100 RESET-PERCENTAGE)
-    (WARN "Sorry, assuming (= 100 reset-percentage)"))
+    (WARN "SORRY, ASSUMING (= 100 RESET-PERCENTAGE)"))
   (LET ((CONSTRAINTS (COLLECT-CONSTRAINTS VARS)))
     (DOLIST (V VARS) (VAR-SET-RANDOMLY V))
     (DOLIST (C CONSTRAINTS) (CONSTRAINT-UPDATE-COST C))
@@ -322,7 +322,7 @@
                                 (MULTIPLE-VALUE-BIND
                                     (G3151)
                                     0
-                                  (FUNCALL #'(SETF VAR-TABU) G3151 G3152)))))
+                                  (SETF (VAR-TABU G3152) G3151)))))
                           (GO START3150))
                          NIL)))
                  NIL)
@@ -388,7 +388,7 @@
                             (LET* ((G3158 V)
                                    (G3159 1)
                                    (G3157 (- (VAR-TABU G3158) G3159)))
-                              (FUNCALL #'(SETF VAR-TABU) G3157 G3158)))
+                              (SETF (VAR-TABU G3158) G3157)))
                            (IF T
                                (PROGN
                                 (IF (= 1 (VAR-TABU V))
@@ -397,7 +397,7 @@
                                      (LET* ((G3161 V)
                                             (G3162 1)
                                             (G3160 (- (VAR-TABU G3161) G3162)))
-                                       (FUNCALL #'(SETF VAR-TABU) G3160 G3161))
+                                       (SETF (VAR-TABU G3161) G3160))
                                      (LET* ((G3164 1)
                                             (G3163 (- TABU-COUNT G3164)))
                                        (SETQ TABU-COUNT G3163)))
@@ -420,7 +420,7 @@
                        (GO LOOP-TOP-NIL)
                       LOOP-END-NIL)
                      RESULT2708))))
-            (IF (NOT WORST-VAR) (PROGN NIL (ERROR "no var is movable")) NIL)
+            (IF (NOT WORST-VAR) (PROGN NIL (ERROR "NO VAR IS MOVABLE")) NIL)
             (LET* ((OLD-VALUE (VAR-VALUE WORST-VAR))
                    (LIST2714 NIL)
                    (POSSIBLE-MOVE NIL)
@@ -440,7 +440,7 @@
                     (MULTIPLE-VALUE-BIND
                         (G3165)
                         POSSIBLE-MOVE
-                      (FUNCALL #'(SETF VAR-VALUE) G3165 G3166)))
+                      (SETF (VAR-VALUE G3166) G3165)))
                   (BLOCK NIL
                     (LET ((N-LIST3167 (VAR-CONSTRAINTS WORST-VAR)))
                       (TAGBODY
@@ -556,7 +556,7 @@
                     (MULTIPLE-VALUE-BIND
                         (G3176)
                         X
-                      (FUNCALL #'(SETF VAR-VALUE) G3176 G3177)))
+                      (SETF (VAR-VALUE G3177) G3176)))
                   (GO LOOP-TOP-NIL)
                  LOOP-END-NIL)
                 NIL)))
