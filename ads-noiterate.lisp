@@ -7,7 +7,7 @@
 ;;;     whose terms and conditions equally apply for this file too
 
 
-(DEFPACKAGE :ADS (:USE :CL :ITERATE)
+(DEFPACKAGE :ADS (:USE :CL)
             (:EXPORT MAKE-INT-VAR-FROM-TO MAKE-INT-VAR-DOMAIN POST ADS EXAMPLE
              ACC-NOKEY2)) 
 (IN-PACKAGE :ADS) 
