@@ -90,9 +90,9 @@
 	       :vars vars
 	       :costfn (compile nil
 				`(lambda (,@var-syms)
-				   (let (,@(iter
-					    (for s in var-syms)
-					    (collect `(,s (var-value ,s)))))
+				   (let (,@(loop
+					      for s in var-syms
+					      collect `(,s (var-value ,s))))
 				     ,form))))))
       (dolist (v vars)
 	(push c (var-constraints v)))

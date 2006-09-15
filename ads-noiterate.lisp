@@ -87,40 +87,11 @@
            (C
             (MAKE-CONSTRAINT :VARS VARS :COSTFN
                              (COMPILE NIL
-                                      `(LAMBDA ,VAR-SYMS
-                                         (LET (SB-IMPL::BACKQ-COMMA
-                                               (LET*
-                                                ((LIST2673 NIL) (S NIL)
-                                                 (RESULT2672 NIL)
-                                                 (END-POINTER2674 NIL)
-                                                 (TEMP2675 NIL))
-                                                (BLOCK NIL
-                                                  (TAGBODY
-                                                    (SETQ LIST2673 VAR-SYMS)
-                                                   LOOP-TOP-NIL
-                                                    (IF (ATOM LIST2673)
-                                                        (GO LOOP-END-NIL))
-                                                    (SETQ S (CAR LIST2673))
-                                                    (SETQ LIST2673
-                                                            (CDR LIST2673))
-                                                    (PROGN
-                                                     (SETQ TEMP2675
-                                                             (LIST
-                                                              `(,S
-                                                                (VAR-VALUE
-                                                                 ,S))))
-                                                     (SETQ END-POINTER2674
-                                                             (IF RESULT2672
-                                                                 (SETF (CDR
-                                                                        END-POINTER2674)
-                                                                         TEMP2675)
-                                                                 (SETQ RESULT2672
-                                                                         TEMP2675)))
-                                                     RESULT2672)
-                                                    (GO LOOP-TOP-NIL)
-                                                   LOOP-END-NIL)
-                                                  RESULT2672)))
-                                           ,FORM))))))
+                                      `(LAMBDA (,@VAR-SYMS)
+					 (LET (,@(LOOP
+						    FOR S IN VAR-SYMS
+						    COLLECT `(,S (VAR-VALUE ,S))))
+					   ,FORM))))))
       (DOLIST (V VARS) (PUSH C (VAR-CONSTRAINTS V)))
       C))) 
 (DEFUN COLLECT-CONSTRAINTS (VARS)
