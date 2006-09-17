@@ -1,3 +1,4 @@
+	Load-on-demand plugins for accidentals, voices, staves/clefs, splitrules and backends
 	Added :IGNORE mark (does nothing)
 	Can compile command-line interface w/ CLISP
 	(Experimental) Adaptive search (Kilian)

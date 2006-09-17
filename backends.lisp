@@ -12,16 +12,9 @@
 
 #+sbcl (eval-when (:compile-toplevel :load-toplevel :execute) (require :sb-posix))
 
-(declaim (type cons +backendexts+))
-(defparameter +backendexts+
-  '((:data . "fms") (:fomus . "fms") (:raw . "fmr")
-    #-fomus-nocmn (:cmn . "cmn") #-fomus-nolilypond (:lilypond . "ly")
-    #-fomus-nomusicxml (:musicxml . "xml") #-fomus-nomusicxml (:musicxml-sibelius . "xml") #-fomus-nomusicxml (:musicxml-finale . "xml")
-    #-fomus-nomidi (:midi . "mid")))
-
 (declaim (type (or symbol list) *backend* *output*))
 (defparameter *backend* nil)
-(defparameter *output* (list (first (first +backendexts+))))
+(defparameter *output* (list (first (first *backendexts*))))
 (defparameter *filename* (namestring (merge-pathnames "fomus" +tmp-path+)))
 
 (defun save-raw (filename parts)
@@ -36,10 +29,10 @@
 	(prin1 parts f)
 	(fresh-line f)))))
 
-(defvar *registered-backends* (make-hash-table))
+;; (defvar *registered-backends* (make-hash-table))
 
-(defun register-backend (backend callback)
-  (setf (gethash backend *registered-backends*) callback))
+;; (defun register-backend (backend callback)
+;;   (setf (gethash backend *registered-backends*) callback))
 
 (defun backend (backend filename dir parts options process play view)
   (declare (ignorable options process play view)
@@ -62,9 +55,8 @@
 	   (:musicxml-finale (save-xmlfinale parts (format-comment +xml-comment+) filename options))
 	   #-fomus-nomidi (:midi (save-midi parts filename options play))
 	   (otherwise
-	    (let ((callback (gethash backend *registered-backends*)))
-	      (if callback
-		  (funcall callback parts #|+title+ +version+|# filename options process view) ; exported +title+ and +version+ so they can just be accessed as variables--seems redundant if they are passed as arguments
-		  (error "Invalid backend ~S" backend)))))
+	    (load-fomus-plugin backend)
+	    (call-plugin backend '("Invalid backend ~S" backend) ; exported +title+ and +version+ so they can just be accessed as variables--seems redundant if they are passed as arguments
+			 parts filename options process view)))
       (#+cmu unix:unix-chdir #+sbcl sb-posix:chdir #+openmcl ccl:cwd #+allegro excl:chdir #+lispworks hcl:change-directory #+clisp ext:cd (namestring dir)))))
 

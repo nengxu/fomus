@@ -203,6 +203,7 @@
   (when (and (numberp *verbose*) (>= *verbose* 2)) (out "~&; Checking types..."))
   (check-setting-types)
   (check-settings)
+  (load-acc-plugins)
   (set-fomusproc
     (set-instruments
       (set-note-precision
@@ -354,7 +355,7 @@
 		 (destructuring-bind (ba &key filename process play view &allow-other-keys) xx
 		   (declare (type symbol ba) (type boolean process view))
 		   (backend ba
-			    (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba +backendexts+))) dir))
+			    (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba *backendexts*))) dir))
 			    dir r (rest xx) (or process view) play view))))
       (make-fomuschunk
        :settings (map nil (lambda (s)

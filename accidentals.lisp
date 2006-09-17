@@ -232,6 +232,10 @@
 (declaim (type boolean *use-double-accs*))
 (defparameter *use-double-accs* nil)
 
+(declaim (inline load-acc-plugins))
+(defun load-acc-plugins ()
+  (unless (eq (auto-accs-fun) :nokey1) (load-fomus-plugin (auto-accs-fun))))
+  
 ;; Processed before chords exist and before voices are separated
 ;; events in parts are sorted--function must return them sorted
 (defun accidentals (parts)
@@ -241,14 +245,13 @@
    do (multiple-value-bind (evs rs) (split-list (part-events e) #'notep)
 	(setf (part-events e)
 	      (sort (nconc rs
-			   (case (auto-accs-fun)
-			     (:nokey1 (if *quartertones*
-					  (acc-nokey evs (if *use-double-accs* +acc-qtones-double+ +acc-qtones-single+)
-						     #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
-					  (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
-						     #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity)))
-			     (:nokey2 (ads:acc-nokey2 evs))
-			     (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
+			   (if (eq (auto-accs-fun) :nokey1)
+			       (if *quartertones*
+				   (acc-nokey evs (if *use-double-accs* +acc-qtones-double+ +acc-qtones-single+)
+					      #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
+				   (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
+					      #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity))
+			       (call-plugin (auto-accs-fun) (list "Unknown accidental assignment function ~S" *auto-accs-mod*) evs)))
 		    #'sort-offdur)))))
 
 (defmacro set-note-precision (&body forms)

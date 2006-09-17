@@ -72,3 +72,14 @@
   (fresh-line)
   (finish-output)
   #+cmu (ext:quit) #+sbcl (sb-ext:quit) #+openmcl (ccl:quit) #+clisp (ext:quit))
+
+;; plugins
+(eval-when (:load-toplevel)
+  (map nil
+       (lambda (file)
+	 (or (ignore-errors (register-fomus-plugin file))
+	     (format t "WARNING: Can't register plugin file ~S~%" (namestring file))))
+       (nconc (directory (merge-pathnames "plugins/*.lisp" *load-pathname*))
+	      (directory (merge-pathnames "plugins/backends/*.lisp" *load-pathname*))))
+  (format t "~&"))
+	      

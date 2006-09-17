@@ -597,9 +597,11 @@ NOTE prc :voice 1 :off 10 :dur 1/2 :note :snaredrum]]>
 	</blockquote>
       </example>
       <example>
-        <title id="example.canning">Example by Rob Canning</title>
+        <title id="example.canning">Articulations</title>
 	<programlisting>
 <![CDATA[
+;; Example by Rob Canning
+
 init :output (:lilypond :view t)
 
 part 1 :name "Piano" :instr :piano

@@ -707,7 +707,8 @@
 (declaim (inline is-percussion))
 (defun is-percussion (part)
   (declare (type partex part))
-  (eq (instr-clefs (part-instr part)) :percussion))
+  (or (eq (instr-sym (part-instr part)) :percussion)
+      (eq (instr-clefs (part-instr part)) :percussion)))
 
 (defun get-dur (ev ts)
   (declare (type dur-base ev) (type timesig-repl ts))
@@ -970,3 +971,103 @@
 	(find prog +instruments+ :key #'instr-midiprgch-im :test (lambda (x p) (find x (force-list p))))
 	default)))
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; REGISTER PLUGINS
+
+(declaim (type cons *backendexts*))
+(defparameter *backendexts*
+  '((:data . "fms") (:fomus . "fms") (:raw . "fmr")
+    #-fomus-nocmn (:cmn . "cmn") #-fomus-nolilypond (:lilypond . "ly")
+    #-fomus-nomusicxml (:musicxml . "xml") #-fomus-nomusicxml (:musicxml-sibelius . "xml") #-fomus-nomusicxml (:musicxml-finale . "xml")
+    #-fomus-nomidi (:midi . "mid")))
+
+(defun plugin-package (key)
+  (let ((p (symbol-name key)))
+    (if (string= "FOMUS-" p :end2 6) p (conc-strings "FOMUS-" p))))
+
+(defmacro deffomusplugin (&key type keyname use initfun entryfun description preload filename-ext
+			  shadowing-import-from package-name import-from intern size export)
+  (declare (ignore type))
+  `(progn
+    ,@(when preload (list `(eval-when (:load-toplevel :compile-toplevel :execute) ,preload)))
+    (defpackage
+      ,(plugin-package keyname)
+      ,@(when description (list (list :documentation description)))
+      (:use ,@(remove-duplicates (append '("FOMUS" "COMMON-LISP") (mapcar #'string-upcase use)) :test #'string=))
+      (:export ,(symbol-name initfun) ,(symbol-name entryfun) ,@export)
+      ,@(when shadowing-import-from (list (list :shadowing-import-from shadowing-import-from)))
+      ,@(when package-name (list (list :package-name package-name)))
+      ,@(when import-from (list (list :import-from import-from)))
+      ,@(when intern (list (list :intern intern)))
+      ,@(when size (list (list :size size))))
+    (eval-when (:load-toplevel)
+      (provide ,(plugin-package keyname))
+      (in-package ,(plugin-package keyname))
+      (pushnew (cons ,keyname ,filename-ext) *backendexts* :test #'equal))))
+
+(defstruct (plugin (:copier nil) (:predicate nil))
+  (type nil :type symbol)
+  (file "" :type string)
+  (pack "" :type string)
+  (initfun nil :type symbol)
+  (entryfun nil :type symbol)
+  (desc "" :type string))
+
+(defparameter *plugins* (make-hash-table :test 'eq))
+(defparameter +plugin-types+ '(:accidentals :voices :staves/clefs :splitrules :backend))
+
+(defun compile-plugin (file cfile key)
+  (when (or (not (probe-file cfile)) (>= (file-write-date file) (file-write-date cfile)))
+    (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Compiling plugin ~S..." key))
+    (compile-file file :print nil :verbose nil)))
+
+;; user fun
+(defun register-fomus-plugin (filename &key load)
+  (destructuring-bind (cmd &key type keyname initfun entryfun (description "(none)") filename-ext &allow-other-keys)
+      (with-open-file (f filename :direction :input) (read f))
+    (unless (string= (symbol-name cmd) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
+    (unless (member type +plugin-types+) (error "~S is not a valid plugin type" type)) ; make sure all the right values are stored so error doesn't happen later
+    (check-type keyname keyword)
+    (check-type filename (or pathname string))
+    (check-type initfun symbol)
+    (check-type entryfun symbol)
+    (check-type description string)
+    (when (and filename-ext (not (eq type :backend))) (error "Non-backend shouldn't declare a filename extension"))
+    (let ((pk (plugin-package keyname))
+	  (cf (compile-file-pathname filename)))
+      (compile-plugin filename cf keyname)	; make sure it compiles
+      (setf (gethash keyname *plugins*) (make-plugin :type type :file filename :pack pk :initfun initfun :entryfun entryfun :desc description)))
+    (when load (load-fomus-plugin keyname)))
+  t)
+
+;; user fun
+(defun list-fomus-plugins (&rest type)
+  (let ((ty (or type +plugin-types+)))
+    (loop for l in (sort (split-into-groups (loop for h being each hash-key in *plugins* using (hash-value v)
+						  when (member (plugin-type v) ty) collect (cons h v)) (lambda (x) (plugin-type (cdr x))))
+			 #'car
+			 :key (lambda (x) (position (plugin-type (cdr x)) +plugin-types+)))
+	  do (format t ";; Type: ~A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" (symbol-name (plugin-type (cdr (first l))))
+		     (loop for e in (sort l #'string< :key (lambda (x) (symbol-name (car x))))
+			   collect (symbol-name (car e)) collect (plugin-file (cdr e))
+			   collect (loop with z = (plugin-desc (cdr e)) and in = (format nil "~%; ")
+					 for p = (position #\newline z :start (if p (1+ p) 0))
+					 while p do (setf z (conc-strings (subseq z 0 p) in (subseq z (1+ p))))
+					 finally (return z)))))))
+
+;; user fun
+(defun load-fomus-plugin (keyname)
+  (let* ((pl (or (gethash keyname *plugins*) (error "Plugin ~S is not registered or does not exist" keyname)))
+	 (cf (compile-file-pathname (plugin-file pl))))
+    (when (or (not (find (plugin-pack pl) *modules* :test #'string=)) (compile-plugin (plugin-file pl) cf keyname))
+      (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading plugin ~S..." keyname))
+      (load cf :verbose nil :print nil)
+      (when (plugin-initfun pl)
+	(funcall (find-symbol (symbol-name (plugin-initfun pl)) (find-package (plugin-pack pl)))))))
+  t)
+
+(declaim (inline call-plugin))
+(defun call-plugin (keyname err &rest args) ; assume it's been loaded
+  (let ((pl (gethash keyname *plugins*)))
+    (if pl (apply (find-symbol (symbol-name (plugin-entryfun pl)) (find-package (plugin-pack pl))) args)
+	(apply #'error err))))

@@ -1,14 +1,15 @@
 ;; -*-lisp-*-
 ;; ASDF System for FOMUS
 
-;;; check for iterate
-(eval-when (:load-toplevel :compile-toplevel :execute)
-  (handler-case
-      (asdf:oos 'asdf:load-op '#:iterate)
-    (missing-component ()
-      nil))
-  (unless (member "ITERATE" *modules* :test #'equal)
-    (pushnew :fomus-noiterate *features*)))
+;; ;;; check for iterate
+;; #+fomus-usedeps
+;; (eval-when (:load-toplevel :compile-toplevel :execute)
+;;   (handler-case
+;;       (asdf:oos 'asdf:load-op '#:iterate)
+;;     (missing-component ()
+;;       nil))
+;;   (unless (member "ITERATE" *modules* :test #'equal)
+;;     (pushnew :fomus-noiterate *features*)))
 
 (asdf:defsystem "fomus"
   
@@ -28,8 +29,7 @@
 
    (:file "splitrules" :depends-on ("data"))
    
-   (:file "accidentals" :depends-on ("util" #-fomus-noiterate "ads"
-					    #+fomus-noiterate "ads-noiterate"))
+   (:file "accidentals" :depends-on ("util"))
    (:file "beams" :depends-on ("util"))
    (:file "marks" :depends-on ("util"))
    (:file "other" :depends-on ("util"))
@@ -52,6 +52,4 @@
    (:file "interface" :depends-on ("main"))
 
    (:file "final" :depends-on ("version" "interface") :in-order-to ((load-op (load-op "interface"))))
-   #-fomus-noiterate (:file "ads" :depends-on ("package"))
-   #+fomus-noiterate (:file "ads-noiterate" :depends-on ("package"))
    ))
