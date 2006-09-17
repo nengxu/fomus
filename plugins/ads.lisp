@@ -55,7 +55,7 @@
     :use (:iterate) ; automatically uses common-lisp and fomus packages
     :export (#:make-int-var-from-to #:make-int-var-domain #:post #:ads #:example #:acc-nokey2)
     :preload (asdf:operate 'asdf:load-op :iterate)
-    :description "(Experimental) Key-spelling algorithm by Kilian Sprotte using an adaptive search approach")
+    :description "(Experimental) Note-spelling algorithm by Kilian Sprotte using an adaptive search approach")
   
 
 ;; (defpackage :ads

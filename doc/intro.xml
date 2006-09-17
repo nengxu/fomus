@@ -7,7 +7,7 @@
     <application><ulink url="http://www.cons.org/cmucl/">CMUCL</ulink></application> (version 19),
     <application><ulink url="http://www.sbcl.org/">SBCL</ulink></application> (version 0.9.4),
     <application><ulink url="http://openmcl.clozure.com/">OpenMCL</ulink></application> (version 1),
-    <application><ulink url="http://clisp.sourceforge.net/">CLISP</ulink></application> (version 2, debugging nearly finished, still testing),
+    <application><ulink url="http://clisp.sourceforge.net/">CLISP</ulink></application> (version 2),
     <application><ulink url="http://www.franz.com/">Allegro</ulink></application> (version 7) and
     <application><ulink url="http://www.lispworks.com/">LispWorks</ulink></application> (version 4).
     As the program becomes more stable, it will also be tested in other lisp implementations.  Supported operating systems are

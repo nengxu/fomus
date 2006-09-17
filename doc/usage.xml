@@ -237,7 +237,7 @@
   <section id="interface.text">
   <title id="interface.text.title">Text File Interface</title>
   <para>You may also create a text file where each line of the file executes one of the commands listed in 
-    <link linkend="interface2" endterm="interface2.title"/>.  An example file is given below:
+    <link linkend="interface2" endterm="interface2.title"/>.  A simple example file is given below:
       <example>
         <title>FOMUS Text Input File</title>
 	<programlisting>
@@ -276,14 +276,14 @@ note 1 :off 1 :dur 1 :note 62 \
         <title>FOMUS Usage 7</title>
 	<programlisting>
 <![CDATA[
-(fomus "/directory/file.txt")]]>
+(fomus "/directory/file.fms")]]>
 	</programlisting>
       </example>
       <example>
         <title>FOMUS Usage 8</title>
 	<programlisting>
 <![CDATA[
-(fomus "/directory/file.txt" :output :cmn)]]>
+(fomus "/directory/file.fms" :output :cmn)]]>
 	</programlisting>
       </example>
       Keyword/argument pairs passed to this function override the settings stored in the input file.

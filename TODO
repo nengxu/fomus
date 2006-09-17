@@ -3,11 +3,13 @@ TODO LIST
 Immediate:
 
     Bugs:
+      Finish chunks support
+      Finish key signatures support
       Double brackets shouldn't appear in the same place (6 violins example)
       Send list of XML issues to Sibelius/Finale tech. support
       In CLISP/Cygwin output from executables isn't suppressed (fixable?)
     Documentation:
-      Examples of file input
+      Plugin interface
       Separate MIDI files for different parts
       Proofreading
       More examples (eventually indexed and covering most/all features)
@@ -20,10 +22,11 @@ Immediate:
       LilyPond not tying repeated notes in chords where other notes are tied (fixable?)
       MIDI output testing/adjusting/fine tuning
     Improvements:
+      Finish implementing :invisible mark
       Allow forcing of staff choices (individual notes and entire voice)
       Improve staff and clef decisions
       More control over harmonics
-      More speed improvements (slower in OpenMCL?)
+      More speed improvements (why is it 10x slower in OpenMCL?)
     Additions:
       Onset-to-onset durations
       Dynamic markings fixer (eliminate repeats)
@@ -40,13 +43,8 @@ Immediate:
 Short Term:
 
     Ornaments with accidentals greater than a whole/half step
-    Combine separate sections with different settings into one score
     Proportional notation
-    Durations that fill to next/previous note
-    Part properties: override settings for individual parts
     Support for polymeters in backends
-    Key signatures (plus key detection algorithm?)
-    "Plug-in" architecture to allow easy extension of functionality
 
 Long Term:
 

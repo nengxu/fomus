@@ -110,7 +110,6 @@
    (append *events* *fomus-events*)
    (append *global* *fomus-global*)
    (nconc *fomus-args* args)))
-
 (defun fomus-text (filename args exe)
   (let ((*fomus-args* args)
 	(*fomus-global* nil)
@@ -119,27 +118,33 @@
     (destructuring-bind (&key (verbose *verbose*) &allow-other-keys) args
       (when (and (numberp verbose) (>= verbose 1)) (out ";; Loading input file ~S...~%" filename)))
     (funcall exe
-     (with-open-file (f filename :direction :input)
-       (flet ((git (rs rrs)
-		(unless (symbolp rs) (error "Invalid tag ~S" rs))
-		(case (intern (symbol-name rs) :keyword)
-		  (:init (if (find (first rrs) +settings+ :key #'first) rrs (progn (format t ";; WARNING: Unknown setting ~A~%" (first rrs)) nil)))
-		  (:timesig (apply #'fomus-newtimesig rrs) nil)
-		  (:part (apply #'fomus-newpart rrs) nil)
-		  (:note (apply #'fomus-newnote rrs) nil)
-		  (:rest (apply #'fomus-newrest rrs) nil)
-		  (:mark (apply #'fomus-newmark rrs) nil)
-		  (otherwise (error "Invalid tag ~S" rs)))))
-	 (loop
-	  for re = (read f nil 'eof) until (eq re 'eof)
-	  if (listp re) nconc (git (first re) (uglify (rest re)))
-	  else nconc (with-input-from-string (st (loop
-						  with st = (read-line f)
-						  for s = (string-right-trim " " st)
-						  while (char= (aref s (1- (length s))) #\\)
-						  do (setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f)))
-						  finally (return st)))
-		       (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e))))))))))
+	     (let ((li 0) (lin ""))
+	       (handler-case
+		   (with-open-file (f filename :direction :input)
+		     (flet ((git (rs rrs)
+			      (unless (symbolp rs) (error "Invalid tag ~S" rs))
+			      (case (intern (symbol-name rs) :keyword)
+				(:init (if (find (first rrs) +settings+ :key #'first) rrs (progn (format t ";; WARNING: Unknown setting ~A~%" (first rrs)) nil)))
+				(:timesig (apply #'fomus-newtimesig rrs) nil)
+				(:part (apply #'fomus-newpart rrs) nil)
+				(:note (apply #'fomus-newnote rrs) nil)
+				(:rest (apply #'fomus-newrest rrs) nil)
+				(:mark (apply #'fomus-newmark rrs) nil)
+				(otherwise (error "Invalid tag ~S" rs)))))
+		       (loop
+			for re = (progn (incf li) (setf lin "") (read f nil 'eof)) until (eq re 'eof)
+			do (setf lin (format nil "~S ..." re))
+			if (listp re) nconc (git (first re) (uglify (rest re)))
+			else nconc (with-input-from-string (st (loop
+								with st = (read-line f)
+								for s = (string-right-trim " " st)
+								while (char= (aref s (1- (length s))) #\\)
+								do
+								(setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f))
+								      lin (format nil "~S ~A ..." re st)) 
+								finally (setf lin (format nil "~S ~A" re st)) (return st)))
+				     (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e)))))))
+		 (error (err) (error (format nil "Entry ~D, ~S: ~A" li (remove-newlines lin) err))))))))
 
 (defun fomus-file (filename &optional args)
   (fomus-text filename args #'fomus-textret))

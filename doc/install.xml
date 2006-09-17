@@ -111,4 +111,48 @@ cd path_to_install_directory
       that all parts of the program are consistent.
     </para>
   </section>
+  <section>
+    <title>Emacs Interface</title>
+    <para>
+      Here are a few simple lines you can put in your <filename>.emacs</filename> file.  They associate <filename>.fms</filename> files
+      with Lisp (actually, this example assumes <application>SLIME</application> is being used) and bind the key sequence <literal>"\C-c\C-o"</literal> to run the 
+      <application>FOMUS</application> command-line program.
+      <example>
+        <title>Emacs Init Lines 1</title>
+<![CDATA[
+;; fomus extension
+(add-to-list 'auto-mode-alist '("\\.fms$" . lisp-mode))
+
+;; save buffers & invoke fomus
+(setq fomus-args "")
+(defun run-fomus ()
+  (interactive)
+  (save-some-buffers)
+  (let ((a (read-from-minibuffer "FOMUS arguments: " fomus-args)))
+    (setq fomus-args a)
+    (shell-command (format "fomus %s %S" a buffer-file-name))))
+
+;; add slime mode hook
+(defun custom-slime-mode-hook ()
+  (local-set-key "\C-c\C-o" 'run-fomus))
+(add-hook 'slime-mode-hook 'custom-slime-mode-hook)]]>
+      </example>
+    </para>
+    <para>
+      Another option would be to use <application>SLIME</application>'s <function>SLIME-INTERACTIVE-EVAL</function> function instead of
+      <function>SHELL-COMMAND</function>:
+      <example>
+        <title>Emacs Init Lines 2</title>
+<![CDATA[
+;; save buffers & invoke fomus in the default Lisp
+(setq fomus-args "")
+(defun run-fomus ()
+  (interactive)
+  (save-some-buffers)
+  (let ((a (read-from-minibuffer "FOMUS arguments: " fomus-args)))
+    (setq fomus-args a)
+    (slime-interactive-eval (format "(fomus %S %s)" buffer-file-name a))))]]>
+      </example>
+    </para>
+  </section>
 </chapter>

@@ -1,3 +1,4 @@
+	.fms file load errors now show entry number and line where error occurred
 	Load-on-demand plugins for accidentals, voices, staves/clefs, splitrules and backends
 	Added :IGNORE mark (does nothing)
 	Can compile command-line interface w/ CLISP
