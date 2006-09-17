@@ -119,8 +119,8 @@
       (when (and (numberp verbose) (>= verbose 1)) (out ";; Loading input file ~S...~%" filename)))
     (funcall exe
 	     (let ((li 0) (lin ""))
-	       (handler-case
-		   (with-open-file (f filename :direction :input)
+	       (with-open-file (f filename :direction :input)
+		 (handler-case
 		     (flet ((git (rs rrs)
 			      (unless (symbolp rs) (error "Invalid tag ~S" rs))
 			      (case (intern (symbol-name rs) :keyword)
@@ -143,8 +143,8 @@
 								(setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f))
 								      lin (format nil "~S ~A ..." re st)) 
 								finally (setf lin (format nil "~S ~A" re st)) (return st)))
-				     (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e)))))))
-		 (error (err) (error (format nil "Entry ~D, ~S: ~A" li (remove-newlines lin) err))))))))
+				     (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e))))))
+		   (error (err) (error (format nil "Entry ~D, ~S: ~A" li (remove-newlines lin) err)))))))))
 
 (defun fomus-file (filename &optional args)
   (fomus-text filename args #'fomus-textret))
