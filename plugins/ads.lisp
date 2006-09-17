@@ -112,7 +112,7 @@
   (flet ((var-syms (num)
 	   (iter
 	     (for i from 1 to num)
-	     (collect (intern (format nil "V~A" i) "ADS")))))
+	     (collect (intern (format nil "V~A" i) "FOMUS-NOKEY2")))))
     (let* ((var-syms (var-syms (length vars)))
 	   (c (make-constraint
 	       :vars vars
