@@ -75,7 +75,7 @@
 
 ;; plugins
 (eval-when (:load-toplevel)
-  (let ((fomus-dir (asdf:component-pathname (asdf:find-system :fomus))))
+  (let ((fomus-dir #+asdf (asdf:component-pathname (asdf:find-system :fomus)) #-asdf *load-pathname*))
     (map nil
 	 (lambda (file)
 	   (or (ignore-errors (register-fomus-plugin file))

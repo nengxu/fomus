@@ -646,13 +646,13 @@
 			   (let ((x (find (- and o) (force-list (timesig-repl si)) :key #'timesig-nbeats)))
 			     (if x (copy-timesig x
 						 :off o :div (or (timesig-div x) (repl-divs (timesig-div si) (- and o)))
-						 :parts (timesig-partids si) :repl nil)
+						 :parts (timesig-partids si) :repl nil :props nil)
 				 (let ((n (* (/ (- and o) (timesig-nbeats si)) (timesig-num si))))
 				   (copy-timesig si
 						 :off o
 						 :time (cons (numerator n) (* (denominator n) (timesig-den si)))
 						 :div (repl-divs (timesig-div si) (- and o))
-						 :repl nil))))
+						 :repl nil :props nil))))
 			   si)
 	      when (> and mx) do (setf mx and)
 	      do (funcall fun p at o and) ; part, timesig, o1, o2
@@ -674,7 +674,7 @@
 										     (t (error "Conflicting time signature/part IDs assignment at offset ~S, part ~S"
 											       (timesig-foff x) (part-name p)))))))))
 						     (if (or (null x) (> (timesig-off (first x)) 0))
-							 (cons (copy-timesig dts :off 0) x)
+							 (cons (copy-timesig dts :off 0 :props nil) x)
 							 x))))
 					    (if *auto-override-timesigs*
 						(loop for (e1 e2) of-type (timesig (or timesig null)) on z
@@ -1001,9 +1001,9 @@
       ,@(when intern (list (list :intern intern)))
       ,@(when size (list (list :size size))))
     (eval-when (:load-toplevel)
-      (provide ,(plugin-package keyname))
-      (in-package ,(plugin-package keyname))
-      (pushnew (cons ,keyname ,filename-ext) *backendexts* :test #'equal))))
+      (provide ,(plugin-package keyname)) 
+      (pushnew (cons ,keyname ,filename-ext) *backendexts* :test #'equal))
+    (eval-when (:load-toplevel :compile-toplevel :execute) (in-package ,(plugin-package keyname)))))
 
 (defstruct (plugin (:copier nil) (:predicate nil))
   (type nil :type symbol)

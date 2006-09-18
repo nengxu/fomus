@@ -30,6 +30,7 @@
         <member><varname><link linkend="setting.beat.division">:BEAT-DIVISION</link></varname></member>
         <member><varname><link linkend="setting.max.tuplet">:MAX-TUPLET</link></varname></member>
         <member><varname><link linkend="setting.min.tuplet.dur">:MIN-TUPLET-DUR</link></varname></member>
+        <member><varname><link linkend="setting.max.tuplet.dur">:MAX-TUPLET-DUR</link></varname></member>
         <member><varname><link linkend="setting.quartertones">:QUARTERTONES</link></varname></member>
         <member><varname><link linkend="setting.acc.throughout.meas">:ACC-THROUGHOUT-MEAS</link></varname></member>
         <member><varname><link linkend="setting.auto.cautionary.accs">:AUTO-CAUTIONARY-ACCS</link></varname></member>

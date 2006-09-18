@@ -1,3 +1,5 @@
+	Fixed bug where automatically generated timesigs copied unwanted properties (ie. specified barlines) from neighboring timesigs
+
 v0.2.8
 	Grace notes can have floating point durations
 	:IGNORE mark can be used repeatedly

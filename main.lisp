@@ -177,7 +177,7 @@
 						       (nu (numerator tt))
 						       (de (denominator tt)))
 						  (loop while (< de tt) do (setf nu (* nu 2) de (* de 2)))
-						  (copy-timesig ts1 :off mo1 :time (cons nu de) :div nil))))
+						  (copy-timesig ts1 :off mo1 :time (cons nu de) :div nil :props nil))))
 					(multiple-value-bind (ev di) (split-engine-byscore (list (list (make-rest :off mo1 :dur (- mo2 mo1)))) mo1 mo2 ts)
 					  (make-meas :timesig ts :off mo1 :endoff mo2 :events ev :props '(:measrest) :div di)))))
 			       (loop for (m1 m2) of-type (meas (or meas null)) on (part-meas p1)
