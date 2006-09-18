@@ -75,11 +75,12 @@
 
 ;; plugins
 (eval-when (:load-toplevel)
-  (map nil
-       (lambda (file)
-	 (or (ignore-errors (register-fomus-plugin file))
-	     (format t "WARNING: Can't register plugin file ~S~%" (namestring file))))
-       (nconc (directory (merge-pathnames "plugins/*.lisp" *load-pathname*))
-	      (directory (merge-pathnames "plugins/backends/*.lisp" *load-pathname*))))
-  (format t "~&"))
+  (let ((fomus-dir (asdf:component-pathname (asdf:find-system :fomus))))
+    (map nil
+	 (lambda (file)
+	   (or (ignore-errors (register-fomus-plugin file))
+	       (format t "WARNING: Can't register plugin file ~S~%" (namestring file))))
+	 (nconc (directory (merge-pathnames "plugins/*.lisp" fomus-dir))
+		(directory (merge-pathnames "plugins/backends/*.lisp" fomus-dir))))
+    (format t "~&")))
 	      
