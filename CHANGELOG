@@ -1,3 +1,5 @@
+v0.2.9
+	Fixed a plugins bug
 	Fixed bug where automatically generated timesigs copied unwanted properties (ie. specified barlines) from neighboring timesigs
 
 v0.2.8
