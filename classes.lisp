@@ -363,9 +363,15 @@
 
 (declaim (special *old-objects*))
 (declaim (inline make-noteex make-restex make-partex))
-(defun make-noteex (ob &rest args) (declare (type (or null note) ob)) (let ((r (apply #'make-instance 'noteex args))) (when *old-objects* (setf (gethash r *old-objects*) ob)) r))
-(defun make-restex (ob &rest args) (declare (type (or null rest) ob)) (let ((r (apply #'make-instance 'restex args))) (when *old-objects* (setf (gethash r *old-objects*) ob)) r))
-(defun make-partex (ob &rest args) (declare (type (or null part) ob)) (let ((r (apply #'make-instance 'partex args))) (when *old-objects* (setf (gethash r *old-objects*) ob)) r))
+(defun make-noteex (ob &rest args)
+  (declare (type (or null note) ob))
+  (let ((r (apply #'make-instance 'noteex args))) (when *old-objects* (setf (gethash r *old-objects*) ob)) r))
+(defun make-restex (ob &rest args)
+  (declare (type (or null rest) ob))
+  (let ((r (apply #'make-instance 'restex args))) (when *old-objects* (setf (gethash r *old-objects*) ob)) r))
+(defun make-partex (ob &rest args)
+  (declare (type (or null part) ob))
+  (let ((r (apply #'make-instance 'partex args))) (when *old-objects* (setf (gethash r *old-objects*) ob)) r))
 
 ;; copy functions
 (declaim (inline copy-timesig copy-timesig-repl copy-event copy-part copy-meas))
@@ -521,7 +527,8 @@
     (class* dur-base
      (partid (type* +partid-type+))
      (voice (check* (or* (integer 1) (list-of-unique* (integer 1))) "Found ~S, expected (INTEGER 1) or unique list of (INTEGER 1) in VOICE slot" t))
-     (dur (check* (or* (satisfies is-dur) (list* (and (satisfies is-dur) rational) integer)) "Found ~S, expected REAL, valid rhythmic symbol or list (REAL/SYMBOL INTEGER) in DUR slot" t)))))
+     (dur (check* (or* (satisfies is-dur) (list* (satisfies is-dur) integer))
+		  "Found ~S, expected REAL, valid rhythmic symbol or list (REAL/SYMBOL INTEGER) in DUR slot" t)))))
 
 (defparameter +note-type+
   '(with-error* (note "~~A of note at offset ~S" (function event-foff))

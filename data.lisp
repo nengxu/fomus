@@ -562,9 +562,9 @@
     (:global (or* null (list-of* (type* +timesig-type+))) "list of TIMESIG objects")
     (:parts (list-of* (type* +part-type+)) "list of PART objects")
     (:events (or* null (list-of* (or* (type* +note-type+) (type* +rest-type+) (type* +mark-type+)))) "list of NOTE or REST objects")
-    (:chunks (or null list))
+    (:chunks (or null list)) ;; need this?
     
-    (:check-ranges boolean) (:transpose boolean) (:input-beat-value (or null (real (0))))
+    (:check-ranges boolean) (:transpose boolean) (:input-beat-value (or null (real (0)))) (:input-offset (or null real))
     (:instruments (or* null (list-of* (or* (type* +instr-type+) (cons* symbol (key-arg-pairs* ,@+instr-keys+))))) "list of INSTR objects")
     (:percussion (or* null (list-of* (or* (type* +perc-type+) (cons* symbol (key-arg-pairs* ,@+instr-keys+))))) "list of PERC objects")
     (:instr-groups (or* null (type* +instr-group-tree-type+)) "list of nested lists of SYMBOLS")
@@ -635,7 +635,9 @@
 (declaim (type cons +notemark-type+))
 (defparameter +notemark-type+
   '(or*
-    (let* ((x (unique* sy (member :ignore :arco :pizz
+    (let* ((x (member :ignore)))
+      (or* x (list* x)))
+    (let* ((x (unique* sy (member :arco :pizz
 				  :start8down- :8down- :end8down- :8down :start8up- :8up- :end8up- :8up
 				  :startwedge> :startwedge< :wedge< :wedge> :endwedge< :endwedge>
 				  :startwedge>* :startwedge<* :wedge<* :wedge>* :endwedge<* :endwedge>*

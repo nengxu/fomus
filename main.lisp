@@ -255,11 +255,11 @@
 		(setf *old-objects* nil)
 		(track-progress +progress-int+
 		  (preproc-keysigs *timesigs*)
-		  (fixinputbeat pts)
+		  (fixinputbeat pts *timesigs* mks)
 		  (when (find-if #'is-percussion pts)
 		    (when (>= *verbose* 2) (out "~&; Percussion...")) ; before voices & clefs
 		    (percussion pts))	; was after accs
-		  (autodurs-preproc pts) 
+		  (autodurs-preproc pts)
 		  (if *auto-quantize*
 		      (progn (when (>= *verbose* 2) (out "~&; Quantizing..."))
 			     (quantize *timesigs* pts) #+debug (fomus-proc-check pts 'quantize))

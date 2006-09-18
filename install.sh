@@ -185,8 +185,8 @@ echo '    echo "Usage: fomus [-lxfscmw] [-o basefilename] [-v value] [-q value] 
 echo '    echo' >> fomus.sh
 echo '    echo "  -l        Output to LilyPond"' >> fomus.sh
 echo '    echo "  -x        Output to MusicXML"' >> fomus.sh
-echo '    echo "  -f        Output to MusicXML w/ Finale kludges"' >> fomus.sh
-echo '    echo "  -s        Output to MusicXML w/ Sibelius kludges"' >> fomus.sh
+echo '    echo "  -f        Output to MusicXML w/ Finale Kludges"' >> fomus.sh
+echo '    echo "  -s        Output to MusicXML w/ Sibelius Kludges"' >> fomus.sh
 echo '    echo "  -c        Output to CMN"' >> fomus.sh
 echo '    echo "  -m        Output to FOMUS input file"' >> fomus.sh
 echo '    echo' >> fomus.sh

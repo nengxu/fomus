@@ -219,14 +219,15 @@
 			    (progn
 			      (setf sv (cons (cons vo ss) (delete vo sv :key #'car))) 
 			      (addmark e (list :staff :voice ss))))
-			(loop with vv = (sort (delete-if-not ; simult. notes
-					       (lambda (x)
-						 (declare (type (or noteex restex) x))
-						 (and (<= (event-off x) oo)
-						      (>= (event-endoff x) oo)
-						      (= (event-staff x) ss)))
-					       (copy-list mm))
-					      #'sort-offdur)
+			(loop with vv = (if (event-grace e) (list e)
+					    (sort (delete-if-not ; simult. notes
+						   (lambda (x)
+						     (declare (type (or noteex restex) x))
+						     (and (<= (event-off x) oo)
+							  (>= (event-endoff x) oo)
+							  (= (event-staff x) ss)))
+						   (copy-list mm))
+						  #'sort-offdur))
 			      with vp = (sort (delete-duplicates (mapcar #'event-voice* vv)) #'<) and vl = (length vv) ; all current simult. voice#s
 			      for a in (mapcar (lambda (v) (declare (type (integer 1) v)) (if (= v vo) e (find v vv :key #'event-voice*))) vp)
 			      for ap = (eq a e) ; primary event (e)

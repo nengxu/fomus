@@ -1,3 +1,10 @@
+v0.2.8
+	Grace notes can have floating point durations
+	:IGNORE mark can be used repeatedly
+	INPUT-OFFSET setting (shift events before processing)
+	Fixed minor bug in post-processing w/ voices and grace notes
+
+v0.2.7
 	.fms file load errors now show entry number and line where error occurred
 	Load-on-demand plugins for accidentals, voices, staves/clefs, splitrules and backends
 	Added :IGNORE mark (does nothing)

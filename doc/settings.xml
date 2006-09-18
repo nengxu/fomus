@@ -26,6 +26,7 @@
         <member><varname><link linkend="setting.parts">:PARTS</link></varname></member>
         <member><varname><link linkend="setting.events">:EVENTS</link></varname></member>
         <member><varname><link linkend="setting.input.beat.value">:INPUT-BEAT-VALUE</link></varname></member>
+        <member><varname><link linkend="setting.input.offset">:INPUT-OFFSET</link></varname></member>
         <member><varname><link linkend="setting.beat.division">:BEAT-DIVISION</link></varname></member>
         <member><varname><link linkend="setting.max.tuplet">:MAX-TUPLET</link></varname></member>
         <member><varname><link linkend="setting.min.tuplet.dur">:MIN-TUPLET-DUR</link></varname></member>
@@ -140,6 +141,7 @@
       <title>Quantizing</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.input.beat.value">:INPUT-BEAT-VALUE</link></varname></member>
+        <member><varname><link linkend="setting.input.offset">:INPUT-OFFSET</link></varname></member>
         <member><varname><link linkend="setting.beat.division">:BEAT-DIVISION</link></varname></member>
         <member><varname><link linkend="setting.min.tuplet.dur">:MIN-TUPLET-DUR</link></varname></member>
         <member><varname><link linkend="setting.max.tuplet.dur">:MAX-TUPLET-DUR</link></varname></member>
@@ -892,8 +894,18 @@
         <listitem>
           <para>
 	    When set to some real number greater than <literal>0</literal>, indicates that this durational value is to be interpreted as one beat.
-	    <application>FOMUS</application> effectively scales all input objects by dividing offsets and durations by this value before doing any other processing.
+	    <application>FOMUS</application> scales all input objects by dividing offsets and durations by this value before doing any other processing.
 	    A value of <literal>NIL</literal> is the default and is equivalent to <literal>1</literal>.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.input.offset"/>:INPUT-OFFSET</varname></term>
+        <listitem>
+          <para>
+	    When set to some real number, indicates that this durational value is to be interpreted as one beat.
+	    <application>FOMUS</application> shifts all input objects by adding this value to all offsets before doing any other processing.
+	    A value of <literal>NIL</literal> is the default and is equivalent to <literal>0</literal>.
   	</para>
         </listitem>
       </varlistentry>

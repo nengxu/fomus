@@ -15,6 +15,8 @@
 
 (declaim (type (or null (real (0))) *input-beat-value*))
 (defparameter *input-beat-value* nil)
+(declaim (type (or null real) *input-offset*))
+(defparameter *input-offset* nil)
 
 ;; must be before notes are transposed!
 (defun check-ranges (pts)
@@ -186,10 +188,14 @@
 	      when (and #|(notep ev)|# (< (event-off ev) oo)) do (setf oo (event-off ev)))
 	(print-dot)))
 
-(defun fixinputbeat (parts)
+(defun fixinputbeat (parts tims mks)
   (declare (type list parts))
-  (when *input-beat-value*
-    (loop for p of-type partex in parts do
-	  (loop for e of-type (or noteex restex) in (part-events p) do
-		      (setf (event-off e) (/ (event-off e) *input-beat-value*)
-			    (event-dur* e) (/ (event-dur* e) *input-beat-value*))))))
+  (when (or *input-beat-value* *input-offset*)
+    (let ((bv (or *input-beat-value* 1))
+	  (io (or *input-offset* 0)))
+      (loop for p of-type partex in parts do
+	    (loop for e of-type (or noteex restex) in (part-events p) do
+		  (setf (event-off e) (+ (/ (event-off e) bv) io))
+		  (unless (event-grace e) (setf (event-dur* e) (/ (event-dur* e) bv)))))
+      (loop for ti of-type timesig in tims do (setf (event-off ti) (+ (/ (event-off ti) bv) io)))
+      (loop for m of-type mark in mks do (setf (event-off m) (+ (/ (event-off m) bv) io))))))

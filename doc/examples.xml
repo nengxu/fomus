@@ -450,9 +450,9 @@
   <section id="examples.textinput">
     <title id="examples.textinput.title">Text Input File Examples</title>
     <para>
-      The following may be reproduced by saving the example to a file and using the so-called text file or command line interfaces
-      to process them (see <link linkend="interface.text" endterm="interface.text.title"/> and <link linkend="interface.cmd" endterm="interface.cmd.title"/>
-      for more information).  When an output isn't specified in the file, this must be given in the command.  Some examples are:
+      Any of the following may be reproduced by saving the example to a file and using the so-called text file or command line interface
+      to process it (see <link linkend="interface.text" endterm="interface.text.title"/> and <link linkend="interface.cmd" endterm="interface.cmd.title"/>
+      for more information).  When an output isn't specified in the file, this must be given in the Lisp function call or at the command line.  Some examples are:
     </para>
       <example>
         <title>Text Input Commands (From Lisp)</title>
@@ -669,7 +669,7 @@ NOTE p1 :voice 1 :off 14 :dur 1/2 :note :low-wood-block]]>
 	</blockquote>
       </example>
       <example>
-        <title id="example.txtoverser">Overtone Series (Using Quartertones)</title>
+        <title id="example.txtoverser">Overtone Series (using Quartertones)</title>
 	<programlisting>
 <![CDATA[
 INIT :output '(:lilypond :view t)

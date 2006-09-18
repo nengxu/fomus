@@ -112,15 +112,15 @@ cd path_to_install_directory
     </para>
   </section>
   <section>
-    <title>Emacs Interface</title>
+    <title>(Simple) Emacs Interface</title>
     <para>
-      Here are a few simple lines you can put in your <filename>.emacs</filename> file.  They associate <filename>.fms</filename> files
+      Here are a few simple lines that you can put in your <filename>.emacs</filename> file.  They associate <filename>.fms</filename> files
       with Lisp (actually, this example assumes <application>SLIME</application> is being used) and bind the key sequence <literal>"\C-c\C-o"</literal> to run the 
       <application>FOMUS</application> command-line program.
       <example>
         <title>Emacs Init Lines 1</title>
 <![CDATA[
-;; fomus extension
+;; fomus extension--editing works well enough in lisp mode
 (add-to-list 'auto-mode-alist '("\\.fms$" . lisp-mode))
 
 ;; save buffers & invoke fomus
@@ -137,6 +137,7 @@ cd path_to_install_directory
   (local-set-key "\C-c\C-o" 'run-fomus))
 (add-hook 'slime-mode-hook 'custom-slime-mode-hook)]]>
       </example>
+      (I'm not sure why the lines are all run together.  FIXME)
     </para>
     <para>
       Another option would be to use <application>SLIME</application>'s <function>SLIME-INTERACTIVE-EVAL</function> function instead of
@@ -144,7 +145,7 @@ cd path_to_install_directory
       <example>
         <title>Emacs Init Lines 2</title>
 <![CDATA[
-;; save buffers & invoke fomus in the default Lisp
+;; save buffers and invoke fomus in the default Lisp
 (setq fomus-args "")
 (defun run-fomus ()
   (interactive)
