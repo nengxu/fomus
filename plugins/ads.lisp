@@ -38,24 +38,23 @@
 ;;
 ;; type = one of :accidentals :voices :staves/clefs :splitrules or :backend
 ;; keyname = keyword ID for this module
-;; use = packages to use (automatically includes common-lisp and fomus packages)
 ;; initfun = callback initialization function w/ no arguments (not really necessary in Lisp, but it's included anyways)
 ;; entryfun = function to replace fomus's default function (arguments differ depending on context)
-;; description = a string
+;; documentation = passed to defpackage and also printed out when list-fomus-plugins is called
 ;; preload = form that is executed before anything else (for loading dependencies)
 ;; filename-ext = string such as "xml" or "ly" added to output filename--only use w/ backends
-;; (all other arguments) = same as equivalent args in defpackage (only specified w/ keywords and not in lists)
+;; (all other arguments) = same as equivalent args in defpackage (deffomusplugin acts as an extension to defpackage)
 
 ;; DEFPLUGIN takes care of defining the package, also adds a FOMUS-PLUGINNAME module to the *MODULES* list (FOMUS uses this)
 ;; It also adds an (in-package ...)
 
 
 (deffomusplugin
-    :keyname :nokey2 :type :accidentals :entryfun acc-nokey2
-    :use (:iterate) ; automatically uses common-lisp and fomus packages
-    :export (#:make-int-var-from-to #:make-int-var-domain #:post #:ads #:example #:acc-nokey2)
-    :preload (asdf:operate 'asdf:load-op :iterate)
-    :description "(Experimental) Note-spelling algorithm by Kilian Sprotte using an adaptive search approach")
+    (:keyname :nokey2) (:type :accidentals) (:entryfun acc-nokey2)
+    (:use :iterate) ; automatically uses common-lisp and fomus packages
+    (:export #:make-int-var-from-to #:make-int-var-domain #:post #:ads #:example #:acc-nokey2)
+    (:preload (asdf:operate 'asdf:load-op :iterate))
+    (:documentation "(Experimental) Note-spelling algorithm by Kilian Sprotte using an adaptive search approach"))
   
 
 ;; (defpackage :ads
@@ -66,7 +65,7 @@
 ;; 	   #:acc-nokey2
 ;; 	   ))
 
-;; DEFPLUGIN takes care of (in-package ...)
+;; DEFFOMUSPLUGIN takes care of (in-package ...)
 ;; (in-package :ads)
 
 (setf *print-circle* t)	; for safety - not that I am really reading all this #1# stuff...

@@ -1,3 +1,6 @@
+	Straightened out deffomusplugin and made it look more like defpackage
+	Fixed bug with beaming in compound meters
+
 v0.2.9
 	Fixed a plugins bug (deffomusplugin macro)
 	Fixed bug where automatically generated timesigs copied unwanted properties (ie. specified barlines) from neighboring timesigs

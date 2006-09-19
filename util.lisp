@@ -985,25 +985,20 @@
   (let ((p (symbol-name key)))
     (if (string= "FOMUS-" p :end2 6) p (conc-strings "FOMUS-" p))))
 
-(defmacro deffomusplugin (&key type keyname use initfun entryfun description preload filename-ext
-			  shadowing-import-from package-name import-from intern size export)
-  (declare (ignore type))
-  `(progn
-    ,@(when preload (list `(eval-when (:load-toplevel :compile-toplevel :execute) ,preload)))
-    (defpackage
-      ,(plugin-package keyname)
-      ,@(when description (list (list :documentation description)))
-      (:use ,@(remove-duplicates (append '("FOMUS" "COMMON-LISP") (mapcar #'string-upcase use)) :test #'string=))
-      (:export ,(symbol-name initfun) ,(symbol-name entryfun) ,@export)
-      ,@(when shadowing-import-from (list (list :shadowing-import-from shadowing-import-from)))
-      ,@(when package-name (list (list :package-name package-name)))
-      ,@(when import-from (list (list :import-from import-from)))
-      ,@(when intern (list (list :intern intern)))
-      ,@(when size (list (list :size size))))
-    (eval-when (:load-toplevel)
-      (provide ,(plugin-package keyname)) 
-      (pushnew (cons ,keyname ,filename-ext) *backendexts* :test #'equal))
-    (eval-when (:load-toplevel :compile-toplevel :execute) (in-package ,(plugin-package keyname)))))
+(defmacro deffomusplugin (&rest args)
+  (destructuring-bind (&key type keyname initfun entryfun preload filename-ext &allow-other-keys)
+      (loop for e in args collect (first e) collect (rest e))
+    (declare (ignore type))
+    `(progn
+      ,@(when preload (list `(eval-when (:load-toplevel :compile-toplevel :execute) ,(first preload)))) ; forms for loading dependencies
+      (defpackage ,(plugin-package (first keyname))
+	(:use "FOMUS" "COMMON-LISP")
+	(:export ,(first initfun) ,(first entryfun))
+	,@(loop for e in args unless (find (first e) '(:type :keyname :initfun :entryfun :preload :filename-ext :import-from-fomus)) collect e))
+      (eval-when (:load-toplevel)
+	(provide ,(plugin-package (first keyname))) 
+	(pushnew (cons ,(first keyname) ,(first filename-ext)) *backendexts* :test #'equal))
+      (eval-when (:load-toplevel :compile-toplevel :execute) (in-package ,(plugin-package (first keyname)))))))
 
 (defstruct (plugin (:copier nil) (:predicate nil))
   (type nil :type symbol)
@@ -1023,21 +1018,24 @@
 
 ;; user fun
 (defun register-fomus-plugin (filename &key load)
-  (destructuring-bind (cmd &key type keyname initfun entryfun (description "(none)") filename-ext &allow-other-keys)
-      (with-open-file (f filename :direction :input) (read f))
-    (unless (string= (symbol-name cmd) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
-    (unless (member type +plugin-types+) (error "~S is not a valid plugin type" type)) ; make sure all the right values are stored so error doesn't happen later
-    (check-type keyname keyword)
+  (destructuring-bind (&key type keyname initfun entryfun (documentation '("(none)")) filename-ext &allow-other-keys)
+      (with-open-file (f filename :direction :input)
+	(let ((d (read f)))
+	  (unless (string= (symbol-name (first d)) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
+	  (loop for e in (rest d) collect (first e) collect (rest e))))
+    (unless (member (first type) +plugin-types+) (error "~S is not a valid plugin type" (first type))) ; make sure all the right values are stored so error doesn't happen later
+    (check-type (first keyname) keyword)
     (check-type filename (or pathname string))
-    (check-type initfun symbol)
-    (check-type entryfun symbol)
-    (check-type description string)
-    (when (and filename-ext (not (eq type :backend))) (error "Non-backend shouldn't declare a filename extension"))
-    (let ((pk (plugin-package keyname))
+    (check-type (first initfun) symbol)
+    (check-type (first entryfun) symbol)
+    (check-type (first documentation) string)
+    (when (and (first filename-ext) (not (eq (first type) :backend))) (error "Non-backend shouldn't declare a filename extension"))
+    (let ((pk (plugin-package (first keyname)))
 	  (cf (compile-file-pathname filename)))
-      (compile-plugin filename cf keyname)	; make sure it compiles
-      (setf (gethash keyname *plugins*) (make-plugin :type type :file filename :pack pk :initfun initfun :entryfun entryfun :desc description)))
-    (when load (load-fomus-plugin keyname)))
+      (compile-plugin filename cf (first keyname))	; make sure it compiles
+      (setf (gethash (first keyname) *plugins*) (make-plugin :type (first type) :file filename :pack pk
+							     :initfun (first initfun) :entryfun (first entryfun) :desc (first documentation))))
+    (when load (load-fomus-plugin (first keyname))))
   t)
 
 ;; user fun

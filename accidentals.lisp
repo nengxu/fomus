@@ -12,53 +12,57 @@
 ;; ACCIDENTALS
 
 (declaim (type symbol *auto-accs-mod*))
-(defparameter *auto-accs-mod* t)
+(defparameter *auto-accs-mod* t) ; setting
 (declaim (inline auto-accs-fun))
 (defun auto-accs-fun () (if (truep *auto-accs-mod*) :nokey1 *auto-accs-mod*))
 
 (declaim (type boolean *auto-accidentals* *auto-cautionary-accs*))
-(defparameter *auto-accidentals* t)
-(defparameter *auto-cautionary-accs* nil)
+(defparameter *auto-accidentals* t) ; setting
+(defparameter *auto-cautionary-accs* nil) ; setting
 
-;; numbers to determine importance of accidentals
+;; score values
 (declaim (type (real 1) *max-acc-beat-dist-mul*))
-(defparameter *max-acc-beat-dist-mul* 2) ; number of beats of rest before not caring about interval spelling
+(defparameter *max-acc-beat-dist-mul* 2) ; maximum number of beats of rests allowed before not caring about spelling
 (declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float *acc-dist-score*))
-(defparameter *acc-dist-score* (float 1/3))
-
+(defparameter *acc-dist-score* (float 1/3)) ; used w/ acc-beat-dist: determines how much distance influences spelling
 (declaim (type #-(or openmcl allegro) (float (0)) #+(or openmcl allegro) float *acc-beat-dist* *acc-octave-dist*))
-(defparameter *acc-beat-dist* (float 3/2)) ; number of beats where beat distance score = acc-dist-score
-(defparameter *acc-octave-dist* (float 2)) ; number of octaves where octave distance score = acc-dist-score (default is 1.0 octaves = 2 beats = 2/3 of total score)
+(defparameter *acc-beat-dist* (float 3/2)) ; used w/ acc-dist-score: at a distance of *acc-beat-dist* beats, a spelling decision has a "weight" of *acc-dist-score*
+(defparameter *acc-octave-dist* (float 2)) ; used w/ acc-dist-score: at a distance of *acc-octave-dist* octaves, a spelling decision has a "weight" of *acc-dist-score*
 
-;; don't need to check if beat distance is past max
+;; calculate some form of cartesian distance between two notes
+;; link = whether or not notes are "linked" (example: the two notes of an artificial harmonic which must have highest spelling priority)
 (declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float *acc-beat-dist-sc* *acc-octave-dist-sc*))
 (declaim (special *acc-beat-dist-sc* *acc-octave-dist-sc*))
-(defun nokey-notedist (tie note1 off1 eoff1 note2 off2 eoff2)
-  (declare (type boolean tie) (type rational note1 note2) (type (real 0) off1 eoff1 off2 eoff2))
-  (if tie 3.0
+(defun nokey-notedist (link note1 off1 eoff1 note2 off2 eoff2)
+  (declare (type boolean link) (type rational note1 note2) (type (real 0) off1 eoff1 off2 eoff2))
+  (if link 3.0
       (distance (expt *acc-beat-dist-sc* (max (- off2 eoff1) (- off1 eoff2) 0.0))
 		(expt *acc-octave-dist-sc* (* (diff note1 note2) (float 1/12))))))
 
 ;; allowed qualities for ea. diatonic interval
 (declaim (type (vector cons) +nokey-niceints1+ +nokey-niceints2+ +nokey-penalty+)
 	 (type (vector integer) +nokey-harmints+))
-(defparameter +nokey-niceints1+ (vector '(0) '(-1 1) '(-1 1) '(0 2) '(-2 0) '(-1 1) '(-1 1))) ; diatonic spelling
-(defparameter +nokey-niceints2+ (vector '(-2 2) '(-2 2) '(-2 2) '(-2) '(2) '(-2 2) '(-2 2))) ; augmented/diminished intervals
-(defparameter +nokey-penalty+ (vector '(1) '(-1 1) '(-1) '(1) '(-1 1) '(-1 1) '(-1)))
-(defparameter +nokey-harmints+ (vector 0 1 1 2 2 3 4 4 5 5 6 6))
+(defparameter +nokey-niceints1+ (vector '(0) '(-1 1) '(-1 1) '(0 2) '(-2 0) '(-1 1) '(-1 1))) ; best spellings from unison to 7th (0 = perfect, -1/1 = min/maj, -2/2 = dim/aug)
+(defparameter +nokey-niceints2+ (vector '(-2 2) '(-2 2) '(-2 2) '(-2) '(2) '(-2 2) '(-2 2))) ; 2nd best spellings
+(defparameter +nokey-penalty+ (vector '(1) '(-1 1) '(-1) '(1) '(-1 1) '(-1 1) '(-1))) ; for ea. white key, location of neighboring black keys (1/2 step lower or higher)
+(defparameter +nokey-harmints+ (vector 0 1 1 2 2 3 4 4 5 5 6 6)) ; when two notes are "linked", required interval given the chromatic distance
 
 (declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float
 	       *acc-diatonic-int-score* *acc-aug-dim-int-score* *acc-spelling-penalty* *acc-good-unison-score* *acc-bad-unison-score* *acc-similar-qtone-score*))
-(defparameter *acc-diatonic-int-score* (float 7/8))
-(defparameter *acc-aug-dim-int-score* (float 1/2))
-(defparameter *acc-spelling-penalty* (float 1/4))
-(defparameter *acc-good-unison-score* (float 1))
-(defparameter *acc-bad-unison-score* (float 3/8))
-(defparameter *acc-similar-qtone-score* (float 1/3))
+(defparameter *acc-diatonic-int-score* (float 7/8)) ; score for forming a diatonic interval
+(defparameter *acc-aug-dim-int-score* (float 1/2)) ; score for almost forming a diatonic interval
+(defparameter *acc-spelling-penalty* (float 1/4)) ; penalty for using double sharps or flats
+(defparameter *acc-good-unison-score* (float 1)) ; score for spelling upwards motion w/ sharps (and downwards w/ flats)
+(defparameter *acc-bad-unison-score* (float 3/8)) ; penalty for not doing the above
+(defparameter *acc-similar-qtone-score* (float 1/3)) ; score for using similar quartertones in close proximity to each other
 
+;; calculate spelling penalty for using double sharps or double flats (for no quartertones & quartertones)
+;; it's a separate function so it may be passed as an argument
+;; n = note, a = accidental
+;; returns: score
 (defun nokey-notepen (n a)
   (declare (type rational n) (type (or (integer -2 2) (integer -2 2)) a))
-  (* (mloop
+  (* (mloop ; mloop used for compatibility w/ CLISP
       for e of-type (integer -1 1) in (cons 0 (svref +nokey-penalty+ (notespelling n a)))
       minimize (diff a e)) *acc-spelling-penalty*))
 (defun nokeyq-notepen (n a)
@@ -67,10 +71,12 @@
       for e of-type (integer -1 1) in (cons 0 (svref +nokey-penalty+ (qnotespelling n a)))
       minimize (diff (car a) e)) *acc-spelling-penalty*))
 
-;; scores of 1 are perfect
-;; tie is if accidentals must be in same direction
-(defun nokey-intscore (tie note1 acc1 off1 eoff1 note2 acc2 off2 eoff2 &optional qt) ; returns 0 to 1 (or nil)
-  (declare (type boolean tie qt) (type (integer -2 2) acc1 acc2) (type rational note1 note2) (type (rational 0) off1 eoff1 off2 eoff2))
+;; calculate score given two notes
+;; link = whether or not notes are "linked" (example: the two notes of an artificial harmonic which must have highest spelling priority)
+;; qt = is function being called from nokeyq-intscore?
+;; returns value from 0.0 to 1.0
+(defun nokey-intscore (link note1 acc1 off1 eoff1 note2 acc2 off2 eoff2 &optional qt)
+  (declare (type boolean link qt) (type (integer -2 2) acc1 acc2) (type rational note1 note2) (type (rational 0) off1 eoff1 off2 eoff2))
   (multiple-value-bind (n1 a1 o1 eo1 n2 a2 o2 eo2)
       (if (= off1 off2)
 	  (if (<= (- note1 acc1) (- note2 acc2))
@@ -81,7 +87,7 @@
 	      (values note2 acc2 off2 eoff2 note1 acc1 off1 eoff1)))
     (declare (ignorable o1 eo1 o2 eo2))
     (multiple-value-bind (i q) (interval n1 a1 n2 a2)
-      (let ((v (- (cond ((and tie (/= i (svref +nokey-harmints+ (mod (diff n1 n2) 12))) #|(or (and (< acc1 0) (> acc2 0)) (and (> acc1 0) (< acc2 0)))|#) 0.0)
+      (let ((v (- (cond ((and link (/= i (svref +nokey-harmints+ (mod (diff n1 n2) 12)))) 0.0)
 			((find q (svref +nokey-niceints1+ i)) *acc-diatonic-int-score*)
 			((and (= i 0)	; unisons special case
 			      (or 
@@ -93,35 +99,37 @@
 		  (nokey-notepen n1 a1)
 		  (nokey-notepen n2 a2))))
 	(if qt v (max v 0.0))))))
-(defun nokeyq-intscore (tie note1 acc1 off1 eoff1 note2 acc2 off2 eoff2)
-  (declare (type boolean tie) (type (cons (integer -2 2) (rational -1/2 1/2)) acc1 acc2) (type rational note1 note2) (type (rational 0) off1 eoff1 off2 eoff2))
+(defun nokeyq-intscore (link note1 acc1 off1 eoff1 note2 acc2 off2 eoff2)
+  (declare (type boolean link) (type (cons (integer -2 2) (rational -1/2 1/2)) acc1 acc2) (type rational note1 note2) (type (rational 0) off1 eoff1 off2 eoff2))
   (let ((aa1 (car acc1)) (aa2 (car acc2))
 	(qa1 (cdr acc1)) (qa2 (cdr acc2)))
-    (let ((s (nokey-intscore tie (- note1 qa1) aa1 off1 eoff1 (- note2 qa2) aa2 off2 eoff2 t)))
+    (let ((s (nokey-intscore link (- note1 qa1) aa1 off1 eoff1 (- note2 qa2) aa2 off2 eoff2 t)))
       (if (and (= qa1 0) (= qa2 0)) (max s 0.0)
 	  (let ((a1 (if (= qa1 0) aa1 qa1))
 		(a2 (if (= qa2 0) aa2 qa2)))
 	    (min (max (if (or (and (> a1 0) (< a2 0)) (and (< a1 0) (> a2 0)))
-			  (if tie 0.0
+			  (if link 0.0
 			      (let ((m (if (and (/= qa1 0) (/= qa2 0)) *acc-similar-qtone-score* (* *acc-similar-qtone-score* 0.5))))
 				(if (= (qnotespelling note1 acc1) (qnotespelling note2 acc2)) (+ s m) (- s m)))) ; penalize different accs on different written notes
 			  s)
 		      0.0) 1.0))))))
 
+;; default heap size
 (declaim (type (integer 1) *acc-engine-heap*))
 (defparameter *acc-engine-heap* 30)
 
-;; depth-first search branching down only top score group (same scores)
-;; DESTRUCTIVE
+;; structure encapsulating node in search
 (defstruct (nokeynode (:copier nil) (:predicate nokeynodep))
-  (sc 0.0 :type #-(or allegro lispworks) (float 0) #+(or allegro lispworks) float)
-  (ret nil :type list)
-  (re 0 :type (integer 0))
-  (evs nil :type list)
-  (evc nil :type list)
-  (evd nil :type list)
-  (o 0 :type (rational 0))
-  (co 0 :type (integer 0))) ; sc = score-so-far (evt - evd), ret = return events, re = num. remaining, events from, evc = events to consider when redoing, evd = events to redo
+  (sc 0.0 :type #-(or allegro lispworks) (float 0) #+(or allegro lispworks) float) ; score so far
+  (ret nil :type list) ; list of return events (solution so far)
+  (re 0 :type (integer 0)) ; number of remaining decisions
+  (evs nil :type list) ; remaining events
+  (evc nil :type list) ; events effecting current decision
+  (evd nil :type list) ; events to redo (that will need redoing)
+  (o 0 :type (rational 0)) ; offset counter
+  (co 0 :type (integer 0))) ; counter
+
+;; "main" accidentals-spelling function
 (defun acc-nokey (events choices spellfun penfun intscorefun name conv) ; events in one part
   (declare (type list events choices)
 	   (type (function (rational (or (integer -2 2) (cons (integer -2 2) (rational -1/2 1/2)))) (values (or (integer 0 6) null) (or integer null))) spellfun)
@@ -133,15 +141,15 @@
 	(mxd (* *acc-beat-dist* *max-acc-beat-dist-mul*))
 	(cho (mapcar conv choices)))
     (declare (type (integer 0) co))
-    (flet ((scorefun (no)		; optimistic score
+    (flet ((scorefun (no)
 	     (declare (type nokeynode no))
 	     (cons (+ (nokeynode-sc no)
 		      (loop for e of-type (cons #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float *) in (nokeynode-evd no) sum (car e))
-		      (nokeynode-re no)) ; unexplored accidentals all scores of 1
+		      (nokeynode-re no)) ; remaining accidentals all get scores of 1.0
 		   (nokeynode-co no)))
 	   (expandfun (no)
 	     (declare (type nokeynode no))
-	     (when (> (nokeynode-co no) co) ;; progress
+	     (when (> (nokeynode-co no) co) ; show progress
 	       (setf co (nokeynode-co no))
 	       (print-dot))
 	     (loop
@@ -161,9 +169,9 @@
 	      collect (let ((w (copy-event f :note (cons (event-note* f) e)))
 			    (s (nokeynode-sc no)))
 			(let ((d (cons w 
-				       (or (loop ; keep only relevant notes that will need rescoring (endoff > - ? beats)
+				       (or (loop ; keep only relevant notes that will need rescoring
 					    for e of-type (cons #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float note) in (nokeynode-evd no) ; e is (score . event)
-					    if (> (event-endoff (cdr e)) oo) ; endoff will = offset for grace notes!
+					    if (> (event-endoff (cdr e)) oo)
 					    collect (cdr e)	; collect just the events
 					    else do (incf s (car e)))
 					   (let ((mx (mloop
@@ -188,7 +196,7 @@
 						 (ne (event-note* e))
 						 (su (- 1.0 (funcall penfun ne eua))) (di 1.0))
 					    (declare (type #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float su di))
-					    (loop ; plus optimistic 1 scores for rest in range
+					    (loop ; plus scores of 1.0 for rest in range
 					     for e0 of-type noteex in lf
 					     while (<= (event-off e0) (event-off e))
 					     do (incf su) (incf di))
@@ -227,15 +235,17 @@
 			  :heaplim *acc-engine-heap*
 			  :scoregreaterfun #'scoregreaterfun
 			  :remscoregreaterfun #'remscoregreaterfun))
-	   (error "Cannot find valid note spellings for part ~S" name)))))) ; return events sorted
+	   (error "Cannot find valid note spellings for part ~S" name))))))
 
 (declaim (type boolean *use-double-accs*))
-(defparameter *use-double-accs* nil)
+(defparameter *use-double-accs* nil) ; setting
 
 (declaim (inline load-acc-plugins))
 (defun load-acc-plugins ()
   (unless (eq (auto-accs-fun) :nokey1) (load-fomus-plugin (auto-accs-fun))))
-  
+
+;; ---------- ADDING COMMENTS ----------
+
 ;; Processed before chords exist and before voices are separated
 ;; events in parts are sorted--function must return them sorted
 (defun accidentals (parts)
