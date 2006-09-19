@@ -40,12 +40,6 @@
 	  (and *long-eighth-beams* 
 	       (>= (count-if (lambda (x) (declare (type (or noteex restex) x)) (and (notep x) (null (event-tupfrac x)) (= (event-writtendur* x timesig) 1/8))) events)
 		   *long-eighth-beam-count*)))))
-;; (defun beams-grouplarge (events timesig)
-;;   (declare (type list events) (type timesig-repl timesig))
-;;   (or (eq *long-eighth-beams* :always)
-;;       (and *long-eighth-beams* 
-;; 	   (>= (count-if (lambda (x) (declare (type (or noteex restex) x)) (and (notep x) (null (event-tupfrac x)) (= (event-writtendur* x timesig) 1/8))) events)
-;; 	       *long-eighth-beam-count*))))
 
 ;; top level generic rules for dividing/beaming measures
 ;; input written duration
@@ -63,12 +57,12 @@
 	(cond
 	  ((and (<= writdur 6/8) (beams-grouplarge events timesig) (>= beamdur (/ (timesig-den timesig)))) (list writdur)) ; 6/8
 	  ((<= writdur 3/8) (list writdur))
-	  ((<= writdur 6/8) (list 3/8 (- writdur 3/8)))
+	  ((and (<= writdur 6/8) (>= (timesig-den timesig) 8)) (list 3/8 (- writdur 3/8))) ; 9/19/06 added (>= (timesig-den timesig) 8)
 	  (t (multiple-value-bind (e1 e2 off2) (fi 6/8)
 	       (nconc (beams-rules e1 off 6/8 beamdur timesig)
 		      (when (> writdur 6/8) (beams-rules e2 off2 (- writdur 6/8) beamdur timesig))))))
 	(cond
-	  ((and (<= writdur #|4/8 5/9/06|# 6/8) (beams-grouplarge events timesig)) (list writdur)) ; 4/8
+	  ((and (<= writdur 6/8) (beams-grouplarge events timesig)) (list writdur)) ; 4/8
 	  ((<= writdur 2/8) (list writdur))
 	  ((<= writdur 4/8) (list 2/8 (- writdur 2/8)))
 	  ((<= writdur 5/8) (list 3/8 (- writdur 3/8)))
@@ -76,10 +70,12 @@
 	       (nconc (beams-rules e1 off 4/8 beamdur timesig)
 		      (when (> writdur 4/8) (beams-rules e2 off2 (- writdur 4/8) beamdur timesig)))))))))
 
+; (debugn-if (= (meas-off m) 6) "~S"
+
 ;; must be before postproc adds tuplet marks???
-(defun beams-standbydiv (meas)
+(defun beams-standbydiv (meas)		; list of measures
   (declare (type list meas))
-  (loop for m of-type meas in meas ;;and debmn from 1
+  (loop for m of-type meas in meas
 	do (multiple-value-bind (grs evs) (split-list (meas-events m) #'event-grace)
 	     (let ((ts (meas-timesig m)))
 	       (labels ((spt (evs wd wl &optional dmu (tf 0)) ; return events unsorted in their groups
@@ -128,8 +124,7 @@
 			       (return (if re (cons re rr) rr))))))) 
 		 (flet ((bm (evs dv wl)	; dv = number of beams, ad = written beam duration
 			  (declare (type cons evs) (type (integer 1) dv) (type cons wl))
-			  (let ((ad (if (= dv 1) 3/4 
-					(expt 1/2 dv)))) ; ad is written division duration
+			  (let ((ad (if (= dv 1) 3/4 (expt 1/2 dv)))) ; ad is written division duration
 			    (let ((spf (nreverse (mapcar #'nreverse (spt evs ad wl))))
 				  (spb (nreverse (mapcar #'nreverse (spt (reverse evs) ad (nreverse wl))))))
 			      #+debug (check-order spf "BEAMS-STANDBYDIV (1)" (lambda (x y) (<= (event-off (first x)) (event-off (first y)))))
@@ -154,14 +149,14 @@
 				  do (loop
 				      for (e0 e1) of-type ((or noteex restex) (or noteex restex null)) on ee #-clisp while #-clisp e1
 				      for nb = #-clisp (event-nbeams e1 ts) #+clisp (if e1 (event-nbeams e1 ts) (loop-finish))
-				      when (and (notep e0) (notep e1) (> (event-beamrt e0) 0) ; (event-nbeams e0 ts)
-						(and (< (event-beamlt e1) nb) (< (event-beamrt e1) nb)))
+				      when (and (notep e0) (notep e1) (> (event-beamrt e0) 0)
+						(and (< (event-beamlt e1) nb) (or (< (event-beamrt e1) nb) (= (event-beamrt e0) nb))))
 				      do (push (cons (event-nbeams e1 ts) e1) ll)))
 			    (loop for ee of-type cons in spb
 				  do (loop for (e0 e1) of-type ((or noteex restex) (or noteex restex null)) on ee #-clisp while #-clisp e1
 					   for nb = #-clisp (event-nbeams e1 ts) #+clisp (if e1 (event-nbeams e1 ts) (loop-finish))
-					   when (and (notep e0) (notep e1) (> (event-beamlt e0) 0) ; (event-nbeams e0 ts)
-						     (and (< (event-beamlt e1) nb) (< (event-beamrt e1) nb)))
+					   when (and (notep e0) (notep e1) (> (event-beamlt e0) 0)
+						     (and (or (< (event-beamlt e1) nb) (= (event-beamlt e0) nb)) (< (event-beamrt e1) nb)))
 					   do (push (cons (event-nbeams e1 ts) e1) lr)))
 			    (loop for (nb . e) of-type ((integer 0) . noteex) in ll do (setf (event-beamlt e) nb))
 			    (loop for (nb . e) of-type ((integer 0) . noteex) in lr do (setf (event-beamrt e) nb)))))

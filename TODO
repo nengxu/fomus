@@ -3,6 +3,7 @@ TODO LIST
 Immediate:
 
     Bugs:
+      Weird beams in compound meters (caused by some grouping into 4?)
       Finish chunks support
       Finish key signatures support
       Double brackets shouldn't appear in the same place (6 violins example)
