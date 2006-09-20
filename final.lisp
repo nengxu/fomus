@@ -30,6 +30,16 @@
        finally
        (return t)))))
 
+(defparameter +fomus-dir+ #+asdf (asdf:component-pathname (asdf:find-system :fomus)) #-asdf *load-pathname*)
+(defun register-plugins ()
+  (map nil
+       (lambda (file)
+	 (or (ignore-errors (register-fomus-plugin file))
+	     (format t "WARNING: Can't register plugin file ~S~%" (namestring file))))
+       (nconc (directory (merge-pathnames "plugins/*.lisp" +fomus-dir+))
+	      (directory (merge-pathnames "plugins/backends/*.lisp" +fomus-dir+))))
+  (format t "~&"))
+
 (eval-when (:load-toplevel :execute)
   (export (mapcar (lambda (x) (find-symbol (conc-strings "*" (symbol-name (first x)) "*") :fomus)) +settings+) :fomus))
 
@@ -50,12 +60,15 @@
   (find-cm) (find-cmn))
 
 (eval-when (:load-toplevel :execute)
-  (unless (find-symbol "INSTALL" :common-lisp-user) (load-initfile)))
+  (unless (find-symbol "+FOMUS-INSTALL+" :common-lisp-user)
+    (load-initfile)
+    (register-plugins)))
 
 (defun fomus-exe (initfile opts basename quality verbosity &rest filename)
   (let ((*package* (find-package "FOMUS")))
     (catcherr
       (load-initfile initfile nil)
+      (register-plugins)
       (let* ((v (when (find #\w opts) t))
 	     (o (nconc (when (string/= quality "") (list :quality (ignore-errors (read-from-string quality))))
 		       (when (string/= basename "") (list :filename basename))
@@ -73,14 +86,3 @@
   (finish-output)
   #+cmu (ext:quit) #+sbcl (sb-ext:quit) #+openmcl (ccl:quit) #+clisp (ext:quit))
 
-;; plugins
-(eval-when (:load-toplevel)
-  (let ((fomus-dir #+asdf (asdf:component-pathname (asdf:find-system :fomus)) #-asdf *load-pathname*))
-    (map nil
-	 (lambda (file)
-	   (or (ignore-errors (register-fomus-plugin file))
-	       (format t "WARNING: Can't register plugin file ~S~%" (namestring file))))
-	 (nconc (directory (merge-pathnames "plugins/*.lisp" fomus-dir))
-		(directory (merge-pathnames "plugins/backends/*.lisp" fomus-dir))))
-    (format t "~&")))
-	      

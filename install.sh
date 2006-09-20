@@ -163,7 +163,7 @@ then
     fi
 fi
 
-INSTFLAG='(intern "INSTALL" :common-lisp-user)'
+INSTFLAG='(intern "+FOMUS-INSTALL+" :common-lisp-user)'
 if [[ "$LISP" = 'clisp' ]]; then
     $LISPEXE $EXTRAARG $EVALARG "(progn $INSTFLAG (load \"load.lisp\") $EXITCMD)"
     $LISPEXE $EXTRAARG $EVALARG "(progn $INCCM $INCCMN $INSTFLAG (load \"load.lisp\") $DUMPCMD $EXITCMD)"
