@@ -46,6 +46,7 @@
 	:ABBREV <userinput>abbrev</userinput>
 	:INSTR <userinput>instr</userinput>
 	:EVENTS <userinput>events</userinput>
+	:PROPS <userinput>props</userinput>
 	:OPTS <userinput>opts</userinput>)</function>
     </para>
     <para>Copy Function: 
@@ -56,6 +57,7 @@
 	:ABBREV <userinput>abbrev</userinput>
 	:INSTR <userinput>instr</userinput>
 	:EVENTS <userinput>events</userinput>
+	:PROPS <userinput>props</userinput>
 	:OPTS <userinput>opts</userinput>)</function>
     </para>
     <para>Predicate Function: <function>(PARTP <userinput>obj</userinput>)</function></para>
@@ -146,11 +148,21 @@
 	  </listitem>
 	</varlistentry> 
         <varlistentry>
+          <term><function><anchor id="part.props"/>PART-PROPS</function></term>
+	  <listitem>
+	    <para>
+	      Part properties are specified in the same way <structfield><link linkend="note.marks">MARKS</link></structfield> are specified.
+	      They are settings that affect only the part they are included in.
+	      See <link linkend="marks.partprops" endterm="marks.partprops.title"/> for a list of these.
+	    </para>
+	  </listitem>
+	</varlistentry> 
+        <varlistentry>
           <term><function><anchor id="part.opts"/>PART-OPTS</function></term>
 	  <listitem>
 	    <para>
 	      This is a keyword/argument pair list specifying options to be passed directly to the backend algorithms.
-	      Each backend has its own set of options, which may coexist in this list with any other backend options.
+	      Each backend has its own set of options that may be specified alongside options for any other backend.
 	      See the <link linkend="backends" endterm="backends.title"/> for more information.
 	    </para>
 	  </listitem>
@@ -1125,6 +1137,7 @@
         :VOICE <userinput>voice</userinput>
 	:NOTE <userinput>note</userinput>
 	:AUTODUR <userinput>autodur</userinput>
+	:MARKS <userinput>marks</userinput>
 	:MIDINOTE-IM <userinput>midinote-im</userinput>
 	:MIDINOTE-EX <userinput>midinote-ex</userinput>)</function>
     </para>
@@ -1135,6 +1148,7 @@
         :VOICE <userinput>voice</userinput>
 	:NOTE <userinput>note</userinput>
 	:AUTODUR <userinput>autodur</userinput>
+	:MARKS <userinput>marks</userinput>
 	:MIDINOTE-IM <userinput>midinote-im</userinput>
 	:MIDINOTE-EX <userinput>midinote-ex</userinput>)</function>
     </para>
@@ -1190,6 +1204,16 @@
 	      and can therefore be notated with durations that are simpler to read.
 	      Notes containing certain marks such as trills and tremolos are left unchanged.
 	      This slot is <literal>T</literal> by default.
+	    </para>
+	  </listitem>
+	</varlistentry>
+        <varlistentry>
+          <term><function><anchor id="perc.marks"/>PERC-MARKS</function></term>
+	  <listitem>
+	    <para>
+	      Contains a list of <structfield><link linkend="note.marks">MARKS</link></structfield> to be added to
+	      <classname><link linkend="class.note">NOTE</link></classname> objects that specify this percussion instrument.
+	      An example value to put here might be <literal>((:text "R.S." :up))</literal> for a "rim shot" percussion instrument.
 	    </para>
 	  </listitem>
 	</varlistentry>

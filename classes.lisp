@@ -141,8 +141,10 @@
 (defmethod out-format :around ((ob t)) (remove-newlines (call-next-method)))
 
 (defmethod out-format ((ob perc))
-  (format nil "PERC ~S :staff ~S :voice ~S :note ~S :autodur ~S :midinote-im ~S :midinote-ex ~S"
-	  (perc-sym ob) (perc-staff ob) (perc-voice ob) (perc-note ob) (perc-autodur ob) (perc-midinote-im ob) (perc-midinote-ex ob)))
+  (format nil "PERC ~S :staff ~S :voice ~S :note ~S :autodur ~S~A :midinote-im ~S :midinote-ex ~S"
+	  (perc-sym ob) (perc-staff ob) (perc-voice ob) (perc-note ob) (perc-autodur ob)
+	  (if (perc-marks ob) (format nil " :marks ~S" (perc-marks ob)) "")
+	  (perc-midinote-im ob) (perc-midinote-ex ob)))
 (defmethod out-format ((ob instr))
   (format nil "INSTR ~S :clefs ~S :staves ~S :minp ~S :maxp ~S :simultlim ~S :tpose ~S :cleflegls ~S :8uplegls ~S :8dnlegls ~S :percs ~A :midiprgch-im ~S :midiprgch-ex ~S"
 	  (instr-sym ob) (instr-clefs ob) (instr-staves ob) (instr-minp ob) (instr-maxp ob) (instr-simultlim ob) (instr-tpose ob)

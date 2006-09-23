@@ -335,8 +335,8 @@
       <literal>:SINGLE</literal>|<literal>:DOUBLE</literal>|<literal>:FINAL</literal>|<literal>:REPEATLEFT</literal>|<literal>:REPEATRIGHT</literal>|<literal>:REPEATLEFTRIGHT</literal>|<literal>:INVISIBLE</literal>)</function></member>
     </simplelist>
   </section>
-  <section>
-    <title>PART Properties</title>
+  <section id="marks.partprops">
+    <title id="marks.partprops.title">PART Properties</title>
     <para>
       These are "marks" that are specified in <classname><link linkend="class.part">PART</link></classname> objects
       (and are called properties rather than marks). They either change how the part appears in the score or affect

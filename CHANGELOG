@@ -1,3 +1,6 @@
+	Fixed LilyPond backend bug involving alternate noteheads and grace notes
+	Added MARKS slot to percussion instrument definition
+	Added some more LilyPond settings
 	Straightened out deffomusplugin and made it look more like defpackage
 	Fixed bug with beaming in compound meters
 

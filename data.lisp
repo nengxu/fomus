@@ -142,12 +142,13 @@
   (voice 1 :type (integer 1))
   (note nil :type (or symbol integer))
   (autodur t :type boolean)
+  (marks nil :type list)
   (midinote-im nil :type (or null (integer 0 127) cons))
   (midinote-ex nil :type (or null (integer 0 127))))
 (declaim (type cons +perc-keys+))
-(defparameter +perc-keys+ '(:sym :staff :voice :note :autodur :midinote-im :midinote-ex))
+(defparameter +perc-keys+ '(:sym :staff :voice :note :autodur :marks :midinote-im :midinote-ex))
 (defprint-struct perc
-    (perc-sym :sym) (perc-staff :staff) (perc-voice :voice) (perc-note :note) (perc-autodur :autodur)
+    (perc-sym :sym) (perc-staff :staff) (perc-voice :voice) (perc-note :note) (perc-autodur :autodur) (perc-marks :marks)
     (perc-midinote-im :midinote-im) (perc-midinote-ex :midinote-ex))
 
 (declaim (inline make-perc))
@@ -155,10 +156,10 @@
 
 (declaim (inline copy-perc))
 (defun copy-perc (perc &key (sym (perc-sym perc)) (staff (perc-staff perc)) (note (perc-note perc)) (voice (perc-voice perc))
-		  (autodur (perc-autodur perc)) (midinote-im (perc-midinote-im perc)) (midinote-ex (perc-midinote-ex perc)))
+		  (autodur (perc-autodur perc)) (marks (perc-marks perc)) (midinote-im (perc-midinote-im perc)) (midinote-ex (perc-midinote-ex perc)))
   (declare (type perc perc) (type (or symbol real) sym) (type (integer 1) staff) (type (integer 1) voice) (type (or symbol integer) note)
-	   (type boolean autodur) (type (or null (integer 0 127) cons) midinote-im) (type (or null (integer 0 127)) midinote-ex))
-  (make-perc-aux :sym sym :staff staff :note note :voice voice :autodur autodur :midinote-im midinote-im :midinote-ex midinote-ex))
+	   (type boolean autodur) (type list marks) (type (or null (integer 0 127) cons) midinote-im) (type (or null (integer 0 127)) midinote-ex))
+  (make-perc-aux :sym sym :staff staff :note note :voice voice :autodur autodur :marks marks :midinote-im midinote-im :midinote-ex midinote-ex))
 
 (declaim (type cons +perc-type+))
 (defparameter +perc-type+
@@ -169,6 +170,7 @@
      (perc-voice (check* (integer 1) "Found ~S, expected (INTEGER 1) in VOICE slot" t))
      (perc-note (check* (or* null (type* +notesym-type+) integer) "Found ~S, expected NIL, INTEGER or valid note/accidental symbol in NOTE slot" t))
      (perc-autodur (check* boolean "Found ~S, expected BOOLEAN in PERC-AUTODUR slot" t))
+     (perc-marks (check* (or* null (with-error* ("~~A in MARKS slot") (type* +markmarks-type+)))))
      (perc-midinote-im (check* (or null (integer 0 127) cons) "Found ~S, expected NIL, (INTEGER 0 127) or list of (INTEGER 0 127) in MIDINOTE-IM slot" t))
      (perc-midinote-ex (check* (or null (integer 0 127) cons) "Found ~S, expected NIL, (INTEGER 0 127) in MIDINOTE-EX slot" t)))))
 
@@ -624,6 +626,14 @@
     #-fomus-nolilypond (:lilypond-view-exe string)
     #-fomus-nolilypond (:lilypond-view-opts (or* null (list-of* string)) "NIL or list of STRINGS")
 
+    #-fomus-nolilypond (:lilypond-filehead (or* null string (list-of* string)) "NIL, STRING or list of STRING") 
+    #-fomus-nolilypond (:lilypond-scorehead (or* null string (list-of* string)) "NIL, STRING or list of STRING")
+    #-fomus-nolilypond (:lilypond-text-markup string)
+    #-fomus-nolilypond (:lilypond-textdyn-markup string)
+    #-fomus-nolilypond (:lilypond-texttempo-markup string)
+    #-fomus-nolilypond (:lilypond-textnote-markup string)
+    #-fomus-nolilypond (:lilypond-textacc-markup string)
+    
     #-fomus-nocmn (:cmn-view-exe string)
     #-fomus-nocmn (:cmn-view-opts (or* null (list-of* string)) "NIL or list of STRINGS")    
     ))

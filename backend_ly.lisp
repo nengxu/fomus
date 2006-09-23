@@ -182,17 +182,17 @@
 (defparameter +lilypond-trmarks+
   '((:trill . "\\trill") (:startlongtrill- . "\\startTrillSpan") (:prall . "\\prall") (:mordent . "\\mordent")))
 
-(defparameter +lilypond-text+ "\\markup{\\italic{~A}}")
-(defparameter +lilypond-textdyn+ "\\markup{\\dynamic{\\italic{\\bold{~A}}}}")
-(defparameter +lilypond-texttempo+ "\\markup{\\bold{\\huge{~A}}}")
-(defparameter +lilypond-textnote+ "\\markup{\\italic{~A}}")
-(defparameter +lilypond-textacc+ "\\markup{\\tiny{~A}}") ;; not user defined yet
+(defparameter *lilypond-text-markup* "\\markup{\\italic{~A}}")
+(defparameter *lilypond-textdyn-markup* "\\markup{\\dynamic{\\italic{\\bold{~A}}}}")
+(defparameter *lilypond-texttempo-markup* "\\markup{\\bold{\\huge{~A}}}")
+(defparameter *lilypond-textnote-markup* "\\markup{\\italic{~A}}")
+(defparameter *lilypond-textacc-markup* "\\markup{\\tiny{~A}}") ;; not user defined yet
 
 (defparameter +lilypond-dyns+
-  `((:pppppp . ,(list (format nil +lilypond-textdyn+ "pppppp"))) (:ppppp . ,(list (format nil +lilypond-textdyn+ "ppppp")))
+  `((:pppppp . ,(list (format nil *lilypond-textdyn-markup* "pppppp"))) (:ppppp . ,(list (format nil *lilypond-textdyn-markup* "ppppp")))
     (:pppp . "\\pppp") (:ppp . "\\ppp") (:pp . "\\pp") (:p . "\\p") (:mp . "\\mp")
     (:mf . "\\mf") (:f . "\\f") (:ff . "\\ff") (:fff . "\\fff") (:ffff . "\\ffff")
-    (:fffff . ,(list (format nil +lilypond-textdyn+ "fffff"))) (:ffffff . ,(list (format nil +lilypond-textdyn+ "ffffff")))
+    (:fffff . ,(list (format nil *lilypond-textdyn-markup* "fffff"))) (:ffffff . ,(list (format nil *lilypond-textdyn-markup* "ffffff")))
     (:fp . "\\fp") (:sf . "\\sf") (:sff . "\\sff") (:sp . "\\sp") (:spp . "\\spp") (:sfz . "\\sfz") (:rfz . "\\rfz")))
 
 (defparameter +lilypond-noteheads+
@@ -220,14 +220,18 @@
     (:b-maj . "bes \\major") (:gmin . "g \\minor")
     (:fmaj . "f \\major") (:dmin . "d \\minor")))
 
+(defparameter *lilypond-filehead* nil)
+(defparameter *lilypond-scorehead* nil)
+
 (defun save-lilypond (parts header filename options process view)
   (when (>= *verbose* 1) (out ";; Saving LilyPond file ~S...~%" filename))
   (with-open-file (f filename :direction :output :if-exists :supersede)
-    (destructuring-bind (&key filehead scorehead text-markup textdyn-markup texttempo-markup textnote-markup version &allow-other-keys) options
+    (destructuring-bind (&key filehead scorehead text-markup textdyn-markup texttempo-markup textnote-markup textacc-markup version &allow-other-keys) options
       (let ((ve (lilypond-version options version)))
 	(format f "~A" header)
 	(format f +lilypond-vers+ (floor ve 100) (mod ve 100))
-	(when filehead (loop for e in (force-list filehead) do (format f "~A~%" e) finally (format f "~%"))) ;; user header
+	(let ((fh (or filehead *lilypond-filehead*)))
+	  (when fh (loop for e in (force-list fh) do (format f "~A~%" e) finally (format f "~%")))) ;; user header
 	(loop for e in (append +lilypond-defs+
 			       (cond
 				 ((>= ve 207) +lilypond-defs-28+)
@@ -336,6 +340,10 @@
 					    (conc-stringlist
 					     (loop for u in uu for r = (third u)
 						   collect (format nil "\\times ~A/~A {" (cdr r) (car r)))))
+					  (let ((z (getmark e :notehead)))
+					    (if z (let ((y (lookup (second z) +lilypond-noteheads+)))
+						    (if y (format nil "\\noteHead #'~A " y) ""))
+						""))
 					  (let ((g (event-grace e)))
 					    (if g
 						(let ((g1 (getmark e :startgrace))
@@ -355,10 +363,6 @@
 						    +lilypond-trmarks+)
 					      (if (eq cdi :d) "\\markAccIn " "\\markOrnIn ")
 					      "")
-					  (let ((z (getmark e :notehead)))
-					    (if z (let ((y (lookup (second z) +lilypond-noteheads+)))
-						    (if y (format nil "\\noteHead #'~A " y) ""))
-						""))
 					  (let ((l (and (notep e) (notep pre) (> (event-beamlt e) 0) (/= (min (event-nbeams e ts) (event-nbeams pre ts)) (event-beamlt e))))
 						(r (and (notep e) (notep nxe) (> (event-beamrt e) 0) (/= (min (event-nbeams e ts) (event-nbeams nxe ts)) (event-beamrt e)))))
 					    (cond ((and l r) (format nil "\\beamLR #~A #~A " (event-beamlt e) (event-beamrt e)))
@@ -455,7 +459,7 @@
 						  :key #'cdr :test #'equal)
 						 when (eq cdi :u) collect "^" and collect (car i)
 						 when (cdr i) collect (ecase cdi (:u "^") (:d "_")) and
-						 collect (format nil +lilypond-textacc+
+						 collect (format nil (or textacc-markup *lilypond-textacc-markup*)
 								 (ecase (cdr i)
 								   (-2 "\\doubleflat")
 								   (-3/2 "\\sesquiflat")
@@ -479,10 +483,10 @@
 						(t "")) 
 					  (conc-stringlist
 					   (loop for x in '(:text :textdyn :texttempo :textnote)
-						 and m in (list (or text-markup +lilypond-text+)
-								(or textdyn-markup +lilypond-textdyn+)
-								(or texttempo-markup +lilypond-texttempo+)
-								(or textnote-markup +lilypond-textnote+))
+						 and m in (list (or text-markup *lilypond-text-markup*)
+								(or textdyn-markup *lilypond-textdyn-markup*)
+								(or texttempo-markup *lilypond-texttempo-markup*)
+								(or textnote-markup *lilypond-textnote-markup*))
 						 nconc (loop for (xxx di str) in (getmarks e x)
 							     collect (conc-strings
 								      (ecase di (:up "^") (:down "_"))
@@ -531,7 +535,7 @@
 	      (when *composer* (format f "  composer = ~S~%" *composer*))
 	      (format f "}~%~%"))
 	    (format f "\\score {~%") ;; score block
-	    (loop for e in (force-list scorehead) do (format f "  ~A~%" e))
+	    (loop for e in (force-list (or scorehead *lilypond-scorehead*)) do (format f "  ~A~%" e))
 	    (loop
 	     with in = 2
 	     for p in parts and nm in (nreverse nms) do

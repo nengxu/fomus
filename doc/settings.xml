@@ -62,6 +62,15 @@
         <member><varname><link linkend="setting.lilypond.view.exe">:LILYPOND-VIEW-EXE</link></varname></member>
         <member><varname><link linkend="setting.lilypond.view.opts">:LILYPOND-VIEW-OPTS</link></varname></member>
         <member><varname><link linkend="setting.lilypond.version">:LILYPOND-VERSION</link></varname></member>
+        <member><varname><link linkend="setting.lilypond.filehead">:LILYPOND-FILEHEAD</link></varname></member>
+        <member><varname><link linkend="setting.lilypond.scorehead">:LILYPOND-SCOREHEAD</link></varname></member>
+        <member><varname><link linkend="setting.lilypond.text.markup">:LILYPOND-TEXT-MARKUP</link></varname></member>
+        <member><varname><link linkend="setting.lilypond.textdyn.markup">:LILYPOND-TEXTDYN-MARKUP</link></varname></member>
+        <member><varname><link linkend="setting.lilypond.texttempo.markup">:LILYPOND-TEXTTEMPO-MARKUP</link></varname></member>
+        <member><varname><link linkend="setting.lilypond.textnote.markup">:LILYPOND-TEXTNOTE-MARKUP</link></varname></member>
+
+        <member><varname><link linkend="setting.lilypond.textacc.markup">:LILYPOND-TEXTACC-MARKUP</link></varname></member>
+
         <member><varname><link linkend="setting.cmn.view.exe">:CMN-VIEW-EXE</link></varname></member>
         <member><varname><link linkend="setting.cmn.view.opts">:CMN-VIEW-OPTS</link></varname></member>
       </simplelist>
@@ -846,8 +855,8 @@
         <term><varname><anchor id="setting.filename"/>:FILENAME</varname></term>
         <listitem>
           <para>
-  	  This string represents the path and name of a file to which <application>FOMUS</application> adds an appropriate extension when it saves
-  	  its output.
+  	  This string represents the path and filename to which <application>FOMUS</application> adds an appropriate extension when it saves
+  	  output in various formats.
   	  This setting in combination with the <varname><link linkend="setting.backend">BACKEND</link></varname> setting determines the actual output filenames.
     	  <example>
               <title>FILENAME Setting</title>
@@ -994,6 +1003,16 @@
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><varname><anchor id="setting.lilypond.filehead"/>:LILYPOND-FILEHEAD</varname></term>
+        <listitem>
+          <para>
+	      This is a string or list of strings representing text to be inserted directly into a <application>LilyPond</application> output file.
+	      Each string in the list is followed by a carriage return.
+	      The text is inserted near the top of the file at a point before any score or part data appears.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><varname><anchor id="setting.lilypond.opts"/>:LILYPOND-OPTS</varname></term>
         <listitem>
           <para>
@@ -1009,6 +1028,75 @@
           <para>
 	      This is a string specifying the extension for the output filename that is created when <application>LilyPond</application> is run.
 	      The default is <literal>"ps"</literal> for Linux and <literal>"pdf"</literal> for OS X/Windows.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.lilypond.scorehead"/>:LILYPOND-SCOREHEAD</varname></term>
+        <listitem>
+          <para>
+	      This is a string or list of strings representing text to be inserted directly into a <application>LilyPond</application> output file 
+	      at the beginning of a score block.  Each string in the list is followed by a carriage return.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.lilypond.text.markup"/>:LILYPOND-TEXT-MARKUP</varname></term>
+        <listitem>
+          <para>
+	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
+	      printing text above or below the staff.
+	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
+	      (as if in a call to <function>FORMAT</function>).
+	      The default value is <literal>"\markup{\italic{~A}}"</literal>.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.lilypond.textacc.markup"/>:LILYPOND-TEXTACC-MARKUP</varname></term>
+        <listitem>
+          <para>
+	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
+	      engraving accidentals as text.
+	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
+	      (as if in a call to <function>FORMAT</function>).
+	      The default value is <literal>"\\markup{\\tiny{~A}}"</literal>.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.lilypond.textdyn.markup"/>:LILYPOND-TEXTDYN-MARKUP</varname></term>
+        <listitem>
+          <para>
+	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
+	      printing text in a dynamic-type font.
+	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
+	      (as if in a call to <function>FORMAT</function>).
+	      The default value is <literal>"\markup{\dynamic{\italic{\bold{~A}}}}"</literal>.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.lilypond.textnote.markup"/>:LILYPOND-TEXTNOTE-MARKUP</varname></term>
+        <listitem>
+          <para>
+	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
+	      printing text above single notes.
+	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
+	      (as if in a call to <function>FORMAT</function>).
+	      The default value is <literal>"\markup{\italic{~A}}"</literal>.
+  	</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.lilypond.texttempo.markup"/>:LILYPOND-TEXTTEMPO-MARKUP</varname></term>
+        <listitem>
+          <para>
+	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
+	      printing text in a heavy "tempo" font.
+	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
+	      (as if in a call to <function>FORMAT</function>).
+	      The default value is <literal>"\markup{\bold{\huge{~A}}}"</literal>.
   	</para>
         </listitem>
       </varlistentry>

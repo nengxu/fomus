@@ -71,6 +71,7 @@
         <member><varname><link linkend="lily.textdyn.markup">:TEXTDYN-MARKUP</link></varname></member>
         <member><varname><link linkend="lily.texttempo.markup">:TEXTTEMPO-MARKUP</link></varname></member>
         <member><varname><link linkend="lily.textnote.markup">:TEXTNOTE-MARKUP</link></varname></member>
+        <member><varname><link linkend="lily.textacc.markup">:TEXTACC-MARKUP</link></varname></member>
       </simplelist>
     </section>
     <section>
@@ -175,10 +176,22 @@
           <listitem>
             <para>
 	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
-	      specifying text to be printed above or below the staff.
+	      printing text above or below the staff.
 	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
 	      (as if in a call to <function>FORMAT</function>).
 	      The default value is <literal>"\markup{\italic{~A}}"</literal>.
+    	    </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
+          <term><varname><anchor id="lily.textacc.markup"/>:TEXTACC-MARKUP</varname></term>
+          <listitem>
+            <para>
+	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
+	      engraving accidentals as text.
+	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
+	      (as if in a call to <function>FORMAT</function>).
+	      The default value is <literal>"\\markup{\\tiny{~A}}"</literal>.
     	    </para>
           </listitem>
         </varlistentry>
@@ -187,7 +200,7 @@
           <listitem>
             <para>
 	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
-	      specifying text to be printed in a dynamic-type font.
+	      printing text in a dynamic-type font.
 	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
 	      (as if in a call to <function>FORMAT</function>).
 	      The default value is <literal>"\markup{\dynamic{\italic{\bold{~A}}}}"</literal>.
@@ -199,7 +212,7 @@
           <listitem>
             <para>
 	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
-	      specifying text to be printed above single notes.
+	      printing text above single notes.
 	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
 	      (as if in a call to <function>FORMAT</function>).
 	      The default value is <literal>"\markup{\italic{~A}}"</literal>.
@@ -211,7 +224,7 @@
           <listitem>
             <para>
 	      This is a "wrapper" string specifying <application>LilyPond</application> markup instructions to be used when
-	      specifying text to be printed in a heavy "tempo" font.
+	      printing text in a heavy "tempo" font.
 	      The string must have an <literal>~A</literal> or similar substring to indicate where to place the actual text
 	      (as if in a call to <function>FORMAT</function>).
 	      The default value is <literal>"\markup{\bold{\huge{~A}}}"</literal>.

@@ -120,12 +120,6 @@
 				       n)))
 			    (addmark e (if (eq (first x) :tremolo) (list (first x) r) (list (first x) r (event-note* e)))))))
 	(print-dot)))
-;; (loop for p of-type partex in parts do
-;; 	(loop for e of-type (or noteex restex) in (part-events p)
-;; 	      for m = (or (popmark e :tremolofirst) (popmark e :tremolosecond))
-;; 	      when m do (let ((x (force-list m)))
-;; 			  (addmark e (list (first x) (second x) (event-note* e)))))
-;; 	(print-dot))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PERCUSSION
@@ -152,6 +146,7 @@
 			  (when (perc-voice c) (setf (event-voice* ev) (perc-voice c)))
 			  (setf (event-note ev) (note-to-num (perc-note c)))
 			  (addmark ev (list :percsym (note-to-num (perc-note c)) n))
+			  (setf (event-marks ev) (append (perc-marks c) (event-marks ev)))
 			  (when (and *auto-percussion-durs* (perc-autodur c) (not (event-grace ev))
 				     (notany (lambda (x)
 					       (declare (type symbol x))
