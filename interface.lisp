@@ -118,11 +118,14 @@
     (destructuring-bind (&key (verbose *verbose*) &allow-other-keys) args
       (when (and (numberp verbose) (>= verbose 1)) (out ";; Loading input file ~S...~%" filename)))
     (funcall exe
-	     (let ((li 0) (lin ""))
+	     (let ((li 0) (lin "") (of nil))
 	       (with-open-file (f filename :direction :input)
 		 (handler-case
 		     (flet ((git (rs rrs)
 			      (unless (symbolp rs) (error "Invalid tag ~S" rs))
+			      (when (numberp of)
+				(let ((m (member :off rrs)))
+				  (when (and m (numberp (second m))) (setf (second m) (+ of (second m))))))
 			      (case (intern (symbol-name rs) :keyword)
 				(:init (if (find (first rrs) +settings+ :key #'first) rrs (progn (format t ";; WARNING: Unknown setting ~A~%" (first rrs)) nil)))
 				(:timesig (apply #'fomus-newtimesig rrs) nil)
@@ -130,21 +133,22 @@
 				(:note (apply #'fomus-newnote rrs) nil)
 				(:rest (apply #'fomus-newrest rrs) nil)
 				(:mark (apply #'fomus-newmark rrs) nil)
+				(:off (setf of (first rrs)) nil)
 				(otherwise (error "Invalid tag ~S" rs)))))
 		       (loop
 			for re = (progn (incf li) (setf lin "") (read f nil 'eof)) until (eq re 'eof)
 			do (setf lin (format nil "~S ..." re))
 			if (listp re) nconc (git (first re) (uglify (rest re)))
 			else nconc (with-input-from-string (st (loop
-								with st = (read-line f)
+								with st = (read-line f nil "")
 								for s = (string-right-trim " " st)
-								while (char= (aref s (1- (length s))) #\\)
-								do
-								(setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f))
-								      lin (format nil "~S ~A ..." re st)) 
+								while (and (> (length s) 1) (char= (aref s (1- (length s))) #\\))
+								do (setf st (conc-strings (subseq s 0 (1- (length s))) " " (read-line f))
+									 lin (format nil "~S ~A ..." re st)) 
 								finally (setf lin (format nil "~S ~A" re st)) (return st)))
 				     (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e))))))
-		   (error (err) (error (format nil "Entry ~D, ~S: ~A" li (remove-newlines lin) err)))))))))
+		   (error (err)
+		     (error (format nil "Entry ~D, ~S: ~A" li (remove-newlines lin) err)))))))))
 
 (defun fomus-file (filename &optional args)
   (fomus-text filename args #'fomus-textret))

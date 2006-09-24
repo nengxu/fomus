@@ -1,3 +1,4 @@
+	OFF tags in .fms file for shifting offsets over sections of file
 	FOMUS uses ASDF (and ASDF-Binary-Locations) to determine where plugin fasl files are placed
 	Changed some setting names
 	Fixed LilyPond backend bug involving alternate noteheads and grace notes
