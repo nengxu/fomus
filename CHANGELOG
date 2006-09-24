@@ -1,3 +1,5 @@
+	FOMUS uses ASDF (and ASDF-Binary-Locations) to determine where plugin fasl files are placed
+	Changed some setting names
 	Fixed LilyPond backend bug involving alternate noteheads and grace notes
 	Added MARKS slot to percussion instrument definition
 	Added some more LilyPond settings

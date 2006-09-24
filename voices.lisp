@@ -35,10 +35,11 @@
 (declaim (type boolean *auto-voicing*))
 (defparameter *auto-voicing* t)
 
-(declaim (type symbol *auto-voices-mod*))
-(defparameter *auto-voices-mod* t)
+(declaim (type symbol *auto-voices-mod* *auto-voices-plugin*))
+(defparameter *auto-voices-mod* nil)
+(defparameter *auto-voices-plugin* t)
 (declaim (inline auto-voices-fun))
-(defun auto-voices-fun () (if (truep *auto-voices-mod*) :voices1 *auto-voices-mod*))
+(defun auto-voices-fun () (if (truep *auto-voices-plugin*) :voices1 *auto-voices-plugin*))
 
 (declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float
 	       *voice-high/low-beat-dist-sc* *voice-leading-beat-dist-sc* *voice-octave-dist-sc* *voice-full-beat-dist-sc*)
@@ -188,6 +189,10 @@
 						      (error "Only one voice allowed when :AUTO-VOICING is NIL in note at offset ~S, part ~S" (event-foff e) name)
 						      (first (event-voice e))) 1))))
 
+(declaim (inline load-voices-plugins))
+(defun load-voices-plugins ()
+  (unless (eq (auto-voices-fun) :voices1) (load-fomus-plugin (auto-voices-fun))))
+
 ;; distribute ambiguous voice assignments (lists)
 (defun voices (parts)
   (declare (type list parts))
@@ -200,9 +205,9 @@
 				 for e of-type restex in rs
 				 if (listp (event-voice e)) nconc (mapc (lambda (i) (declare (type (integer 1) i)) (copy-event e :voice i)) (event-voice e))
 				 else collect e)
-				(case (auto-voices-fun)
-				  (:voices1 (voices-bydist evs (part-instr e) (part-name e))) 
-				  (otherwise (error "Unknown voice distribution function ~S" *auto-voices-mod*))))
+				(if (eq (auto-voices-fun) :voices1)
+				    (voices-bydist evs (part-instr e) (part-name e)) 
+				    (call-plugin (auto-voices-fun) (list "Unknown voice distribution plugin ~S" *auto-voices-plugin*) evs (part-instr e) (part-name e))))
 			 #'sort-offdur)))))
 
 (defun voices-generic (parts)
@@ -219,10 +224,11 @@
 (defparameter *auto-multivoice-rests* t) ; into single rests
 (defparameter *auto-multivoice-notes* t) ; into chords
 
-(declaim (type symbol *auto-multivoice-comb-mod*))
-(defparameter *auto-multivoice-comb-mod* t)
+(declaim (type symbol *auto-multivoice-comb-mod* *auto-multivoice-comb-plugin*))
+(defparameter *auto-multivoice-comb-mod* nil)
+(defparameter *auto-multivoice-comb-plugin* t)
 (declaim (inline auto-multivoice-comb-fun))
-(defun auto-multivoice-comb-fun () (if (truep *auto-multivoice-comb-mod*) :comb1 *auto-multivoice-comb-mod*))
+(defun auto-multivoice-comb-fun () (if (truep *auto-multivoice-comb-plugin*) :comb1 *auto-multivoice-comb-plugin*))
 
 ;; input should have complete rests/notes for each voice
 ;; combines rests into single rests, notes into chords if all attributes are =
@@ -297,4 +303,4 @@
        for m of-type meas in (part-meas p) do
        (case (auto-multivoice-comb-fun)
 	 (:comb1 (comb-notes-sim/bydist m))
-	 (otherwise (error "Unknown multiple voice combination function ~S" *auto-multivoice-comb-mod*))))))
+	 (otherwise (error "Unknown multiple voice combination plugin ~S" *auto-multivoice-comb-plugin*))))))

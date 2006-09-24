@@ -11,10 +11,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACCIDENTALS
 
-(declaim (type symbol *auto-accs-mod*))
-(defparameter *auto-accs-mod* t) ; setting
+(declaim (type symbol *auto-accs-mod* *auto-accs-plugin*))
+(defparameter *auto-accs-mod* nil) ; deprecated setting
+(defparameter *auto-accs-plugin* t) ; setting
 (declaim (inline auto-accs-fun))
-(defun auto-accs-fun () (if (truep *auto-accs-mod*) :nokey1 *auto-accs-mod*))
+(defun auto-accs-fun () (if (truep *auto-accs-plugin*) :nokey1 *auto-accs-plugin*))
 
 (declaim (type boolean *auto-accidentals* *auto-cautionary-accs*))
 (defparameter *auto-accidentals* t) ; setting
@@ -261,7 +262,7 @@
 					      #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
 				   (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
 					      #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity))
-			       (call-plugin (auto-accs-fun) (list "Unknown accidental assignment function ~S" *auto-accs-mod*) evs)))
+			       (call-plugin (auto-accs-fun) (list "Unknown accidental assignment plugin ~S" *auto-accs-plugin*) evs)))
 		    #'sort-offdur)))))
 
 (defmacro set-note-precision (&body forms)
@@ -353,7 +354,7 @@
 			 (mapcar #'part-meas pa))))
 	  (case (auto-accs-fun)	; m is list of measures (everything is sorted)
 	    (:nokey1 (acc-nokey-cautaccs ms))
-	    (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))))
+	    (otherwise (error "Unknown accidental assignment plugin ~S" *auto-accs-plugin*))))))
 
 (defun preproc-cautaccs (parts)
   (declare (type list parts))
@@ -420,11 +421,12 @@
 	    (loop for m of-type meas in (part-meas p) do
 		  (multiple-value-bind (evs rs) (split-list (meas-events m) #'notep)
 		    (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
-			  (case (auto-accs-fun)
-			    (:nokey1 (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))))
-			    ;; TODO dont know what to do here
-			    (:nokey2 nil)
-			    (otherwise (error "Unknown accidental assignment function ~S" *auto-accs-mod*))))
+			  (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))))
+		    ;; 			  (case (auto-accs-fun)
+		    ;; 			    (:nokey1 (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))))
+		    ;; 			    ;; TODO dont know what to do here
+		    ;; 			    (:nokey2 nil)
+		    ;; 			    (otherwise (error "Unknown accidental assignment plugin ~S" *auto-accs-plugin*))))
 		    (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur)))))
       (loop for p of-type partex in parts unless (is-percussion p) do
 	    (loop for m of-type meas in (part-meas p) do

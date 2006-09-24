@@ -11,11 +11,12 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SPLIT RULES
 
-(declaim (type list *default-tuplets*) (type symbol *tuplet-mod*))
+(declaim (type list *default-tuplets*) (type symbol *tuplet-mod* *tuplet-function*))
 (defparameter *default-tuplets* nil)
-(defparameter *tuplet-mod* t)
+(defparameter *tuplet-mod* nil)
+(defparameter *tuplet-function* t)
 (declaim (inline tuplet-mod))
-(defun tuplet-mod () (if (truep *tuplet-mod*) :pow2 *tuplet-mod*))
+(defun tuplet-mod () (if (truep *tuplet-function*) :pow2 *tuplet-function*))
 
 ;; tup in place of div
 (defun split-tupdurmult (tup div)
@@ -27,7 +28,7 @@
 		       for d0 = nil then d
 		       and d = (loop for x1 = div then x2 for x2 = (/ x1 2) while (integerp x2) finally (return x1)) then (* d 2)
 		       when (> d tup) do (return (or d0 d))))
-	       (otherwise (error "Unknown tuplet function ~S" *tuplet-mod*))))))
+	       (otherwise (error "Unknown tuplet function ~S" *tuplet-function*))))))
 
 ;; returns list of new rules for given rule: (number-or-list-of-divs newrule1 newrule2...)
 (defclass baserule () nil)

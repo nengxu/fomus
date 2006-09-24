@@ -20,7 +20,7 @@ Immediate:
       CMN tremolos
       CMN cautionary accidentals on chords
       CMN part groups/brackets
-      LilyPond not tying repeated notes in chords where other notes are tied (fixable?)
+      LilyPond not tying repeated notes in chords where other notes are tied (fixable in next LilyPond version)
       MIDI output testing/adjusting/fine tuning
     Improvements:
       Finish implementing :invisible mark
@@ -28,6 +28,7 @@ Immediate:
       Improve staff and clef decisions
       More control over harmonics
       More speed improvements (why is it 10x slower in OpenMCL?)
+      Quantization plugins
     Additions:
       Onset-to-onset durations
       Dynamic markings fixer (eliminate repeats)

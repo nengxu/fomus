@@ -30,7 +30,7 @@
        finally
        (return t)))))
 
-(defparameter +fomus-dir+ #+asdf (asdf:component-pathname (asdf:find-system :fomus)) #-asdf *load-pathname*)
+(defparameter +fomus-dir+ #+asdf (or (ignore-errors (asdf:component-pathname (asdf:find-system :fomus))) *load-pathname*) #-asdf *load-pathname*)
 (defun register-plugins ()
   (map nil
        (lambda (file)

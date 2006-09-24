@@ -53,7 +53,11 @@
     (format t "~%;; WARNING: Couldn't create debug file ~S~%" *debug-filename*)))
 
 (defparameter *indata-ignore*
-  '(:global :parts :events :backend :debug-filename :lilypond-exe :lilypond-opts :lilypond-out-ext :lilypond-view-exe :lilypond-view-opts :cmn-view-exe :cmn-view-opts))
+  (nconc
+   (mapcar #'first +deprecated-repl+)
+   '(:global :parts :events :debug-filename
+     :lilypond-exe :lilypond-opts :lilypond-out-ext :lilypond-view-exe :lilypond-view-opts
+     :cmn-view-exe :cmn-view-opts)))
 (defun save-indata (fn parts mks)
   (declare (type list parts))
   (when (>= *verbose* 1) (out "~&;; Saving input data file ~S..." fn))
@@ -203,7 +207,11 @@
   (when (and (numberp *verbose*) (>= *verbose* 2)) (out "~&; Checking types..."))
   (check-setting-types)
   (check-settings)
+  (load-quantize-plugins)
+  (load-split-plugins)
   (load-acc-plugins)
+  (load-voices-plugins)
+  (load-staff/clef-plugins)
   (set-fomusproc
     (set-instruments
       (set-note-precision
@@ -337,30 +345,40 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MAIN
 
+(defmacro resolve-deprecated (&body forms)
+  `(progn
+    ,@(loop for (d . r) of-type (symbol . symbol) in +deprecated-repl+
+	    for ds = (find-symbol (format nil "*~A*" (symbol-name d)) :fomus)
+	    and rs = (find-symbol (format nil "*~A*" (symbol-name r)) :fomus)
+	    if r collect `(when ,ds (format t ";; WARNING: Setting ~S is deprecated--use ~S instead~%" (quote ,d) (quote ,r))
+			   (setf ,rs ,ds ,ds nil))
+	    else collect `(when ,ds (format t ";; WARNING: Setting ~S is deprecated" (quote ,d)) (setf ,ds nil)))
+    ,@forms))
+
 (defun fomus-main ()
-  (when *backend* (setf *output* *backend* *backend* nil)) ;; resolve aliases
-  (find-cm)
-  (when (find :cmn (force-list2some *output*) :key (lambda (x) (first (force-list x)))) (find-cmn))
-  (let ((dir #+cmu (ext:default-directory)
-	     #+sbcl (conc-strings (sb-unix:posix-getcwd) "/")
-	     #+clisp (ext:default-directory)
-	     #+openmcl (ccl:mac-default-directory)
-	     #+allegro (excl:current-directory)
-	     #+lispworks (hcl:get-working-directory)))
-    (let ((r (if *chunks*
-		 (fomus-merge)
-		 (fomus-proc (remove-if-not (lambda (x) (member x '(:data :fomus))) (force-list2some *output*) :key (lambda (x) (first (force-list x)))) dir))))
-      (loop for x of-type (or symbol cons) in (force-list2some *output*)
-	    do (let ((xx (force-list x)))
-		 (destructuring-bind (ba &key filename process play view &allow-other-keys) xx
-		   (declare (type symbol ba) (type boolean process view))
-		   (backend ba
-			    (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba *backendexts*))) dir))
-			    dir r (rest xx) (or process view) play view))))
-      (make-fomuschunk
-       :settings (map nil (lambda (s)
-			    (declare (type cons s))
-			    (cons (first s) (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))
-		      +settings+)
-       :parts r))))
+  (resolve-deprecated
+   (find-cm)
+   (when (find :cmn (force-list2some *output*) :key (lambda (x) (first (force-list x)))) (find-cmn))
+   (let ((dir #+cmu (ext:default-directory)
+	      #+sbcl (conc-strings (sb-unix:posix-getcwd) "/")
+	      #+clisp (ext:default-directory)
+	      #+openmcl (ccl:mac-default-directory)
+	      #+allegro (excl:current-directory)
+	      #+lispworks (hcl:get-working-directory)))
+     (let ((r (if *chunks*
+		  (fomus-merge)
+		  (fomus-proc (remove-if-not (lambda (x) (member x '(:data :fomus))) (force-list2some *output*) :key (lambda (x) (first (force-list x)))) dir))))
+       (loop for x of-type (or symbol cons) in (force-list2some *output*)
+	     do (let ((xx (force-list x)))
+		  (destructuring-bind (ba &key filename process play view &allow-other-keys) xx
+		    (declare (type symbol ba) (type boolean process view))
+		    (backend ba
+			     (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba *backendexts*))) dir))
+			     dir r (rest xx) (or process view) play view))))
+       (make-fomuschunk
+	:settings (map nil (lambda (s)
+			     (declare (type cons s))
+			     (cons (first s) (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))
+		       +settings+)
+	:parts r)))))
 

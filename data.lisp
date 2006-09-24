@@ -555,7 +555,7 @@
   `((:debug-filename (or null string)) (:verbose (integer 0 2)) 
     (:use-cm boolean) (:cm-scale t)
     (:backend (or* symbol (cons* symbol key-arg-pairs*) (list-of* (or* symbol (cons* symbol key-arg-pairs*))))
-     "(SYMBOL KEYWORD/ARGUMENT-PAIRS...) or list of (SYMBOL KEYWORD/ARGUMENT-PAIRS...)")
+     "(SYMBOL KEYWORD/ARGUMENT-PAIRS...) or list of (SYMBOL KEYWORD/ARGUMENT-PAIRS...)") ; deprecated
     (:output (or* symbol (cons* symbol key-arg-pairs*) (list-of* (or* symbol (cons* symbol key-arg-pairs*))))
      "(SYMBOL KEYWORD/ARGUMENT-PAIRS...) or list of (SYMBOL KEYWORD/ARGUMENT-PAIRS...)")
     (:filename string)
@@ -588,9 +588,12 @@
     (:auto-override-timesigs boolean) 
     (:auto-pizz/arco boolean) (:auto-percussion-durs boolean)
 
-    (:split-mod symbol) (:auto-accs-mod symbol) (:auto-voices-mod symbol) (:auto-distr-rests-mod symbol)
+    (:split-mod symbol) (:auto-accs-mod symbol) (:auto-voices-mod symbol) (:auto-distr-rests-mod symbol) ; -mods are deprecated
     (:auto-multivoice-comb-mod symbol) (:auto-ottavas-mod symbol) (:auto-beam-mod symbol) (:auto-quantize-mod symbol)
     (:auto-staff/clefs-mod symbol) (:tuplet-mod symbol)
+    (:split-plugin symbol) (:auto-accs-plugin symbol) (:auto-voices-plugin symbol) (:auto-distr-rests-plugin symbol)
+    (:auto-multivoice-comb-plugin symbol) (:auto-ottavas-plugin symbol) (:auto-beam-plugin symbol) (:auto-quantize-plugin symbol)
+    (:auto-staff/clefs-plugin symbol) (:tuplet-function symbol)
 
     (:default-tuplets (or* null (list-of* (list* (integer 1) (integer 1)))) "list of ((INTEGER 1) (INTEGER 1))")
     (:default-meas-divs (or* null (list-of* (cons* (rational (0)) (list-of* (list-of* (rational (0))))))) "list of ((RATIONAL (0)) ((RATIONAL (0)) ...) ...)")
@@ -637,6 +640,13 @@
     #-fomus-nocmn (:cmn-view-exe string)
     #-fomus-nocmn (:cmn-view-opts (or* null (list-of* string)) "NIL or list of STRINGS")    
     ))
+
+(declaim (type list +deprecated-repl+))
+(defparameter +deprecated-repl+
+  '((:backend . :output)
+    (:split-mod . :split-plugin) (:auto-accs-mod . :auto-accs-plugin) (:auto-voices-mod . :auto-voices-plugin) (:auto-distr-rests-mod . :auto-distr-rests-plugin)
+    (:auto-multivoice-comb-mod . :auto-multivoice-comb-plugin) (:auto-ottavas-mod . :auto-ottavas-plugin) (:auto-beam-mod . :auto-beam-plugin)
+    (:auto-quantize-mod . :auto-quantize-plugin) (:auto-staff/clefs-mod . :auto-staff/clefs-plugin) (:tuplet-mod . :tuplet-function)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MARKS

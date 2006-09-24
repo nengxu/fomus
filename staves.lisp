@@ -14,10 +14,11 @@
 (declaim (type boolean *auto-staff/clef-changes*))
 (defparameter *auto-staff/clef-changes* t)
 
-(declaim (type symbol *auto-staff/clefs-mod*))
-(defparameter *auto-staff/clefs-mod* t)
+(declaim (type symbol *auto-staff/clefs-mod* *auto-staff/clefs-plugin*))
+(defparameter *auto-staff/clefs-mod* nil)
+(defparameter *auto-staff/clefs-plugin* t)
 (declaim (inline auto-clefs-fun))
-(defun auto-clefs-fun () (if (truep *auto-staff/clefs-mod*) :staves/clefs1 *auto-staff/clefs-mod*))
+(defun auto-clefs-fun () (if (truep *auto-staff/clefs-plugin*) :staves/clefs1 *auto-staff/clefs-plugin*))
 
 (declaim (type (real 0) *clef-force-clef-change-dist*))
 (defparameter *clef-force-clef-change-dist* 2) ; 2 can be nil
@@ -214,6 +215,10 @@
 					    (clefs-getclef nil nil i))
 				  (1+ i)))))))))))
 
+(declaim (inline load-staff/clef-plugins))
+(defun load-staff/clef-plugins ()
+  (unless (eq (auto-clefs-fun) :staves/clefs1) (load-fomus-plugin (auto-clefs-fun))))
+
 (defun clefs (parts)
   (loop
    for p of-type partex in parts
@@ -240,9 +245,9 @@
 		      (setf (event-userclef e) (first c)))
 		    (part-name p))
      (multiple-value-bind (evs prs)
-	 (case (auto-clefs-fun)
-	   (:staves/clefs1 (clefs-bylegscore no (part-instr p) (part-name p))) 
-	   (otherwise (error "Unknown staff/clefs assignment function ~S" *auto-staff/clefs-mod*)))
+	 (if (eq (auto-clefs-fun) :staves/clefs1)
+	     (clefs-bylegscore no (part-instr p) (part-name p))
+	     (call-plugin (auto-clefs-fun) (list "Unknown staff/clefs assignment plugin ~S" *auto-staff/clefs-plugin*) no (part-instr p) (part-name p)))
        (setf (part-events p) (sort (nconc re evs) #'sort-offdur))
        (mapc (lambda (x) (declare (type cons x)) (addprop p x)) prs)))
    (loop ; temporarily assign rests to staves (will become defaults if distr-rests isn't run)
@@ -304,10 +309,11 @@
 (defparameter *grandstaff-hide-rests* t) ; nil (t or :some) or :all, can override in part properties?
 (defparameter *min-grandstaff-hide-rests-dur* 1)
 
-(declaim (type symbol *auto-distr-rests-mod*))
-(defparameter *auto-distr-rests-mod* t)
+(declaim (type symbol *auto-distr-rests-mod* *auto-distr-rests-plugin*))
+(defparameter *auto-distr-rests-mod* nil)
+(defparameter *auto-distr-rests-plugin* t)
 (declaim (inline auto-distr-rests-fun))
-(defun auto-distr-rests-fun () (if (truep *auto-distr-rests-mod*) :rests1 *auto-distr-rests-mod*))
+(defun auto-distr-rests-fun () (if (truep *auto-distr-rests-plugin*) :rests1 *auto-distr-rests-plugin*))
 
 ;; call AFTER ass-voices but BEFORE anything else (need to know where the rests are)
 ;; assigns all rests to staves and hides some rests
@@ -425,5 +431,5 @@
 (defun distr-rests (parts)
   (case (auto-distr-rests-fun)
     (:rests1 (distr-rests-byconfl parts))
-    (otherwise (error "Unknown rest to staves distribution function ~S" *auto-distr-rests-mod*))))
+    (otherwise (error "Unknown rest to staves distribution plugin ~S" *auto-distr-rests-plugin*))))
 

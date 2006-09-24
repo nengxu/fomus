@@ -11,10 +11,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; BEAMS
 
-(declaim (type symbol *auto-beam-mod*))
-(defparameter *auto-beam-mod* t)
+(declaim (type symbol *auto-beam-mod* *auto-beam-plugin*))
+(defparameter *auto-beam-mod* nil)
+(defparameter *auto-beam-plugin* t)
 (declaim (inline auto-beam-fun))
-(defun auto-beam-fun () (if (truep *auto-beam-mod*) :beams1 *auto-beam-mod*))
+(defun auto-beam-fun () (if (truep *auto-beam-plugin*) :beams1 *auto-beam-plugin*))
 
 (declaim (type boolean *auto-beams*))
 (defparameter *auto-beams* t)
@@ -207,5 +208,5 @@
   (loop for p of-type partex in parts
 	do (case (auto-beam-fun)
 	     (:beams1 (beams-standbydiv (part-meas p)))
-	     (otherwise (error "Unknown auto-beam function ~S" *auto-beam-mod*)))))
+	     (otherwise (error "Unknown auto-beam plugin ~S" *auto-beam-plugin*)))))
 

@@ -115,22 +115,22 @@
         </simplelist>
       </section> 
     <section>
-      <title>Modules</title>
+      <title>Plugins</title>
       <simplelist type="vert" columns="3">
-        <member><varname><link linkend="setting.auto.accs.mod">:AUTO-ACCS-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.beam.mod">:AUTO-BEAM-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.multivoice.comb.mod">:AUTO-MULTIVOICE-COMB-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.distr.rests.mod">:AUTO-DISTR-RESTS-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.ottavas.mod">:AUTO-OTTAVAS-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.quantize.mod">:AUTO-QUANTIZE-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.staff/clefs.mod">:AUTO-STAFF/CLEFS-MOD</link></varname></member>
-        <member><varname><link linkend="setting.auto.voices.mod">:AUTO-VOICES-MOD</link></varname></member>
-        <member><varname><link linkend="setting.split.mod">:SPLIT-MOD</link></varname></member> 
-	<member><varname><link linkend="setting.tuplet.mod">:TUPLET-MOD</link></varname></member> 
+        <member><varname><link linkend="setting.auto.accs.plugin">:AUTO-ACCS-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.beam.plugin">:AUTO-BEAM-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.multivoice.comb.plugin">:AUTO-MULTIVOICE-COMB-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.distr.rests.plugin">:AUTO-DISTR-RESTS-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.ottavas.plugin">:AUTO-OTTAVAS-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.quantize.plugin">:AUTO-QUANTIZE-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.staff/clefs.plugin">:AUTO-STAFF/CLEFS-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.auto.voices.plugin">:AUTO-VOICES-PLUGIN</link></varname></member>
+        <member><varname><link linkend="setting.split.plugin">:SPLIT-PLUGIN</link></varname></member> 
+	<member><varname><link linkend="setting.tuplet.function">:TUPLET-FUNCTION</link></varname></member> 
       </simplelist>
     </section>
     <section>
-      <title>Modules On/Off</title>
+      <title>Plugins On/Off</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.auto.accidentals">:AUTO-ACCIDENTALS</link></varname></member>
         <member><varname><link linkend="setting.auto.cautionary.accs">:AUTO-CAUTIONARY-ACCS</link></varname></member>
@@ -256,12 +256,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.accs.mod"/>:AUTO-ACCS-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.accs.plugin"/>:AUTO-ACCS-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for determining note spellings.
+  	  Designates which plugin is to be used for determining note spellings.
   	  Current possible values are <literal>T</literal>, <literal>:NOKEY1</literal> and <literal>:NOKEY2</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:NOKEY1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:NOKEY1</literal>.
 	  <variablelist>
           <varlistentry>
             <term><literal>:NOKEY1</literal></term>
@@ -281,12 +281,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.beam.mod"/>:AUTO-BEAM-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.beam.plugin"/>:AUTO-BEAM-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for beaming.
+  	  Designates which plugin is to be used for beaming.
   	  Current possible values are <literal>T</literal> and <literal>:BEAMS1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:BEAMS1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:BEAMS1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -310,12 +310,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.distr.rests.mod"/>:AUTO-DISTR-RESTS-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.distr.rests.plugin"/>:AUTO-DISTR-RESTS-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for determining how rests are distributed among staves.
+  	  Designates which plugin is to be used for determining how rests are distributed among staves.
   	  Current possible values are <literal>T</literal> and <literal>:RESTS1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:RESTS1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:RESTS1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -331,12 +331,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.multivoice.comb.mod"/>:AUTO-MULTIVOICE-COMB-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.multivoice.comb.plugin"/>:AUTO-MULTIVOICE-COMB-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for determining how simultaneous notes from different voices are combined into chords on the same staff.
+  	  Designates which plugin is to be used for determining how simultaneous notes from different voices are combined into chords on the same staff.
   	  Current possible values are <literal>T</literal> and <literal>:COMB1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:COMB1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:COMB1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -368,12 +368,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.ottavas.mod"/>:AUTO-OTTAVAS-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.ottavas.plugin"/>:AUTO-OTTAVAS-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for determining where ottava brackets occur.
+  	  Designates which plugin is to be used for determining where ottava brackets occur.
   	  Current possible values are <literal>T</literal> and <literal>:OTTAVAS1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:OTTAVAS1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:OTTAVAS1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -427,12 +427,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.quantize.mod"/>:AUTO-QUANTIZE-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.quantize.plugin"/>:AUTO-QUANTIZE-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for quantizing.
+  	  Designates which plugin is to be used for quantizing.
   	  Current possible values are <literal>T</literal> and <literal>:QUANTIZE1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:QUANTIZE1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:QUANTIZE1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -447,22 +447,22 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.staff/clefs.mod"/>:AUTO-STAFF/CLEFS-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.staff/clefs.plugin"/>:AUTO-STAFF/CLEFS-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used to determine automatic staff and clef changes.
+  	  Designates which plugin is to be used to determine automatic staff and clef changes.
   	  Current possible values are <literal>T</literal> and <literal>:STAVES/CLEFS1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:STAVES/CLEFS1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:STAVES/CLEFS1</literal>.
   	</para>
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.auto.voices.mod"/>:AUTO-VOICES-MOD</varname></term>
+        <term><varname><anchor id="setting.auto.voices.plugin"/>:AUTO-VOICES-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for determining how notes are distributed into separate voices.
+  	  Designates which plugin is to be used for determining how notes are distributed into separate voices.
   	  Current possible values are <literal>T</literal> and <literal>:VOICES1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:VOICES1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:VOICES1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -748,7 +748,7 @@
 	  <para> 
 	    The default value is <literal>NIL</literal>.
 	    If <application>FOMUS</application> doesn't find an entry for a tuplet division here, it determines its own depending on the value
-	    of <varname><link linkend="setting.tuplet.mod">TUPLET-MOD</link></varname>.
+	    of <varname><link linkend="setting.tuplet.function">TUPLET-FUNCTION</link></varname>.
   	  </para>
         </listitem>
       </varlistentry>
@@ -1331,9 +1331,9 @@
           <para>
   	  If set to <literal>T</literal>, <application>FOMUS</application> rounds pitches to quartertone values
 	  and uses quartertone notation in the score.
-	  This only works if the algorithm specified by the <varname><link linkend="setting.auto.accs.mod">AUTO-ACCS-MOD</link></varname> setting
+	  This only works if the algorithm specified by the <varname><link linkend="setting.auto.accs.plugin">AUTO-ACCS-PLUGIN</link></varname> setting
 	  supports it.
-	  The only module provided so far, <literal>:NOKEY1</literal>, supports quartertones.
+	  <application>FOMUS</application>'s default plugin <literal>:NOKEY1</literal> supports quartertones.
   	</para>
         </listitem>
       </varlistentry>
@@ -1353,12 +1353,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.split.mod"/>:SPLIT-MOD</varname></term>
+        <term><varname><anchor id="setting.split.plugin"/>:SPLIT-PLUGIN</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for splitting and tying notes.
+  	  Designates which plugin is to be used for splitting and tying notes.
   	  Current possible values are <literal>T</literal> and <literal>:SPLIT1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:SPLIT1</literal>.
+  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:SPLIT1</literal>.
   	</para>
         </listitem>
       </varlistentry>
@@ -1422,12 +1422,12 @@
         </listitem>
       </varlistentry>
       <varlistentry>
-        <term><varname><anchor id="setting.tuplet.mod"/>:TUPLET-MOD</varname></term>
+        <term><varname><anchor id="setting.tuplet.function"/>:TUPLET-FUNCTION</varname></term>
         <listitem>
           <para>
-  	  Designates which module is to be used for determining tuplet ratios.
+  	  Designates which function is to be used for determining tuplet ratios.
   	  Current possible values are <literal>T</literal>, <literal>:POW2</literal> and <literal>:DUR</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:POW2</literal>.
+  	  <literal>T</literal> represents the default function and is equivalent to <literal>:POW2</literal>.
 	  <literal>:POW2</literal> determines tuplet ratios based on the rule that the number of tuplet divisions replace (in most cases)
 	  the number of durational units equaling the next lowest power of two.  <application>FOMUS</application> thus notates 7 in the time of 4
 	  and 13 in the time of 8. <literal>:DUR</literal> determines ratios

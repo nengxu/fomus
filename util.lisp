@@ -1009,12 +1009,19 @@
   (desc "" :type string))
 
 (defparameter *plugins* (make-hash-table :test 'eq))
-(defparameter +plugin-types+ '(:accidentals :voices :staves/clefs :splitrules :backend))
+(defparameter +plugin-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
 
 (defun compile-plugin (file cfile key)
   (when (or (not (probe-file cfile)) (>= (file-write-date file) (file-write-date cfile)))
     (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Compiling plugin ~S..." key))
-    (compile-file file :print nil :verbose nil)))
+    (compile-file file :print nil :verbose nil :output-file cfile)))
+
+(defun plugin-outname (file)
+  #+asdf (let ((x (ignore-errors (first (asdf:output-files (make-instance 'asdf:compile-op) (asdf:find-component (asdf:find-system :fomus) "package"))))))
+	   (if x (let ((f (change-filename x :name (conc-strings "plugins/" (pathname-name file)))))
+		   (ignore-errors (ensure-directories-exist f)) f)
+	       (compile-file-pathname file)))
+  #-asdf (compile-file-pathname file))
 
 ;; user fun
 (defun register-fomus-plugin (filename &key load)
@@ -1031,7 +1038,7 @@
     (check-type (first documentation) string)
     (when (and (first filename-ext) (not (eq (first type) :backend))) (error "Non-backend shouldn't declare a filename extension"))
     (let ((pk (plugin-package (first keyname)))
-	  (cf (compile-file-pathname filename)))
+	  (cf (plugin-outname filename)))
       (compile-plugin filename cf (first keyname))	; make sure it compiles
       (setf (gethash (first keyname) *plugins*) (make-plugin :type (first type) :file filename :pack pk
 							     :initfun (first initfun) :entryfun (first entryfun) :desc (first documentation))))
@@ -1056,7 +1063,7 @@
 ;; user fun
 (defun load-fomus-plugin (keyname)
   (let* ((pl (or (gethash keyname *plugins*) (error "Plugin ~S is not registered or does not exist" keyname)))
-	 (cf (compile-file-pathname (plugin-file pl))))
+	 (cf (plugin-outname (plugin-file pl))))
     (when (or (not (find (plugin-pack pl) *modules* :test #'string=)) (compile-plugin (plugin-file pl) cf keyname))
       (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading plugin ~S..." keyname))
       (load cf :verbose nil :print nil)
@@ -1069,3 +1076,5 @@
   (let ((pl (gethash keyname *plugins*)))
     (if pl (apply (find-symbol (symbol-name (plugin-entryfun pl)) (find-package (plugin-pack pl))) args)
 	(apply #'error err))))
+
+;; (asdf:output-files (make-instance 'asdf:compile-op) (first (asdf:module-components (asdf:find-system :fomus))))

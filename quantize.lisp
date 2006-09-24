@@ -11,10 +11,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; QUANTIZE
 
-(declaim (type symbol *auto-quantize-mod*))
-(defparameter *auto-quantize-mod* t)
+(declaim (type symbol *auto-quantize-mod* *auto-quantize-plugin*))
+(defparameter *auto-quantize-mod* nil)
+(defparameter *auto-quantize-plugin* t)
 (declaim (inline auto-quantize-fun))
-(defun auto-quantize-fun () (if (truep *auto-quantize-mod*) :quantize1 *auto-quantize-mod*))
+(defun auto-quantize-fun () (if (truep *auto-quantize-plugin*) :quantize1 *auto-quantize-plugin*))
 
 (declaim (type boolean *auto-quantize*) 
 	 (type integer *default-grace-num*))
@@ -132,101 +133,16 @@
 						     :call-rev nil)))
 			 (setf (part-events p) (sort (part-events p) #'sort-offdur)))))))))
 
+(declaim (inline load-quantize-plugins))
+(defun load-quantize-plugins ()
+  (unless (eq (auto-quantize-fun) :quantize1) (load-fomus-plugin (auto-quantize-fun))))
+
 (defun quantize (timesigs parts)
-  (case (auto-quantize-fun)
-    (:quantize1 (quantize-byfit timesigs parts))
-    (otherwise (error "Unknown quantize function ~S" *auto-quantize-mod*))))
-
-;; (defparameter *quantize-adjust-grace-durs* t)
-
-;; (defun clean-quantize (parts)
-;;   (when *quantize-adjust-grace-durs*
-;;     (loop for p in parts do
-;; 	  (loop for v in (split-into-groups (part-events p) #'event-voice*) do
-;; 		(loop with d and do
-;; 		      for e in (sort (copy-list v) (complement #'sort-offdur))
-;; 		      if (and d (getmark e :grace) (eql (event-off e) do))
-;; 		      do (setf (event-dur* e) (let for x = *default-grace-dur* then (/ x 2) until (<= x d) finally (return x)))
-;; 		      else if (notep e) do (setf d (event-dur* e))
-;; 		      else do (setf d nil)
-;; 		      do (setf do (event-off e))))
-;; 	  ;; 	      (loop with g and di = (>= *default-grace-num* 0)	; di = t if forward and default grace >= 0
-;; 	  ;; 		    for e in (sort v (if di #'sort-offdur (complement #'sort-offdur)))
-;; 	  ;; 		    if (popmark e :grace)
-;; 	  ;; 		    do (setf (event-grace* e) (setf g (if g
-;; 	  ;; 							  (if di (max (1+ g) *default-grace-num*) (min (1- g) *default-grace-num*))
-;; 	  ;; 							  *default-grace-num*)))
-;; 	  ;; 		    else if (event-grace e) do (setf g (event-grace e)))
-;; 	  )))
+  (if (eq (auto-quantize-fun) :quantize1)
+      (quantize-byfit timesigs parts)
+      (call-plugin (auto-quantize-fun) (list "Unknown quantize plugin ~S" *auto-quantize-plugin*) timesigs parts)))
 
 (defun quantize-generic (parts)
   (loop for p in parts do
 	(loop for e in (part-events p) do
 	      (setf (event-dur* e) (rationalize (or (event-gracedur e) (event-dur* e))) (event-off e) (rationalize (event-off e))))))
-
-		   #|(cons pts (list o1 o2))|# #|(cons nil nil)|#
-	;; 	       (uu00 (i)
-	;; 		 (declare (type cons i))
-;; 		 (cons i
-;; 		       (loop for (i1 i2 . i3) of-type ((integer 1) (or (integer 1) null) . list) on i while i2
-;; 			     when (or i0 i3) nconc (uu (append i0 (cons (+ i1 i2) i3)))
-;; 			     collect i1 into i0))) 
-;; 	       (mt00 (tu o du nx #|nxs|# ep) ; du = rest of tuplet list, o = off, du = dur, nx = number of div units, nxs = list of ii's to not bother considering
-;; 		 (declare (type list tu) (type (rational 0) o) (type (rational (0)) du nx) #|(type cons nxs)|# (type list ep))
-;; 		 (sel
-;; 		  (loop with tp = (first tu) and rt = (rest tu) and nxl = (+ nx (/ nx 2))
-;; 			for d in (delete-if (lambda (x) (declare (type (integer 2) x)) (>= x nxl)) (primes2 tp)) ; possible prime tuplet divisions, delete ones too big for nx
-;; 			for ii = (loop-return-lastmin (diff i nx) for i = d then (* i 2)) ; nearest *2 multiple to beat-div
-;; 					#|unless (find ii nxs)|# #|(or (>= ii nxl) (find ii nxs))|# ; collect all divisionpoint-lists
-;; 			collect (cons ep (loop for i from 0 to ii collect (+ o (/ (* du i) ii))))
-;; 			when rt		; another nested tuplet
-;; 			nconc (loop for i of-type cons in (delete-duplicates (loop for e of-type cons in (tuplet-division d) nconc (uu e)) :test #'equal) ; ... fix ; iterate through ways how to divide up tuplet 
-;; 				    for z = (apply #'adj
-;; 						   (loop for p = o then (+ p dd)
-;; 							 and e of-type (integer 1) in i	; e = each division
-;; 							 for dd = (* du (/ e d))
-;; 							 for y = (mt rt p dd (/ (* nx e) d) #|(cons (/ (* ii e) d) nxs)|#
-;; 								     (loop with p2 = (+ p dd) for i of-type (real 0) in ep when (and (>= i p) (<= i p2)) collect i))
-;; 							 if y collect y else do (return)))
-;; 				    when z collect z))))
-;; 	       (dv00 (o ep dl ts) ; process divisions at offset o (dl is one element div-list from timesig)--return one best-fit selection
-;; 		 (declare (type (rational 0) o) (type list ep) (type cons dl) (type timesig-repl ts))
-;; 		 (if (list1p dl)	; entire measure, one du
-;; 		     (sel (let ((du (first dl)))
-;; 			    (nconc
-;; 			     (let ((nx (* du (beat-division ts))))
-;; 			       (unless (integerp nx) (error "Cannot quantize with beat division ~S and measure division ~S at offset ~S"
-;; 							    *beat-division* (timesig-div* ts) (timesig-foff ts)))
-;; 			       (let ((x (loop for i from o to (+ o du) by (/ (beat-division ts)) collect i))) ; collect ((list of beat-div points from 0 to span-dur) (...))
-;; 				 (if (and (>= du *min-tuplet-dur*) (<= du *max-tuplet-dur*) *max-tuplet*)
-;; 				     (let ((y (mt *max-tuplet* o du nx #|(list nx)|# ep)))
-;; 				       (if y (list (cons ep x) y) (list (cons ep x))))
-;; 				     (list (cons ep x))))) ; assuming o & du is valid division into tuplets
-;; 			     (let* ((nd1 (let ((x 1))
-;; 					   (loop until (> x du) do (setf x (* x 2)))
-;; 					   (loop until (and (< x du) (or (>= (- du x) *min-tuplet-dur*) (< x *min-tuplet-dur*)))
-;; 						 do (setf x (if (and (= x 1) (timesig-comp ts)) (* x 2/3) (/ x 2))))
-;; 					   x))
-;; 				    (nd2 (- du nd1)))
-;; 			       (when (and (>= (min nd1 nd2) *min-tuplet-dur*) (<= (max nd1 nd2) *max-tuplet-dur*))
-;; 				 (if (= nd1 nd2)
-;; 				     (list
-;; 				      (let ((os (+ o nd1)))
-;; 					(adj (dv o (loop for i of-type (real 0) in ep when (<= i os) collect i) (list nd1) ts)
-;; 					     (dv os (loop for i of-type (real 0) in ep when (>= i os) collect i) (list nd2) ts))))
-;; 				     (list
-;; 				      (let ((os (+ o nd1)))
-;; 					(adj (dv o (loop for i of-type (real 0) in ep when (<= i os) collect i) (list nd1) ts)
-;; 					     (dv os (loop for i of-type (real 0) in ep when (>= i os) collect i) (list nd2) ts)))
-;; 				      (let ((os (+ o nd2)))
-;; 					(adj (dv o (loop for i of-type (real 0) in ep when (<= i os) collect i) (list nd2) ts)
-;; 					     (dv os (loop for i of-type (real 0) in ep when (>= i os) collect i) (list nd1) ts))))))))))
-;; 		     (sel (cons
-;; 			   (dv o ep (list (apply #'+ dl)) ts) ; entire measure
-;; 			   (loop with e2 = dl ; at least 2 in e2
-;; 				 for e of-type (rational (0)) = (pop e2)
-;; 				 while e2
-;; 				 for os = (+ o e) then (+ os e)
-;; 				 collect e into e1 ; split into 2-parts along divisions
-;; 				 collect (adj (dv o (loop for i of-type (real 0) in ep when (<= i os) collect i) e1 ts)
-;; 					      (dv os (loop for i of-type (real 0) in ep when (>= i os) collect i) e2 ts))))))))
