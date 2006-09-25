@@ -10,6 +10,9 @@ Immediate:
       Send list of XML issues to Sibelius/Finale tech. support
       In CLISP/Cygwin output from executables isn't suppressed (fixable?)
     Documentation:
+      OFF tags in .fms file
+      Specifying chords
+      AUTO-DYN-NODUP setting
       Plugin interface
       Separate MIDI files for different parts
       Proofreading

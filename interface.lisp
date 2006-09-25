@@ -130,7 +130,13 @@
 				(:init (if (find (first rrs) +settings+ :key #'first) rrs (progn (format t ";; WARNING: Unknown setting ~A~%" (first rrs)) nil)))
 				(:timesig (apply #'fomus-newtimesig rrs) nil)
 				(:part (apply #'fomus-newpart rrs) nil)
-				(:note (apply #'fomus-newnote rrs) nil)
+				((:note :notes) (destructuring-bind (pa &rest args &key notes &allow-other-keys) rrs
+						  (if notes
+						      (let ((as (member :notes args )))
+							(setf (first as) :note)
+							(map nil (lambda (no) (setf (second as) no) (apply #'fomus-newnote pa args)) notes))
+						      (apply #'fomus-newnote pa args)))
+				 nil)
 				(:rest (apply #'fomus-newrest rrs) nil)
 				(:mark (apply #'fomus-newmark rrs) nil)
 				(:off (setf of (first rrs)) nil)
@@ -148,7 +154,7 @@
 								finally (setf lin (format nil "~S ~A" re st)) (return st)))
 				     (git re (loop for e = (read st nil 'eof) until (eq e 'eof) collect (uglify e))))))
 		   (error (err)
-		     (error (format nil "Entry ~D, ~S: ~A" li (remove-newlines lin) err)))))))))
+		     (error "Entry ~D, ~S: ~A" li (remove-newlines lin) err))))))))
 
 (defun fomus-file (filename &optional args)
   (fomus-text filename args #'fomus-textret))

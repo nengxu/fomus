@@ -10,7 +10,7 @@ DEFPLUGIN is a wrapper for DEFPACKAGE and accepts the following keywords:
 fomus-specific: type keyname use initfun entryfun description preload filename-ext
 arguments passed to defpackage: shadowing-import-from package-name import-from intern size export
 
-type = one of :accidentals :voices :staves/clefs :splitrules or :backend
+type = one of :accidentals :voices :staves/clefs :splitrules :quantize or :backend for now
 keyname = keyword ID for this module
 initfun = callback initialization function w/ no arguments (not really necessary in Lisp, but it's included anyways)
 entryfun = function to replace fomus's default function (arguments differ depending on context)

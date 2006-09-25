@@ -586,7 +586,7 @@
     (:auto-ottavas boolean) (:auto-grace-slurs boolean) (:auto-voicing boolean) (:auto-beams boolean)
     (:auto-quantize boolean) (:auto-multivoice-rests boolean) (:auto-multivoice-notes boolean)
     (:auto-override-timesigs boolean) 
-    (:auto-pizz/arco boolean) (:auto-percussion-durs boolean)
+    (:auto-pizz/arco boolean) (:auto-dyn-nodup boolean) (:auto-percussion-durs boolean)
 
     (:split-mod symbol) (:auto-accs-mod symbol) (:auto-voices-mod symbol) (:auto-distr-rests-mod symbol) ; -mods are deprecated
     (:auto-multivoice-comb-mod symbol) (:auto-ottavas-mod symbol) (:auto-beam-mod symbol) (:auto-quantize-mod symbol)
@@ -777,11 +777,12 @@
     :thumb :downbow :upbow :portato :tenuto :marcato :accent :notehead :size
     :startslur- :slur- :endslur- :textnote :textdyn))
     
-(declaim (type boolean *auto-pizz/arco*))
+(declaim (type boolean *auto-pizz/arco* *auto-dyn-nodup*))
 (defparameter *auto-pizz/arco* t)
+(defparameter *auto-dyn-nodup* t)
 
 ;; marks only at beginning or end of tied notes
-(declaim (type cons +marks-first-tie+ +marks-last-tie+ +marks-on-off+ +marks-before-after+ +marks-indiv-voices+
+(declaim (type cons +marks-first-tie+ +marks-last-tie+ +marks-onoff+ +marks-before-after+ +marks-indiv-voices+
 	       +marks-spanner-voices+ +marks-spanner-staves+ +marks-expand+ +marks-defaultup+ +marks-withacc+ +marks-withaccdn+
 	       +marks-midistaff+ +marks-midistaffends+))
 (defparameter +marks-first-tie+
@@ -811,8 +812,11 @@
 (defparameter +marks-withaccdn+
   '(:mordent))
 
-(defparameter +marks-on-off+
+(defparameter +marks-onoff+
   '((*auto-pizz/arco* . (:pizz . :arco)) (nil . ((:size :small) . (:size :normal 2))) (nil . ((:size :tiny) . (:size :normal 1)))))
+(defparameter +marks-nodup+
+  '((*auto-dyn-nodup* . (:pppppp :ppppp :pppp :ppp :pp :p :mp :mf :f :ff :fff :ffff :fffff :ffffff))
+    (*auto-dyn-nodup* . (:pppppp* :ppppp* :pppp* :ppp* :pp* :p* :mp* :mf* :f* :ff* :fff* :ffff* :fffff* :ffffff*))))
 
 (defparameter +marks-before-after+
   '((:glissando . :before) (:portamento . :before) (:breath . :after) (:tie . :after)))

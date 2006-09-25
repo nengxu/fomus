@@ -159,11 +159,10 @@
 (defun make-rest (&rest args) (apply #'make-instance 'rest args))
 (defun make-meas (&rest args) (apply #'make-instance 'meas args))
 
-(declaim (inline notep restp timesigp #|keysigp|# partp markp durp eventp fomusobjp measp))
+(declaim (inline notep restp timesigp partp markp durp eventp fomusobjp measp))
 (defun notep (ev) (typep ev 'note))
 (defun restp (ev) (typep ev 'rest))
 (defun timesigp (ev) (typep ev 'timesig-repl))
-;; (defun keysigp (ev) (typep ev 'keysig))
 (defun partp (ev) (typep ev 'part))
 (defun markp (ev) (typep ev 'mark))
 (defun durp (ev) (typep ev 'dur-base))

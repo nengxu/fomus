@@ -331,15 +331,29 @@
 
 (defun postproc-marksonoff (pts)
   (declare (type list pts))
-  (loop for (v . (a . b)) of-type (symbol . ((or symbol list) . (or symbol list))) in +marks-on-off+ when (or (null v) (symbol-value v)) do
-	(loop with o for p of-type partex in pts do
-	      (loop for m of-type meas in (part-meas p) do
-		    (loop for g of-type list in (meas-voices m) do
+  (loop for (v . (a . b)) of-type (symbol . ((or symbol list) . (or symbol list))) in +marks-onoff+ when (or (null v) (symbol-value v)) do
+	(loop for p of-type partex in pts do
+	      (loop with oo = (make-list 4) for m of-type meas in (part-meas p) do
+		    (loop for g of-type list in (meas-voices m) and o on oo do
 			  (loop
 			   for e of-type (or noteex restex) in g
 			   do (rmmark e b)
-			   if (getmark e a) do (if o (rmmark e a) (setf o t))
-			   else when (and o (or (null v) (and (notep e) (not (or-list (force-list (event-tielt e))))))) do (addmark e b) (setf o nil))))
+			   if (getmark e a) do (if (first o) (rmmark e a) (setf (first o) t))
+			   else when (and (first o) (or (null v) (and (notep e) (not (or-list (force-list (event-tielt e))))))) do (addmark e b) (setf (first o) nil))))
+	      (print-dot))))
+(defun postproc-marksnodup (pts)
+  (declare (type list pts))
+  (loop for (v . l) of-type (symbol . list) in +marks-nodup+ when (or (null v) (symbol-value v)) do
+	(loop for p of-type partex in pts do
+	      (loop with lcs = (make-list 4) and lcl = (make-list 4 :initial-element l) for m of-type meas in (part-meas p) do
+		    (loop for g of-type list in (meas-voices m)
+			  for cs on lcs and cl on lcl do
+			  (loop
+			   for e of-type (or noteex restex) in g
+			   when (first cs) do (rmmark e (first cs))
+			   do (let ((x (find-if (lambda (y) (getmark e y)) (first cl))))
+				(when x (let ((a (if (listp x) (first x) x)))
+					  (setf (first cs) a (first cl) (remove a l))))))))
 	      (print-dot))))
 
 ;; preproc-tremolos already
@@ -546,6 +560,7 @@
   (postproc-tuplets pts)
   (postproc-graces pts)
   (postproc-marksonoff pts)
+  (postproc-marksnodup pts)
   (postproc-text pts)
   (postproc-markaccs2 pts)
   (postproc-barlines pts))

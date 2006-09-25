@@ -1,5 +1,7 @@
+	:notes keyword in .fms files for specifying chords
+	AUTO-DYN-NODUP setting and cleaning repeated dynamic marks (more user control to be added)
 	OFF tags in .fms file for shifting offsets over sections of file
-	FOMUS uses ASDF (and ASDF-Binary-Locations) to determine where plugin fasl files are placed
+	FOMUS uses ASDF (and ASDF-Binary-Locations) to determine where plugin .fasl files are placed
 	Changed some setting names
 	Fixed LilyPond backend bug involving alternate noteheads and grace notes
 	Added MARKS slot to percussion instrument definition
