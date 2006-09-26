@@ -314,7 +314,7 @@
 							     (list (make-restex nil :inv t :off (meas-off m) :dur (- (meas-endoff m) (meas-off m)) :marks '(:measrest)))))
 			    while e
 			    do (let ((fm (getmark e :measrest))
-				     (trf (and (>= (nth-value 1 (event-writtendur* e ts)) 2) (< ve 209))))
+				     (trf (and (>= (or (nth-value 1 (event-writtendur* e ts)) 0) 2) (< ve 209))))
 				 (when (getmark e '(:starttext- 2)) (setf twrn t))
 				 (format f "~A "
 					 (conc-strings

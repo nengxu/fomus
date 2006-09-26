@@ -46,7 +46,8 @@
 			     :directory
 			     #-(or lispworks clisp) dir
 			     #+(or lispworks clisp) (if (or (stringp dir) (pathnamep dir))
-							(pathname-directory #+(and (or unix linux darwin clisp) (not cygwin)) (conc-strings dir "/") #-(and (or unix linux darwin clisp) (not cygwin)) dir)
+							(pathname-directory #+(and (or unix linux darwin clisp) (not cygwin)) (conc-strings dir "/")
+									    #-(and (or unix linux darwin clisp) (not cygwin)) dir)
 							dir)
 			     :name name :type ext)))
 

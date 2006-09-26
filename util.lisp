@@ -904,7 +904,7 @@
   (let* ((tc (+ 2 (max (1+ (mloop for x in +settings+ maximize (length (symbol-name (first x))))) 4)))
 	 (tl (+ tc 1 (max (mloop for (xxx t1 t2) in +settings+ maximize (length (or t2 (princ-to-string t1)))) 4))))
     (format t "; NAME~VTTYPE~VTDEFAULT VALUE~%~%" tc tl)
-    (loop for (sy t1 t2) in +settings+ do
+    (loop for (sy t1 t2) in +settings+ unless (find sy +deprecated-repl+ :key #'car) do
 	  (format t "; ~A~VT~A~VT~A~%" sy tc (or t2 t1) tl (remove-newlines (prin1-to-string (symbol-value (find-symbol (conc-strings "*" (symbol-name sy) "*") :fomus))))))))
     
 (defun list-fomus-instruments ()
@@ -1016,9 +1016,11 @@
     (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Compiling plugin ~S..." key))
     (compile-file file :print nil :verbose nil :output-file cfile)))
 
-(defun plugin-outname (file)
+(defun plugin-outname (file backend)
   #+asdf (let ((x (ignore-errors (first (asdf:output-files (make-instance 'asdf:compile-op) (asdf:find-component (asdf:find-system :fomus) "package"))))))
-	   (if x (let ((f (change-filename x :name (conc-strings "plugins/" (pathname-name file)))))
+	   (if x (let* ((z (change-filename x :name nil :ext nil))
+			(f (change-filename x :dir (if backend (conc-strings z "/plugins/backends/") (conc-strings z "/plugins/")) :name (pathname-name file))))
+		   (unless (directory (conc-strings z "/*")) (error "FOMUS compile directory ~S doesn't exist" z)) ; small sanity check
 		   (ignore-errors (ensure-directories-exist f)) f)
 	       (compile-file-pathname file)))
   #-asdf (compile-file-pathname file))
@@ -1031,14 +1033,14 @@
 	  (unless (string= (symbol-name (first d)) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
 	  (loop for e in (rest d) collect (first e) collect (rest e))))
     (unless (member (first type) +plugin-types+) (error "~S is not a valid plugin type" (first type))) ; make sure all the right values are stored so error doesn't happen later
-    (check-type (first keyname) keyword)
+    (let ((x (first keyname))) (check-type x keyword))
     (check-type filename (or pathname string))
-    (check-type (first initfun) symbol)
-    (check-type (first entryfun) symbol)
-    (check-type (first documentation) string)
+    (let ((x (first initfun))) (check-type x symbol))
+    (let ((x (first entryfun))) (check-type x symbol))
+    (let ((x (first documentation))) (check-type x string))
     (when (and (first filename-ext) (not (eq (first type) :backend))) (error "Non-backend shouldn't declare a filename extension"))
     (let ((pk (plugin-package (first keyname)))
-	  (cf (plugin-outname filename)))
+	  (cf (plugin-outname filename (eq (first type) :backend))))
       (compile-plugin filename cf (first keyname))	; make sure it compiles
       (setf (gethash (first keyname) *plugins*) (make-plugin :type (first type) :file filename :pack pk
 							     :initfun (first initfun) :entryfun (first entryfun) :desc (first documentation))))
@@ -1063,7 +1065,7 @@
 ;; user fun
 (defun load-fomus-plugin (keyname)
   (let* ((pl (or (gethash keyname *plugins*) (error "Plugin ~S is not registered or does not exist" keyname)))
-	 (cf (plugin-outname (plugin-file pl))))
+	 (cf (plugin-outname (plugin-file pl) (eq (plugin-type pl) :backend))))
     (when (or (not (find (plugin-pack pl) *modules* :test #'string=)) (compile-plugin (plugin-file pl) cf keyname))
       (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading plugin ~S..." keyname))
       (load cf :verbose nil :print nil)
