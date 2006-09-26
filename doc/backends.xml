@@ -1,20 +1,19 @@
-<chapter id="backends">
-  <title id="backends.title">Backends</title>
+<chapter id="outputs">
+  <title id="outputs.title">Outputs</title>
   <section>
     <para>
       This chapter explains options specific to each of the possible output formats.
-      One or more backends may be selected with the <varname><link linkend="setting.backend">BACKEND</link></varname> setting.
+      One or more outputs or backends may be selected with the <varname><link linkend="setting.output">OUTPUT</link></varname> setting.
       Most options are passed as keyword/argument pairs via this setting or in the
       <structfield><link linkend="part.opts">OPTS</link></structfield> slot of the <classname><link linkend="class.part">PART</link></classname>
-      class.
-  	  Current possible backend symbols are <literal>:DATA</literal> or <literal>:FOMUS</literal>, <literal>:RAW</literal>, <literal>:MUSICXML</literal>, 
-	  <literal>:MUSICXML-SIBELIUS</literal>, <literal>:MUSICXML-FINALE</literal>, <literal>:CMN</literal>, <literal>:LILYPOND</literal> and <literal>:MIDI</literal>.
-      Attention must be made to spelling since misspelled keyword arguments are ignored rather than cause errors (this will be improved in future releases).
+      class. Current possible output symbols are <literal>:DATA</literal> or <literal>:FOMUS</literal>, <literal>:CHUNK</literal>, <literal>:NONE</literal>, 
+      <literal>:MUSICXML</literal>, <literal>:MUSICXML-SIBELIUS</literal>, <literal>:MUSICXML-FINALE</literal>, <literal>:CMN</literal>, 
+      <literal>:LILYPOND</literal> and <literal>:MIDI</literal>.
     </para>
     <para>
       The base output filename is specified using the <varname><link linkend="setting.filename">FILENAME</link></varname> setting.
-      It may be overridden by the <varname>filename</varname> option present in each of the backends.
-      Each backend adds its own extension (for example, a LilyPond file always has a <filename>.ly</filename> extension).
+      It may be overridden by the <varname>filename</varname> option present in each of the outputs.
+      Each output adds its own extension (for example, a LilyPond file gets a <filename>.ly</filename> extension added).
     </para> 
   </section>
   <section>
@@ -22,9 +21,9 @@
     <para>
       This produces a file with extension <filename>.fms</filename> containing a dump of the data that is
       sent to <application>FOMUS</application> before any processing occurs.
-      If this is the only backend specified, <application>FOMUS</application> simply saves the data and returns without further processing.
+      If this is the only output specified, <application>FOMUS</application> simply saves the data and returns without further processing.
       It may be specified using either the <literal>:DATA</literal> or <literal>:FOMUS</literal> keywords in the 
-      <varname><link linkend="setting.backend">BACKEND</link></varname> setting.
+      <varname><link linkend="setting.output">OUTPUT</link></varname> setting.
       The file is editable and can be reloaded for editing and processing by calling the <function><link linkend="function.fomus2">FOMUS</link></function>
       function with the name of the file. See <link linkend="interface.text" endterm="interface.text.title"/> for a description of this file format.
     </para>
@@ -33,7 +32,7 @@
     <title>LilyPond</title>
     <para>
       <application>FOMUS</application> currently creates notation files for <application>LilyPond</application> versions 2.4 and 2.6.
-      The <varname><link linkend="setting.backend">BACKEND</link></varname> setting keyword to use is <literal>:LILYPOND</literal>.
+      The <varname><link linkend="setting.output">OUTPUT</link></varname> setting keyword to use is <literal>:LILYPOND</literal>.
       <application>FOMUS</application> outputs a slightly different file depending on whether LilyPond version 2.4 or 2.6 is installed to insure
       that it compiles correctly (a file for one version may give an error when compiled in the other version).
       A <filename>.ly</filename> extension is added to the base filename to make the complete output filename.
@@ -278,7 +277,7 @@
     <title id="musicxml">MusicXML</title>  
     <para>
     <application>FOMUS</application> outputs <application>MusicXML</application> version 1.1 format files when the <literal>:MUSICXML</literal>
-    keyword is used in the <varname><link linkend="setting.backend">BACKEND</link></varname> setting.
+    keyword is used in the <varname><link linkend="setting.output">OUTPUT</link></varname> setting.
     An <filename>.xml</filename> extension is automatically added to make the complete output filename.
     The output file is importable into a number of different notation programs, though the quality of the
     results will vary.
@@ -372,22 +371,22 @@
   <section>
     <title>MusicXML for Sibelius</title>  
     <para>
-      This is equivalent to the <link linkend="musicxml">MusicXML</link> backend with "kludge" options set appropriately for Sibelius version 4.
-      Use the <literal>:MUSICXML-SIBELIUS</literal> keyword in the <varname><link linkend="setting.backend">BACKEND</link></varname> setting for this.
+      This is equivalent to the <link linkend="musicxml">MusicXML</link> output with "kludge" options set appropriately for Sibelius version 4.
+      Use the <literal>:MUSICXML-SIBELIUS</literal> keyword in the <varname><link linkend="setting.output">OUTPUT</link></varname> setting for this.
     </para>
     </section>
   <section>
     <title>MusicXML for Finale</title>  
     <para>
-      This is equivalent to the <link linkend="musicxml">MusicXML</link> backend with "kludge" options set appropriately for Finale.
-      Use the <literal>:MUSICXML-FINALE</literal> keyword in the <varname><link linkend="setting.backend">BACKEND</link></varname> setting for this.
+      This is equivalent to the <link linkend="musicxml">MusicXML</link> output with "kludge" options set appropriately for Finale.
+      Use the <literal>:MUSICXML-FINALE</literal> keyword in the <varname><link linkend="setting.output">OUTPUT</link></varname> setting for this.
     </para>
     </section>
   <section>
     <title>Common Music Notation</title>  
     <para>
       This backend produces files in Lisp syntax suitable for loading and processing with <application>Common Music Notation</application>.
-      The <varname><link linkend="setting.backend">BACKEND</link></varname> setting for this is <literal>:CMN</literal>.
+      The <varname><link linkend="setting.output">OUTPUT</link></varname> setting for this is <literal>:CMN</literal>.
       A <filename>.cmn</filename> extension is added to the base filename to make the complete output filename.
       The file can be compiled and viewed automatically if <application>CMN</application> is loaded and an <filename>.eps</filename> file
       viewing application (a PostScript viewing application in <application>Gnome</application> or <application>KDE</application>
@@ -508,6 +507,7 @@
       <title>MIDI Options</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="midi.filename">:FILENAME</link></varname></member>
+        <member><varname><link linkend="midi.midi.filename">:MIDI-FILENAME</link></varname></member>
         <member><varname><link linkend="midi.play">:PLAY</link></varname></member>
         <member><varname><link linkend="midi.cm.args">:CM-ARGS</link></varname></member>
         <member><varname><link linkend="midi.events.fun">:EVENTS-FUN</link></varname></member>
@@ -531,6 +531,7 @@
         <member><varname><link linkend="midi.tramp">:TRAMP</link></varname></member>
         <member><varname><link linkend="midi.trdur.secs">:TRDUR-SECS</link></varname></member>
         <member><varname><link linkend="midi.trovlp.adddur">:TROVLP-ADDDUR</link></varname></member>
+        <member><varname><link linkend="midi.midi.filename">:MIDI-FILENAME</link></varname></member>
       </simplelist>
     </section>
     <section>
@@ -718,6 +719,20 @@
           </listitem>
         </varlistentry>
         <varlistentry>
+          <term><varname><anchor id="midi.midi.filename"/>:MIDI-FILENAME</varname></term>
+          <listitem>
+            <para>
+	      This is a part option (see the <classname><link linkend="class.part">PART</link></classname> class).
+	      It is a string representing a filename for a separate output file--<application>FOMUS</application> fills this with 
+	      MIDI data only for the part that it is specified in.
+	      These strings are "merged" with <varname><link linkend="midi.filename">FILENAME</link></varname> using Lisp's <function>MERGE-PATHNAMES</function> function
+	      so that if a full path isn't specified it appears in the same directory as <link linkend="midi.filename">FILENAME</link>.
+	      Parts with the same <varname><link linkend="midi.midi.filename">MIDI-FILENAME</link></varname> are grouped together so that
+	      all of their output is written to one file.
+  	  </para>
+          </listitem>
+        </varlistentry>
+        <varlistentry>
           <term><varname><anchor id="midi.min.amp"/>:MIN-AMP</varname></term>
           <listitem>
             <para>
@@ -853,17 +868,11 @@
     </section>
   </section>
   <section>
-    <title>Raw</title>  
+    <title>CHUNK</title>
     <para>
-      This produces a file with extension <filename>.fmr</filename> containing a dump of the data that is
-      sent to the backends.
-      It may be specified using the <literal>:RAW</literal> keyword in the 
-      <varname><link linkend="setting.backend">BACKEND</link></varname> setting.
-      In future versions of <application>FOMUS</application>, the user will be able to reload this file to
-      produce score files in other formats.
-      The user will also be able to concatenate them into single scores, a useful feature if different settings
-      are appropriate for different score sections.
-      Editing this file isn't recommended or particularly useful.
+      When no other outputs are specified but a "chunk" is desired (see <link linkend="interface.chunks" endterm="interface.chunks.title"/>), 
+      this keyword tells <application>FOMUS</application> to go ahead and process the input without complaining.  The <literal>:NONE</literal>
+      keyword can also be used.
     </para>
   </section>
 </chapter>

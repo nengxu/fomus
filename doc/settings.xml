@@ -47,7 +47,6 @@
         <member><varname><link linkend="setting.debug.filename">:DEBUG-FILENAME</link></varname></member>
         <member><varname><link linkend="setting.use.cm">:USE-CM</link></varname></member>
         <member><varname><link linkend="setting.cm.scale">:CM-SCALE</link></varname></member>
-        <member><varname><link linkend="setting.backend">:BACKEND</link></varname></member>
         <member><varname><link linkend="setting.output">:OUTPUT</link></varname></member>
         <member><varname><link linkend="setting.filename">:FILENAME</link></varname></member>
 	<member><varname><link linkend="setting.quality">:QUALITY</link></varname></member>
@@ -145,6 +144,7 @@
         <member><varname><link linkend="setting.auto.voicing">:AUTO-VOICING</link></varname></member>
         <member><varname><link linkend="setting.auto.percussion.durs">:AUTO-PERCUSSION-DURS</link></varname></member>
         <member><varname><link linkend="setting.auto.pizz/arco">:AUTO-PIZZ/ARCO</link></varname></member>	
+        <member><varname><link linkend="setting.auto.dyn.nodup">:AUTO-DYN-NODUP</link></varname></member>	
       </simplelist>
     </section>
     <section>
@@ -320,6 +320,14 @@
         </listitem>
       </varlistentry>
       <varlistentry>
+        <term><varname><anchor id="setting.auto.dyn.nodup"/>:AUTO-DYN-NODUP</varname></term>
+        <listitem>
+          <para>
+  	    If set to <literal>T</literal>, indicates that <application>FOMUS</application> should eliminate all redundant dynamic markings.
+  	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
         <term><varname><anchor id="setting.auto.grace.slurs"/>:AUTO-GRACE-SLURS</varname></term>
         <listitem>
           <para>
@@ -473,15 +481,6 @@
   	  If set to <literal>T</literal>, <application>FOMUS</application> automatically decides how to distribute notes among multiple voices,
   	  given the choices specified in the <classname>NOTE</classname>, <classname>REST</classname> and <classname>MARK</classname> objects.
   	  If set to <literal>NIL</literal>, the user must specify explicitly which voice an event belongs to.
-  	</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term><varname><anchor id="setting.backend"/>:BACKEND</varname></term>
-        <listitem>
-          <para>
-	    This is the same setting as <varname><link linkend="setting.output">OUTPUT</link></varname>.
-	    Use one or the other, but don't use both.
   	</para>
         </listitem>
       </varlistentry>
@@ -857,7 +856,7 @@
           <para>
   	  This string represents the path and filename to which <application>FOMUS</application> adds an appropriate extension when it saves
   	  output in various formats.
-  	  This setting in combination with the <varname><link linkend="setting.backend">BACKEND</link></varname> setting determines the actual output filenames.
+  	  This setting in combination with the <varname><link linkend="setting.output">OUTPUT</link></varname> setting determines the actual output filenames.
     	  <example>
               <title>FILENAME Setting</title>
               <programlisting>
@@ -1255,7 +1254,7 @@
   	  This is either a list or a list of lists specifying one or more output files with optional keyword/argument pairs for tweaking their contents.
   	  Current possible output symbols are <literal>:DATA</literal> or <literal>:FOMUS</literal>, <literal>:RAW</literal>, <literal>:MUSICXML</literal>, 
 	  <literal>:MUSICXML-SIBELIUS</literal>, <literal>:MUSICXML-FINALE</literal>, <literal>:CMN</literal>, <literal>:LILYPOND</literal> and <literal>:MIDI</literal>.
-  	  More information on these is given in <link linkend="backends" endterm="backends.title"/>.
+  	  More information on these is given in <link linkend="outputs" endterm="outputs.title"/>.
   	  The following are examples of valid output specifications:
   	  <example>
               <title>OUTPUT Setting 1</title>

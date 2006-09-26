@@ -163,7 +163,7 @@
 	    <para>
 	      This is a keyword/argument pair list specifying options to be passed directly to the backend algorithms.
 	      Each backend has its own set of options that may be specified alongside options for any other backend.
-	      See the <link linkend="backends" endterm="backends.title"/> for more information.
+	      See the <link linkend="outputs" endterm="outputs.title"/> for more information.
 	    </para>
 	  </listitem>
 	</varlistentry> 

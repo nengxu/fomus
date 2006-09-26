@@ -1017,10 +1017,11 @@
     (compile-file file :print nil :verbose nil :output-file cfile)))
 
 (defun plugin-outname (file backend)
+  (declare (ignorable backend))
   #+asdf (let ((x (ignore-errors (first (asdf:output-files (make-instance 'asdf:compile-op) (asdf:find-component (asdf:find-system :fomus) "package"))))))
 	   (if x (let* ((z (change-filename x :name nil :ext nil))
 			(f (change-filename x :dir (if backend (conc-strings z "/plugins/backends/") (conc-strings z "/plugins/")) :name (pathname-name file))))
-		   (unless (directory (conc-strings z "/*")) (error "FOMUS compile directory ~S doesn't exist" z)) ; small sanity check
+		   (unless (directory (conc-strings z "/*")) (error "FOMUS compile directory ~S doesn't exist (this is a bug)" z)) ; small sanity check
 		   (ignore-errors (ensure-directories-exist f)) f)
 	       (compile-file-pathname file)))
   #-asdf (compile-file-pathname file))

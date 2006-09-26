@@ -257,7 +257,15 @@ note 1 :off 1 :dur 1 :note 62 \
       :off 2 
       :dur 1
       :note 64
-      :marks (:marcato (:textnote "Text")))]]>
+      :marks (:marcato (:textnote "Text")))
+
+off +2
+note 1 :off 2 :dur 1/2 :note c4 ; actual offset is 4
+off -1
+note 1 :off 10 :dur 1/2 :note c4 ; actual offset is 9
+off
+
+note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)]]>
 	</programlisting>
       </example>
       Each element is read using the Lisp <function>READ</function> command (nothing is evaluated), with the exception of expressions that begin with
@@ -268,6 +276,13 @@ note 1 :off 1 :dur 1 :note 62 \
       The <literal>\</literal> character may be used at the end of a line to concatenate it with the following line.
       Also, as shown in the example above, any "entry" may be surrounded by a set of parenthesis to indicate that all elements inside them are read/parsed together 
       (like an ordinary Lisp expression)--this can also be used to spread entries across several lines.
+      </para>
+      <para>
+        A few extra things are possible with input files to facilitate editing.  Any section of the file may contain an <literal>OFF</literal>
+	tag optionally followed by a number.  This tag shifts the offsets of everything that follows by the specified amount.
+	An <literal>OFF</literal> tag with no number resets the offset shift to 0.  Also, a <literal>:NOTES</literal> keyword is available
+	for specifying chords.  A chord is then specified as a list of notes as shown above.  When <application>FOMUS</application> 
+	reads this it creates a separate note object for each note in the list.
       </para>
       <para>
       To process this file, use the <function>FOMUS</function> command as follows:
@@ -368,6 +383,8 @@ fomus my_data_file.fms]]>
     <para>
       Support for this is considered unstable at the moment.  Bugs (there are probably at least a few) will be squashed and more enhancements will be added shortly.
       <application>FOMUS</application> outputs a chunk object automatically on each successful run.  
+      If no outputs are specified, then <literal>:CHUNK</literal> or <literal>:NONE</literal> must be specified to prevent <application>FOMUS</application>
+      from complaining that there are no outputs.
       A chunk is actually all of the measures in the processed output that contain anything other than measure rests.
       Chunks can only be merged together if there are no such overlapping measures.  (At the moment, chunks can't be "relocated" or given an offset--this 
       obvious features will be added soon.)  <application>FOMUS</application> considers parts with matching 

@@ -112,7 +112,7 @@ cd path_to_install_directory
     </para>
   </section>
   <section>
-    <title>(Simple) Emacs Interface</title>
+    <title>Simple Emacs Interface</title>
     <para>
       Here are a few simple lines that you can put in your <filename>.emacs</filename> file.  They associate <filename>.fms</filename> files
       with Lisp (actually, this example assumes <application>SLIME</application> is being used) and bind the key sequence <literal>"\C-c\C-o"</literal> to run the 

@@ -8,7 +8,7 @@
 		  "backends" "main" "interface" "final")
       and nw
       for na in fl
-      for cl = (if (listp na) (mapcar (lambda (x) (merge-pathnames x *load-pathname*)) na) (list (merge-pathnames na *load-pathname*)))
+      for cl = (if (listp na) (mapcar (lambda (x) (merge-pathnames x *load-truename*)) na) (list (merge-pathnames na *load-truename*)))
       for cn = (mapcar (lambda (x) (compile-file-pathname x)) cl)
       do (loop with nw0
 	       for cn0 in cn

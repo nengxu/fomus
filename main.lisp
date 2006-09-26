@@ -201,8 +201,8 @@
 
 ;; keysigs not implemented yet
 ;; returns data structure ready for output via backends
-(defun fomus-proc (svdata dir)
-  (when (and *output* (numberp *verbose*) (>= *verbose* 1)) (out "~&;; Formatting music..."))
+(defun fomus-proc (svdata dir &aux (someout (find-if-not (lambda (x) (member (if (listp x) (first x) x) '(:fomus :data))) (force-list2some *output*))))
+  (when (and someout (numberp *verbose*) (>= *verbose* 1)) (out "~&;; Formatting music..."))
   (when *debug-filename* (save-debug))
   (when (and (numberp *verbose*) (>= *verbose* 2)) (out "~&; Checking types..."))
   (check-setting-types)
@@ -259,88 +259,88 @@
 		      (destructuring-bind (&key (filename (change-filename *filename* :ext "fms")) &allow-other-keys)
 			  (rest (force-list e))
 			(save-indata (namestring (merge-pathnames filename dir)) pts mks)))
-		(unless *output* (error "No backends specified"))
-		(setf *old-objects* nil)
-		(track-progress +progress-int+
-		  (preproc-keysigs *timesigs*)
-		  (fixinputbeat pts *timesigs* mks)
-		  (when (find-if #'is-percussion pts)
-		    (when (>= *verbose* 2) (out "~&; Percussion...")) ; before voices & clefs
-		    (percussion pts))	; was after accs
-		  (autodurs-preproc pts)
-		  (if *auto-quantize*
-		      (progn (when (>= *verbose* 2) (out "~&; Quantizing..."))
-			     (quantize *timesigs* pts) #+debug (fomus-proc-check pts 'quantize))
-		      (quantize-generic pts))
-		  (when *check-ranges*
-		    (when (>= *verbose* 2) (out "~&; Ranges..."))
-		    (check-ranges pts) #+debug (fomus-proc-check pts 'ranges))	     
-		  (preproc-noteheads pts) ; set acctie TEMPSLOT for accidentals and voicing algorithms
-		  (check-mark-accs pts)
-		  (check-useraccs pts)
-		  (when *transpose*
-		    (when (>= *verbose* 2) (out "~&; Transpositions..."))
-		    (transpose pts) #+debug (fomus-proc-check pts 'transpose))
-		  (if *auto-voicing*
-		      (progn (when (>= *verbose* 2) (out "~&; Voices..."))
-			     (voices pts) #+debug (fomus-proc-check pts 'voices))
-		      (voices-generic pts))
-		  (distr-voices pts)
-		  (if *auto-accidentals*
-		      (progn (when (>= *verbose* 2) (out "~&; Accidentals..."))
-			     (accidentals pts) #+debug (fomus-proc-check pts 'accs))
-		      (accidentals-generic pts))
-		  (reset-tempslots pts nil)
-		  (if *auto-staff/clef-changes*
-		      (progn (when (>= *verbose* 2) (out "~&; Staves/clefs...")) ; staves/voices are now decided
-			     (clefs pts) #+debug (fomus-proc-check pts 'clefs))
-		      (clefs-generic pts))
-		  (reset-tempslots pts nil)
-		  (distribute-marks pts mks)
-		  (reset-tempslots pts nil)
-		  (setf pts (sep-staves pts)) ; ********** STAVES SEPARATED
-		  (when *auto-ottavas*	; (before clean-spanners)
-		    (when (>= *verbose* 2) (out "~&; Ottavas..."))
-		    (ottavas pts) #+debug (fomus-proc-check pts 'ottavas))
-		  (when (>= *verbose* 2) (out "~&; Staff spanners..."))
-		  (clean-spanners pts +marks-spanner-staves+) #+debug (fomus-proc-check pts 'spanners1)
-		  (setf pts (sep-voices (assemble-parts pts))) ; ********** STAVES TOGETHER, VOICES SEPARATED
-		  (when (>= *verbose* 2) (out "~&; Voice spanners..."))
-		  (expand-marks pts) #+debug (fomus-proc-check pts 'expandmarks)
-		  (clean-spanners pts +marks-spanner-voices+) #+debug (fomus-proc-check pts 'spanners2)
-		  (when (>= *verbose* 2) (out "~&; Miscellaneous items..."))
-		  (when (find-if #'is-percussion pts) (autodurs *timesigs* pts)) ;; uses beamrt (autodur) TEMPSLOT until after split function
-		  (preproc-tremolos *timesigs* pts)
-		  (preproc-cautaccs pts)
-		  (when *auto-grace-slurs*
-		    (grace-slurs pts) #+debug (fomus-proc-check pts 'graceslurs))
-		  (when (>= *verbose* 2) (out "~&; Measures..."))
-		  (init-parts *timesigs* pts) ; ----- MEASURES
-		  #+debug (fomus-proc-check pts 'measures)
-		  #+debug (check-same pts "FOMUS-PROC (MEASURES)" :key (lambda (x) (meas-endoff (last-element (part-meas x)))))
-		  (when *auto-cautionary-accs*
-		    (when (>= *verbose* 2) (out "~&; Cautionary accidentals..."))
-		    (cautaccs pts) #+debug (fomus-proc-check pts 'cautaccs))
-		  (when (>= *verbose* 2) (out "~&; Chords..."))
-		  (marks-beforeafter pts)
-		  (preproc-userties pts)
-		  (preproc pts) #+debug (fomus-proc-check pts 'preproc)	; ----- CHORDS, RESTS
-		  (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties1)
-		  (when (>= *verbose* 2) (out "~&; Splits/ties/rests..."))
-		  (split pts) #+debug (fomus-proc-check pts 'ties)
-		  (reset-tempslots pts 0)
-		  (reset-resttempslots pts)
-		  (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties2)
-		  (when *auto-beams*
-		    (when (>= *verbose* 2) (out "~&; Beams..."))
-		    (beams pts) #+debug (fomus-proc-check pts 'beams))
-		  (when (>= *verbose* 2) (out "~&; Staff/voice layouts..."))
-		  (setf pts (assemble-parts pts)) #+debug (fomus-proc-check pts 'assvoices) ; ********** VOICES TOGETHER
-		  (distr-rests pts) #+debug (fomus-proc-check pts 'distrrests)
-		  (when (or *auto-multivoice-rests* *auto-multivoice-notes*)
-		    (comb-notes pts) #+debug (fomus-proc-check pts 'combnotes))
-		  (backup-props pts)
-		  (postproc-parts pts))))))))))
+		(when someout
+		  (setf *old-objects* nil)
+		  (track-progress +progress-int+
+		    (preproc-keysigs *timesigs*)
+		    (fixinputbeat pts *timesigs* mks)
+		    (when (find-if #'is-percussion pts)
+		      (when (>= *verbose* 2) (out "~&; Percussion..."))	; before voices & clefs
+		      (percussion pts))	; was after accs
+		    (autodurs-preproc pts)
+		    (if *auto-quantize*
+			(progn (when (>= *verbose* 2) (out "~&; Quantizing..."))
+			       (quantize *timesigs* pts) #+debug (fomus-proc-check pts 'quantize))
+			(quantize-generic pts))
+		    (when *check-ranges*
+		      (when (>= *verbose* 2) (out "~&; Ranges..."))
+		      (check-ranges pts) #+debug (fomus-proc-check pts 'ranges))	     
+		    (preproc-noteheads pts) ; set acctie TEMPSLOT for accidentals and voicing algorithms
+		    (check-mark-accs pts)
+		    (check-useraccs pts)
+		    (when *transpose*
+		      (when (>= *verbose* 2) (out "~&; Transpositions..."))
+		      (transpose pts) #+debug (fomus-proc-check pts 'transpose))
+		    (if *auto-voicing*
+			(progn (when (>= *verbose* 2) (out "~&; Voices..."))
+			       (voices pts) #+debug (fomus-proc-check pts 'voices))
+			(voices-generic pts))
+		    (distr-voices pts)
+		    (if *auto-accidentals*
+			(progn (when (>= *verbose* 2) (out "~&; Accidentals..."))
+			       (accidentals pts) #+debug (fomus-proc-check pts 'accs))
+			(accidentals-generic pts))
+		    (reset-tempslots pts nil)
+		    (if *auto-staff/clef-changes*
+			(progn (when (>= *verbose* 2) (out "~&; Staves/clefs...")) ; staves/voices are now decided
+			       (clefs pts) #+debug (fomus-proc-check pts 'clefs))
+			(clefs-generic pts))
+		    (reset-tempslots pts nil)
+		    (distribute-marks pts mks)
+		    (reset-tempslots pts nil)
+		    (setf pts (sep-staves pts))	; ********** STAVES SEPARATED
+		    (when *auto-ottavas* ; (before clean-spanners)
+		      (when (>= *verbose* 2) (out "~&; Ottavas..."))
+		      (ottavas pts) #+debug (fomus-proc-check pts 'ottavas))
+		    (when (>= *verbose* 2) (out "~&; Staff spanners..."))
+		    (clean-spanners pts +marks-spanner-staves+) #+debug (fomus-proc-check pts 'spanners1)
+		    (setf pts (sep-voices (assemble-parts pts))) ; ********** STAVES TOGETHER, VOICES SEPARATED
+		    (when (>= *verbose* 2) (out "~&; Voice spanners..."))
+		    (expand-marks pts) #+debug (fomus-proc-check pts 'expandmarks)
+		    (clean-spanners pts +marks-spanner-voices+) #+debug (fomus-proc-check pts 'spanners2)
+		    (when (>= *verbose* 2) (out "~&; Miscellaneous items..."))
+		    (when (find-if #'is-percussion pts) (autodurs *timesigs* pts)) ;; uses beamrt (autodur) TEMPSLOT until after split function
+		    (preproc-tremolos *timesigs* pts)
+		    (preproc-cautaccs pts)
+		    (when *auto-grace-slurs*
+		      (grace-slurs pts) #+debug (fomus-proc-check pts 'graceslurs))
+		    (when (>= *verbose* 2) (out "~&; Measures..."))
+		    (init-parts *timesigs* pts) ; ----- MEASURES
+		    #+debug (fomus-proc-check pts 'measures)
+		    #+debug (check-same pts "FOMUS-PROC (MEASURES)" :key (lambda (x) (meas-endoff (last-element (part-meas x)))))
+		    (when *auto-cautionary-accs*
+		      (when (>= *verbose* 2) (out "~&; Cautionary accidentals..."))
+		      (cautaccs pts) #+debug (fomus-proc-check pts 'cautaccs))
+		    (when (>= *verbose* 2) (out "~&; Chords..."))
+		    (marks-beforeafter pts)
+		    (preproc-userties pts)
+		    (preproc pts) #+debug (fomus-proc-check pts 'preproc) ; ----- CHORDS, RESTS
+		    (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties1)
+		    (when (>= *verbose* 2) (out "~&; Splits/ties/rests..."))
+		    (split pts) #+debug (fomus-proc-check pts 'ties)
+		    (reset-tempslots pts 0)
+		    (reset-resttempslots pts)
+		    (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties2)
+		    (when *auto-beams*
+		      (when (>= *verbose* 2) (out "~&; Beams..."))
+		      (beams pts) #+debug (fomus-proc-check pts 'beams))
+		    (when (>= *verbose* 2) (out "~&; Staff/voice layouts..."))
+		    (setf pts (assemble-parts pts)) #+debug (fomus-proc-check pts 'assvoices) ; ********** VOICES TOGETHER
+		    (distr-rests pts) #+debug (fomus-proc-check pts 'distrrests)
+		    (when (or *auto-multivoice-rests* *auto-multivoice-notes*)
+		      (comb-notes pts) #+debug (fomus-proc-check pts 'combnotes))
+		    (backup-props pts)
+		    (postproc-parts pts)))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MAIN
@@ -357,28 +357,30 @@
 
 (defun fomus-main ()
   (resolve-deprecated
-   (find-cm)
-   (when (find :cmn (force-list2some *output*) :key (lambda (x) (first (force-list x)))) (find-cmn))
-   (let ((dir #+cmu (ext:default-directory)
-	      #+sbcl (conc-strings (sb-unix:posix-getcwd) "/")
-	      #+clisp (ext:default-directory)
-	      #+openmcl (ccl:mac-default-directory)
-	      #+allegro (excl:current-directory)
-	      #+lispworks (hcl:get-working-directory)))
-     (let ((r (if *chunks*
-		  (fomus-merge)
-		  (fomus-proc (remove-if-not (lambda (x) (member x '(:data :fomus))) (force-list2some *output*) :key (lambda (x) (first (force-list x)))) dir))))
-       (loop for x of-type (or symbol cons) in (force-list2some *output*)
-	     do (let ((xx (force-list x)))
-		  (destructuring-bind (ba &key filename process play view &allow-other-keys) xx
-		    (declare (type symbol ba) (type boolean process view))
-		    (backend ba
-			     (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba *backendexts*))) dir))
-			     dir r (rest xx) (or process view) play view))))
-       (make-fomuschunk
-	:settings (map nil (lambda (s)
-			     (declare (type cons s))
-			     (cons (first s) (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))
-		       +settings+)
-	:parts r)))))
+    (find-cm)
+    (when (find :cmn (force-list2some *output*) :key (lambda (x) (first (force-list x)))) (find-cmn))
+    (let ((dir #+cmu (ext:default-directory)
+	       #+sbcl (conc-strings (sb-unix:posix-getcwd) "/")
+	       #+clisp (ext:default-directory)
+	       #+openmcl (ccl:mac-default-directory)
+	       #+allegro (excl:current-directory)
+	       #+lispworks (hcl:get-working-directory)))
+      (let ((r (if *chunks*
+		   (fomus-merge)
+		   (fomus-proc (remove-if-not (lambda (x) (member x '(:data :fomus))) (force-list2some *output*) :key (lambda (x) (first (force-list x)))) dir))))
+	(loop for x of-type (or symbol cons) in (force-list2some *output*)
+	      do (let ((xx (force-list x)))
+		   (destructuring-bind (ba &key filename process play view &allow-other-keys) xx
+		     (declare (type symbol ba) (type boolean process view))
+		     (backend ba
+			      (namestring (merge-pathnames (or filename (change-filename *filename* :ext (lookup ba *backendexts*))) dir))
+			      dir r (rest xx) (or process view) play view))))
+	(if r
+	    (make-fomuschunk
+	     :settings (map nil (lambda (s)
+				  (declare (type cons s))
+				  (cons (first s) (symbol-value (find-symbol (conc-strings "*" (symbol-name (first s)) "*") :fomus))))
+			    +settings+)
+	     :parts r)
+	    t)))))
 
