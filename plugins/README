@@ -16,7 +16,7 @@ initfun = callback initialization function w/ no arguments (not really necessary
 entryfun = function to replace fomus's default function (arguments differ depending on context)
 documentation = passed to defpackage and also printed out when list-fomus-plugins is called
 preload = form that is executed before anything else (for loading dependencies)
-filename-ext = string such as "xml" or "ly" added to output filename--only use w/ backends
+filename-ext = string such as "xml" or "ly" added to output filename--only use w/ backends (optional--without this, the base filename is passed to the plugin function)
 (all other arguments) = same as equivalent args in defpackage (deffomusplugin acts as an extension to defpackage)
 
 DEFPLUGIN takes care of defining the package, also adds a FOMUS-PLUGINNAME module to the *MODULES* list (FOMUS uses this)

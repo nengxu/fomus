@@ -3,6 +3,7 @@ TODO LIST
 Immediate:
 
     Bugs:
+      XML output blows up (with percussion instruments?)
       Weird number choices for some tuplets (12 instead of 6, 10 instead of 5, etc.)
       Double brackets shouldn't appear in the same place (6 violins example)
       Send list of XML issues to Sibelius/Finale tech. support

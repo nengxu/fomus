@@ -990,14 +990,15 @@
       (loop for e in args collect (first e) collect (rest e))
     (declare (ignore type))
     `(progn
-      ,@(when preload (list `(eval-when (:load-toplevel :compile-toplevel :execute) ,(first preload)))) ; forms for loading dependencies
+      ,@(when preload (list `(eval-when (:load-toplevel :compile-toplevel :execute) ,(first preload))))	; forms for loading dependencies
       (defpackage ,(plugin-package (first keyname))
 	(:use "FOMUS" "COMMON-LISP")
 	(:export ,(first initfun) ,(first entryfun))
 	,@(loop for e in args unless (find (first e) '(:type :keyname :initfun :entryfun :preload :filename-ext :import-from-fomus)) collect e))
       (eval-when (:load-toplevel)
 	(provide ,(plugin-package (first keyname))) 
-	(pushnew (cons ,(first keyname) ,(first filename-ext)) *backendexts* :test #'equal))
+	,@(when (first filename-ext)
+		`((pushnew (cons ,(first keyname) (remove #\. ,(first filename-ext) :test #'char=)) *backendexts* :test #'equal))))
       (eval-when (:load-toplevel :compile-toplevel :execute) (in-package ,(plugin-package (first keyname)))))))
 
 (defstruct (plugin (:copier nil) (:predicate nil))
@@ -1053,9 +1054,9 @@
   (let ((ty (or type +plugin-types+)))
     (loop for l in (sort (split-into-groups (loop for h being each hash-key in *plugins* using (hash-value v)
 						  when (member (plugin-type v) ty) collect (cons h v)) (lambda (x) (plugin-type (cdr x))))
-			 #'car
-			 :key (lambda (x) (position (plugin-type (cdr x)) +plugin-types+)))
-	  do (format t ";; Type: ~A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" (symbol-name (plugin-type (cdr (first l))))
+			 #'< :key (lambda (x) (position (plugin-type (cdar x)) +plugin-types+)))
+	  for nx = nil then t
+	  do (format t "~:[~;~%~];; Type: ~A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" nx (symbol-name (plugin-type (cdr (first l))))
 		     (loop for e in (sort l #'string< :key (lambda (x) (symbol-name (car x))))
 			   collect (symbol-name (car e)) collect (plugin-file (cdr e))
 			   collect (loop with z = (plugin-desc (cdr e)) and in = (format nil "~%; ")
