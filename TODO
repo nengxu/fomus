@@ -21,6 +21,9 @@ Immediate:
       LilyPond not tying repeated notes in chords where other notes are tied (fixable in next LilyPond version)
       MIDI output testing/adjusting/fine tuning
     Improvements:
+      Shortcuts for some marks (example: (:slurto 1) to slur to next note, (:slurto 2) for next two, etc.)
+      Check Finale and Siblius updates for changes in MusicXML import
+      Laissez vibrer ties (options to automatically add l.v. ties with autodurs)
       Finish chunks support
       Finish key signatures support
       Finish implementing :invisible mark

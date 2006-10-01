@@ -46,86 +46,87 @@
 	     (when li (addmark (first li) :startgraceslur-) (addmark (last-element li) :endgraceslur-))))
    (print-dot)))
 
-;; must be in separate voices
-;; input level number only needs to be relative, with lower numbers = inner voices--mark arguments are mod then level
-;; lower level is inner
+;; ***** UPDATED COMMENTS *****
+;; sorts through user's potential mess of spanner mark starts, ends, continuations
+;; user level numbers only need to be relative to each other, lower levels are "inner" (closer to the notes)
 (defun clean-spanners (pts spanners)
   (declare (type list pts) (type cons spanners))
   (loop for (startsym contsym endsym replsym symorg) of-type (symbol symbol symbol symbol (or symbol (integer 1))) in spanners
-	for symlvl = (when (numberp symorg) symorg)
+	for symlvl = (when (numberp symorg) symorg) ; symlvl = forced level
 	do (loop for p of-type partex in pts do
-		 (loop
-		  with ss #|= (make-hash-table :test 'eql)|# #|and nu of-type (integer 0) = 0|# and sta and staa and mor of-type list
+		 (loop			; iterate through note events
+		  with ss and sta and staa and mor of-type list
 		  for (e nxe) of-type ((or noteex restex) (or noteex restex null)) on (reverse (part-events p)) do ; go backwards, find endsyms
 		  (setf mor nil)
-		  (loop
-		   for (xxx a1) of-type (t (or (integer 1) null))
-		   in (sort (nconc (when contsym (loop for x = (popmark e contsym) while x collect (force-list x))) ; a1 is level
+		  (loop 
+		   for (xxx a1) of-type (t (or (integer 1) null)) ; loop through contsyms and endsyms
+		   in (sort (nconc (when contsym (loop for x = (popmark e contsym) while x collect (force-list x))) ; a1 = user-specified level
 				   (loop for x = (popmark e endsym) while x collect (force-list x)))
-			    #'< :key (lambda (x) (or (second x) 1))) ; sort by lvl 
-		   do (let ((lv (or symlvl a1 1)))
-			(if (find lv ss)
-			    (push lv mor) ; conflict--need a startsym after the endsym--save inserting endsym for later
-			    (progn (push lv ss)	;; ss hash-table maps user level to proper level
-				   (addmark e (list endsym lv))))))
+			    #'< :key (lambda (x) (or (second x) 1))) ; sort by level (default is 1)
+		   do (let ((lv (or symlvl a1 1))) ; lv = actual level
+			(if (find lv ss) ; ss = list of current spans and their levels
+			    (push lv mor) ; problem, two endsyms, need a matching startsym--save reinserting endsym for later (after dealing w/ startsyms)
+			    (progn (push lv ss)
+				   (addmark e (list endsym lv)))))) ; reinsert proper endsym & level
 		  (loop			; find startsyms
 		   for rr0 of-type cons
-		   in (sort (loop with sp for x = (popmark e startsym) while x collect (force-list x) do (setf sp t)
-				  finally (when (and sp (eq replsym '<)) (addmark e (list :spanner< contsym))))
-			    #'< :key (lambda (x)
+		   in (sort (loop for x = (popmark e startsym) while x collect (force-list x) into sp finally
+				  (when (and sp (eq replsym '<)) (addmark e (list :spanner< contsym))) ; :spanner< is message for postproc functions
+				  (return sp))
+			    #'< :key (lambda (x) ; sort by level, have to find it since startsym is more complicated
 				       (declare (type cons x))
 				       (destructuring-bind (xxx &optional a1 a2) x
 					 (declare (ignore xxx))
-					 (if (numberp a2) a2 (if (numberp a1) a1 1)))))
-		   do (multiple-value-bind (a1 a2 a3)
+					 (if (numberp a2) a2 (if (numberp a1) a1 1)))))	; level is the only number present
+		   do (multiple-value-bind (a1 a2 a3) ; find and sort out mark arguments
 			  (let ((rr (rest rr0)))
-			    (values (find-if #'numberp rr) (find-if #'symbolp rr) (find-if #'stringp rr))) ; a1 is level, a2 is modifier (ex. :dotted), a3 is string
-			(let ((lv (or symlvl a1 1)))
-			  (if (find lv ss)
+			    (values (find-if #'numberp rr) (find-if #'symbolp rr) (find-if #'stringp rr))) ; a1 = level, a2 = modifier (ex. :dotted), a3 = string
+			(let ((lv (or symlvl a1 1))) ; in = inserted startsym?, lv = actual level
+			  (if (find lv ss) ; startsym matches an endsym
 			      (progn (setf ss (delete lv ss)) 
-				     (addmark e (nconc (list startsym lv) (when a3 (list a3)) (when a2 (list a2))
-						       #|(when (and a1 symlvl) (list a1))|#))) ; fixed order now--level is mandatory 1st argument, string is second if text, modifier is last and optional
-			      (progn	; no endsym
-				(let ((lk (or (lookup lv sta) staa)))
-				  (when lk
-				    (loop for (a b) of-type ((or noteex restex) (or noteex restex null)) on lk ; sta = stack for backtracking
-					  if b do (addmark a (list contsym lv)) else do (addmark a (list endsym lv)))
-				    (addmark e (nconc (list startsym lv) (when a3 (list a3)) (when a2 (list a2)) #|(when (and a1 symlvl) (list a1))|#))))
-				(let ((x (assoc lv sta)))
-				  (if x (setf (cdr x) nil) (push (cons lv nil) sta))))))))
-		  (loop for lv of-type (integer 1) in mor do ; put in rest of endsyms
-			(unless (find lv ss)
+				     (addmark e (nconc (list startsym lv) (when a3 (list a3)) (when a2 (list a2))))) ; reinsert mark (startsym level string modifier)
+			      (progn	; problem, no matching endsym
+				(let ((lk (or (lookup lv sta) staa))) ; sta = stack for backtrace (forward) through events (lookup by level), staa = events up to the end
+				  (when lk ; lk = list of events to backtrack through & add contsyms
+				    (loop for (a b) of-type ((or noteex restex) (or noteex restex null)) on lk
+					  if b do (addmark a (list contsym lv)) else do (addmark a (list endsym lv))
+					  finally (addmark e (nconc (list startsym lv) (when a3 (list a3)) (when a2 (list a2)))))))))
+			  (let ((x (assoc lv sta))) ; reinserted startsym, so reset backtrace stack for this level
+			    (if x (setf (cdr x) nil) (push (cons lv nil) sta))))))
+		  (loop for lv of-type (integer 1) in mor do ; ok to reinsert rest of endsyms (ones that didn't have a startsym following it)
+			(unless (find lv ss) ; reinsert endsym if it's safe (not in the middle of a span)
 			  (push lv ss)
 			  (addmark e (list endsym lv))))
-		  (loop for l of-type (integer 1) in ss
+		  (loop for l of-type (integer 1) in ss	; reinsert contsyms (or startsym if at the beginning)
 			if nxe do (unless (getmark e (list endsym l)) (addmark e (list contsym l)))
 			else do (addmark e (list startsym l)))
-		  (map nil (lambda (x) (push e (cdr x))) sta)
-		  (push e staa))
-		 (loop for v of-type cons in (split-into-groups (part-events p) #'event-voice*)
-		       do (loop with x = (make-hash-table) and xx
+		  (map nil (lambda (x) (push e (cdr x))) sta) ; push this event onto all the backtrace stacks
+		  (push e staa)) ; push this event onto the backtrace-to-the-end stack
+		 (loop for v of-type cons in (split-into-groups (part-events p) #'event-voice*)	; replace user levels with ones backends understand (1, 2, etc.)--voices might not be separated here, make sure they are
+		       do (loop with x = (make-hash-table) and xx ; x = hash-table indexed by level containing (off . list-of-start/cont-marks), used as temporary container
 				for e of-type (or noteex restex) in (sort v #'sort-offdur)
-				when (or (truep replsym) (keywordp replsym)) do
+				when (or (truep replsym) (keywordp replsym)) do	; if there is a replsym, do start/cont marks first
 				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (gethash (second m) x))))
 				(loop for m of-type cons in (getmarks e startsym) do (setf (gethash (second m) x) (cons (event-off e) (list m))))
-				do
-				(loop for m of-type cons in (getmarks e endsym) do
-				      (let* ((n (second m))
-					     (z (gethash n x)))
-					(push m (cdr z)) 
-					(push (cons n (cons (cons (car z) (event-off e)) (cdr z))) xx)
-					(remhash n x)))
-				unless (or (truep replsym) (keywordp replsym)) do
+				do (loop for m of-type cons in (getmarks e endsym) do
+					 (let* ((n (second m))
+						(z (gethash n x)))
+					   (push m (cdr z)) 
+					   (push (cons n (cons (cons (car z) (event-off e)) (cdr z))) xx) ; add (level . ((off . endoff) . list-of-start/cont-marks)) to xx
+					   (remhash n x)))
+				unless (or (truep replsym) (keywordp replsym)) do ; if there isn't a replsym, do start/cont marks last
 				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (gethash (second m) x))))
 				(loop for m of-type cons in (getmarks e startsym) do (setf (gethash (second m) x) (cons (event-off e) (list m))))
 				finally (loop with pr
 					      for ((o1 . o2) . ms) of-type (((rational 0) . (rational 0)) . cons)
-					      in (mapcar #'cdr (sort xx #'< :key (if (eq symorg 's) (lambda (k) (- (caadr k) (cdadr k))) #'car)))
+					      in (mapcar #'cdr (sort xx #'< :key (if (eq symorg 's) (lambda (k) (- (cdadr k) (caadr k))) #'car)))
 					      do (let ((nu (1+ (mloop for ((c1 . c2) . lv) of-type (((rational 0) . (rational 0)) . (integer 1)) in pr
 								      when (and (> o2 c1) (< o1 c2)) maximize lv))))
-						   (map nil (lambda (z) (setf (second z) nu)) ms)
+						   (map nil (lambda (z) (setf (second z) nu)) ms) ; ok to replace, marks should all be new
 						   (push (cons (cons o1 o2) nu) pr)))))
 		 (print-dot))))
+
+;; ***** CONTINUE UPDATING COMMENTS HERE *****
 
 (defun expand-marks (pts)
   (loop for ((ma . del) . (rs . re)) of-type ((symbol . boolean) . (symbol . symbol)) in +marks-expand+ do

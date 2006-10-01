@@ -21,8 +21,8 @@
 
 ;; Example:
 
+;; (load-fomus-plugin :timedump) ; (don't normally have to do this, but it needs to be loaded so the symbols are accessible)
 ;; (use-package :fomus-timedump)
-
 ;; (defun savetimes (list filename)
 ;;   (format t ";; Dumping measure downbeats to ~S~%" (concatenate 'string filename ".txt"))
 ;;   (with-open-file (f (concatenate 'string filename ".txt") :direction :output :if-exists :supersede)
@@ -34,7 +34,7 @@
 (deffomusplugin
     (:keyname :timedump) (:type :backend) (:entryfun do-timedump)
     (:export #:timedump #:timedump-off #:timedump-endoff #:timedump-dur #:timedump-timesig #:timedump-barline)
-    (:import-from #:fomus #:force-list)
+    (:import-from #:fomus #:force-list #:*verbose* #:out)
     (:documentation "A simple backend that sends time info to a user callback function (for storing time info, creating click tracks, etc.--see timedump.lisp for info)"))
 
 ;; timesig is given in the form of a cons
@@ -44,6 +44,7 @@
   
 (defun do-timedump (parts filename options process view)
   (declare (ignore process view))
+  (when (>= *verbose* 1) (out ";; Dumping time/measure data...~%"))
   (destructuring-bind (&key callback partids &allow-other-keys) options
     (if callback
 	(loop for e in (or (force-list partids) (list (part-partid (first parts))))
@@ -55,4 +56,4 @@
 						       :barline bl)
 				do (setf bl (second (getprop m :barline))))
 			  filename))
-	(format t ";; WARNING: Need a user callback function for timedump~%"))))
+	(format t ";; ERROR: Need a user callback function for timedump~%"))))

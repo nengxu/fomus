@@ -836,7 +836,7 @@
 ;; spanners
 ;; startsym, contsym, endsym, replsym (nil = remove if on one note, t = can span one note, other symbols are replacements if on one note)
 (defparameter +marks-spanner-voices+
-  '((:startslur- :slur- :endslur- < s) ; :s = forced hierarchical organization
+  '((:startslur- :slur- :endslur- < s) ; < = endsyms cannot overlap with startsyms and must be shifted one event left, s = forced organization (bigger slurs over smaller slurs)
     (:startgraceslur- :graceslur- :endgraceslur- nil)
     (:starttext- :text- :endtext- :text)
     (:startwedge< :wedge< :endwedge< nil)

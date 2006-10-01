@@ -46,3 +46,11 @@ Some data that can be imported from the fomus package that might be useful (thin
 (defparameter +nokey-niceints2+ (vector '(-2 2) '(-2 2) '(-2 2) '(-2) '(2) '(-2 2) '(-2 2))) ; 2nd best spellings
 (defparameter +nokey-penalty+ (vector '(1) '(-1 1) '(-1) '(1) '(-1 1) '(-1 1) '(-1))) ; for ea. white key, location of neighboring black keys (1/2 step lower or higher)
 (defparameter +nokey-harmints+ (vector 0 1 1 2 2 3 4 4 5 5 6 6)) ; when two notes are "linked", required interval given the chromatic distance
+
+*verbose* ; the verbosity level (usually only print something if *verbose* >= 2)
+
+
+FUNCTIONS
+
+force-list (atom) ; leaves atom alone if it's a list, otherwise wraps it in a list
+out (&rest args) ; arguments are passed to (format t ...) and followed up by a (finish-output)

@@ -9,7 +9,9 @@
 (compile-settings)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; ACCIDENTALS
+;; DEFAULT ACCIDENTALS ALGORITHM
+
+;; ***** UPDATED COMMENTS *****
 
 (declaim (type symbol *auto-accs-mod* *auto-accs-plugin*))
 (defparameter *auto-accs-mod* nil) ; deprecated setting
@@ -245,7 +247,7 @@
 (defun load-acc-plugins ()
   (unless (eq (auto-accs-fun) :nokey1) (load-fomus-plugin (auto-accs-fun))))
 
-;; ---------- ADDING COMMENTS ----------
+;; ***** CONTINUE UPDATING COMMENTS HERE *****
 
 ;; Processed before chords exist and before voices are separated
 ;; events in parts are sorted--function must return them sorted
@@ -294,7 +296,7 @@
 					       (append (event-useracc e) (let ((m (mod n 12))) (if (and (>= m 9/2) (<= m 7)) chos chof)))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; CAUTIONARY ACCIDENTALS
+;; CAUTIONARY ACCIDENTALS ALGORITHM
 
 (declaim (type (real (0)) *max-caut-acc-dist*)
 	 (type boolean *caut-acc-ottavas*)
