@@ -14,7 +14,7 @@
 (asdf:defsystem "fomus"
   
   :description "Lisp music notation formatter"
-  :version "0.2.10"
+  :version "0.2.11"
   :author "David Psenicka"
   :licence "LLGPL"
 
