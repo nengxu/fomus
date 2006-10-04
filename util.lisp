@@ -1042,12 +1042,15 @@ Directories are created as needed."
   #-asdf (compile-file-pathname lisp-file))
 
 ;; user fun
+;; also called by REGISTER-PLUGINS at fomus startup
+;; for every *.lisp file found in plugins/ and plugins/backends 
 (defun register-fomus-plugin (filename &key load)
   (destructuring-bind (&key type keyname initfun entryfun (documentation '("(none)")) filename-ext &allow-other-keys)
-      (with-open-file (f filename :direction :input)
-	(let ((d (read f)))
-	  (unless (string= (symbol-name (first d)) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
-	  (loop for e in (rest d) collect (first e) collect (rest e))))
+      (let ((*package* (find-package :fomus))) ; make sure the user can call this from another package
+	(with-open-file (f filename :direction :input)
+	  (let ((d (read f)))
+	    (unless (string= (symbol-name (first d)) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
+	    (loop for e in (rest d) collect (first e) collect (rest e)))))
     ;; make sure all the right values are stored so error doesn't happen later
     (unless (member (first type) +plugin-types+) (error "~S is not a valid plugin type" (first type)))
     (let ((x (first keyname))) (check-type x keyword))

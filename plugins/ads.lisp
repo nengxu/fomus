@@ -1,4 +1,4 @@
-;;; -*- Mode: LISP; Syntax: COMMON-LISP; Package: CL-USER; Base: 10 -*-
+;;; -*- Mode: LISP; Syntax: COMMON-LISP; Base: 10 -*-
 
 ;;; Copyright (c) 2006, Kilian Sprotte. All rights reserved.
 
@@ -47,9 +47,6 @@
 
 ;; DEFPLUGIN takes care of defining the package, also adds a FOMUS-PLUGINNAME module to the *MODULES* list (FOMUS uses this)
 ;; It also adds an (in-package ...)
-
-;;; right now, I feel like macroexpanding this `deffomusplugin' in SLIME... 
-(in-package :fomus)
 
 (deffomusplugin
     (:keyname :nokey2) (:type :accidentals) (:entryfun acc-nokey2)
