@@ -34,8 +34,9 @@
 (defun register-plugins ()
   (map nil
        (lambda (file)
-	 (or (ignore-errors (register-fomus-plugin file))
-	     (format t "WARNING: Can't register plugin file ~S~%" (namestring file))))
+	 (multiple-value-bind (value error)
+	     (ignore-errors (register-fomus-plugin file))
+	   (or value (format t "WARNING: Can't register plugin file ~S~%  ~A~%" (namestring file) error))))
        (nconc (directory (merge-pathnames "plugins/*.lisp" +fomus-dir+))
 	      (directory (merge-pathnames "plugins/backends/*.lisp" +fomus-dir+))))
   (format t "~&"))

@@ -1034,7 +1034,7 @@ Directories are created as needed."
 								   (conc-strings z "/plugins/backends/")
 								   (conc-strings z "/plugins/"))
 					  :name (pathname-name lisp-file))))
-		 (unless (directory (conc-strings z "/*"))
+		 (unless (directory (directory-wildcard z))
 		   (error "FOMUS compile directory ~S doesn't exist (this is a bug)" z)) ; small sanity check
 		 (ignore-errors (ensure-directories-exist f))
 		 f)
