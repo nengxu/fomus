@@ -1012,20 +1012,34 @@
 (defparameter *plugins* (make-hash-table :test 'eq))
 (defparameter +plugin-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
 
-(defun compile-plugin (file cfile key)
-  (when (or (not (probe-file cfile)) (>= (file-write-date file) (file-write-date cfile)))
-    (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Compiling plugin ~S..." key))
-    (compile-file file :print nil :verbose nil :output-file cfile)))
+(defun compile-plugin (lisp-file fasl-file keyname)
+  "Compile LISP-FILE into FASL-FILE, if needed. Returns FASL-FILE or NIL, if nothing happened."
+  (when (or (not (probe-file fasl-file))
+	    (>= (file-write-date lisp-file) (file-write-date fasl-file)))
+    (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Compiling plugin ~S..." keyname))
+    (compile-file lisp-file :print nil :verbose nil :output-file fasl-file)))
 
-(defun plugin-outname (file backend)
+(defun plugin-outname (lisp-file backend)
+  "Return `compile-file-pathname' for LISP-FILE, dealing with asdf, if available
+and taking care for an additional `backends' sub-directory, if it is a BACKEND.
+Directories are created as needed."
   (declare (ignorable backend))
-  #+asdf (let ((x (ignore-errors (first (asdf:output-files (make-instance 'asdf:compile-op) (asdf:find-component (asdf:find-system :fomus) "package"))))))
-	   (if x (let* ((z (change-filename x :name nil :ext nil))
-			(f (change-filename x :dir (if backend (conc-strings z "/plugins/backends/") (conc-strings z "/plugins/")) :name (pathname-name file))))
-		   (unless (directory (conc-strings z "/*")) (error "FOMUS compile directory ~S doesn't exist (this is a bug)" z)) ; small sanity check
-		   (ignore-errors (ensure-directories-exist f)) f)
-	       (compile-file-pathname file)))
-  #-asdf (compile-file-pathname file))
+  #+asdf (let ((fasl-proto-path (ignore-errors
+				  (first (asdf:output-files (make-instance 'asdf:compile-op)
+							    (asdf:find-component (asdf:find-system :fomus) "package"))))))
+	   (if fasl-proto-path
+	       (let* ((z (change-filename fasl-proto-path :name nil :ext nil))
+		      (f (change-filename fasl-proto-path :dir (if backend
+								   (conc-strings z "/plugins/backends/")
+								   (conc-strings z "/plugins/"))
+					  :name (pathname-name lisp-file))))
+		 (unless (directory (conc-strings z "/*"))
+		   (error "FOMUS compile directory ~S doesn't exist (this is a bug)" z)) ; small sanity check
+		 (ignore-errors (ensure-directories-exist f))
+		 f)
+	       ;; fallback to normal...
+	       (compile-file-pathname lisp-file)))
+  #-asdf (compile-file-pathname lisp-file))
 
 ;; user fun
 (defun register-fomus-plugin (filename &key load)
