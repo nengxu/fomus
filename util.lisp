@@ -1007,7 +1007,8 @@
   (pack "" :type string)
   (initfun nil :type symbol)
   (entryfun nil :type symbol)
-  (desc "" :type string))
+  (desc "" :type string)
+  (recompile-if-needed t :type boolean))
 
 (defparameter *plugins* (make-hash-table :test 'eq))
 (defparameter +plugin-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
@@ -1084,14 +1085,18 @@ Directories are created as needed."
 
 ;; user fun
 (defun load-fomus-plugin (keyname)
-  (let* ((pl (or (gethash keyname *plugins*) (error "Plugin ~S is not registered or does not exist" keyname)))
-	 (cf (plugin-outname (plugin-file pl) (eq (plugin-type pl) :backend))))
-    (when (or (not (find (plugin-pack pl) *modules* :test #'string=)) (compile-plugin (plugin-file pl) cf keyname))
-      (when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading plugin ~S..." keyname))
-      (load cf :verbose nil :print nil)
-      (when (plugin-initfun pl)
-	(funcall (find-symbol (symbol-name (plugin-initfun pl)) (find-package (plugin-pack pl)))))))
-  t)
+  (flet ((plugin-provided-p (plugin)
+	   (find (plugin-pack plugin) *modules* :test #'string=)))
+    (let* ((plugin (or (gethash keyname *plugins*) (error "Plugin ~S is not registered or does not exist" keyname)))
+	   (fasl-path (plugin-outname (plugin-file plugin) (eq (plugin-type plugin) :backend))))
+      (when (or (not (plugin-provided-p plugin))
+		(and (plugin-recompile-if-needed plugin)
+		     (compile-plugin (plugin-file plugin) fasl-path keyname)))
+	(when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading plugin ~S..." keyname))
+	(load fasl-path :verbose nil :print nil)
+	(when (plugin-initfun plugin)
+	  (funcall (find-symbol (symbol-name (plugin-initfun plugin)) (find-package (plugin-pack plugin))))))
+      t)))
 
 (declaim (inline call-plugin))
 (defun call-plugin (keyname err &rest args) ; assume it's been loaded
