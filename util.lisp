@@ -1048,7 +1048,8 @@ Directories are created as needed."
 	(let ((d (read f)))
 	  (unless (string= (symbol-name (first d)) "DEFFOMUSPLUGIN") (error "DEFFOMUSPLUGIN declaration not found"))
 	  (loop for e in (rest d) collect (first e) collect (rest e))))
-    (unless (member (first type) +plugin-types+) (error "~S is not a valid plugin type" (first type))) ; make sure all the right values are stored so error doesn't happen later
+    ;; make sure all the right values are stored so error doesn't happen later
+    (unless (member (first type) +plugin-types+) (error "~S is not a valid plugin type" (first type)))
     (let ((x (first keyname))) (check-type x keyword))
     (check-type filename (or pathname string))
     (let ((x (first initfun))) (check-type x symbol))
@@ -1057,7 +1058,7 @@ Directories are created as needed."
     (when (and (first filename-ext) (not (eq (first type) :backend))) (error "Non-backend shouldn't declare a filename extension"))
     (let ((pk (plugin-package (first keyname)))
 	  (cf (plugin-outname filename (eq (first type) :backend))))
-      (compile-plugin filename cf (first keyname))	; make sure it compiles
+      (compile-plugin filename cf (first keyname)) ; make sure it compiles
       (setf (gethash (first keyname) *plugins*) (make-plugin :type (first type) :file filename :pack pk
 							     :initfun (first initfun) :entryfun (first entryfun) :desc (first documentation))))
     (when load (load-fomus-plugin (first keyname))))

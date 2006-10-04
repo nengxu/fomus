@@ -48,6 +48,8 @@
 ;; DEFPLUGIN takes care of defining the package, also adds a FOMUS-PLUGINNAME module to the *MODULES* list (FOMUS uses this)
 ;; It also adds an (in-package ...)
 
+;;; right now, I feel like macroexpanding this `deffomusplugin' in SLIME... 
+(in-package :fomus)
 
 (deffomusplugin
     (:keyname :nokey2) (:type :accidentals) (:entryfun acc-nokey2)
@@ -56,17 +58,8 @@
     (:preload (asdf:operate 'asdf:load-op :iterate))
     (:documentation "(Experimental) Note-spelling algorithm by Kilian Sprotte using an adaptive search approach"))
   
-
-;; (defpackage :ads
-;;   (:use :cl :iterate)
-;;   (:export #:make-int-var-from-to #:make-int-var-domain
-;; 	   #:post #:ads
-;; 	   #:example
-;; 	   #:acc-nokey2
-;; 	   ))
-
-;; DEFFOMUSPLUGIN takes care of (in-package ...)
-;; (in-package :ads)
+;;; so SLIME knows...
+(IN-PACKAGE "FOMUS-NOKEY2")
 
 (setf *print-circle* t)	; for safety - not that I am really reading all this #1# stuff...
 
