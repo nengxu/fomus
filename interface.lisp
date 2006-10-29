@@ -142,6 +142,7 @@
 				(:off (setf of (first rrs)) nil)
 				(otherwise (error "Invalid tag ~S" rs)))))
 		       (loop
+			with *package* = #.(find-package :fomus)
 			for re = (progn (incf li) (setf lin "") (read f nil 'eof)) until (eq re 'eof)
 			do (setf lin (format nil "~S ..." re))
 			if (listp re) nconc (git (first re) (uglify (rest re)))
