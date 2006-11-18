@@ -5,12 +5,15 @@
 ;; util.lisp
 ;;**************************************************************************************************
 
+;; *****COMMENTING IN PROGRESS*****
+
 (in-package :fomus)
 (compile-settings)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DEBUGGING
 
+;; almost all functions expected everything to be sorted--this checks for that
 #+debug
 (defun check-same (list str &key (key #'identity) (test #'eql))
   (unless (let ((l (mapcar key list)))
@@ -27,6 +30,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; FIND GHOSTVIEW
 
+;; set to postscript viewing application
 (eval-when (:load-toplevel :execute)
   (defparameter +ghostview-exe+
     #+darwin (find-exe "open")
@@ -40,13 +44,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PROGRESS DOTS, IMMEDIATE OUTPUT
 
+;; print a progress dot only if some certain time interval has elapsed since the last dot
 (declaim (type (integer 0) +progress-int+))
-(defparameter +progress-int+ 5) ; in seconds
-
+(defparameter +progress-int+ 5) ; seconds
 ;; after good progress, reward with a dot!
 (declaim (inline print-dot))
 (defun print-dot () (when (>= *verbose* 1) (progress ".")))
 
+;; wrapper for format--some lisps buffer the output so user can't see progress
 (defun out (&rest args) (apply #'format t args) (finish-output))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -54,44 +59,54 @@
 
 (declaim (type (vector (or (integer 0 6) null)) +note-to-white+)
 	 (type (vector integer) +white-to-note+))
-(defparameter +note-to-white+ (vector 0 nil 1 nil 2 3 nil 4 nil 5 nil 6))
-(defparameter +white-to-note+ (vector 0 2 4 5 7 9 11))
+(defparameter +note-to-white+ (vector 0 nil 1 nil 2 3 nil 4 nil 5 nil 6)) ; vector of white notes in chromatic scale
+(defparameter +white-to-note+ (vector 0 2 4 5 7 9 11)) ; vector of chromatic notes given white note index (0 - 6)
 
 (declaim (type cons +acc-single+ +acc-double+ +acc-qtones-single+ +acc-qtones-double+))
-(defparameter +acc-single+ '(0 -1 1))
-(defparameter +acc-double+ '(0 -1 1 -2 2))
-(defparameter +acc-qtones-single+ '(0 -1 1 (0 . -1/2) (0 . 1/2) (-1 . -1/2) (1 . 1/2)))
-(defparameter +acc-qtones-double+ '(0 -1 1 -2 2 (0 . -1/2) (0 . 1/2) (-1 . -1/2) (1 . 1/2)))
+(defparameter +acc-single+ '(0 -1 1)) ; all possible modifications when only using single flats and sharps
+(defparameter +acc-double+ '(0 -1 1 -2 2)) ; all possible modifications when using double flats and sharps
+(defparameter +acc-qtones-single+ '(0 -1 1 (0 . -1/2) (0 . 1/2) (-1 . -1/2) (1 . 1/2))) ; acc-single + quartertones
+(defparameter +acc-qtones-double+ '(0 -1 1 -2 2 (0 . -1/2) (0 . 1/2) (-1 . -1/2) (1 . 1/2))) ; acc-double + quartertones
 
+;; convert note value (mod 12) into a white-note value (mod 7)
+;; expects p to actually be a valid white note (error if it isn't)
 (defun notetowhite (p)
   (declare (type integer p))
   (multiple-value-bind (o n) (floor p 12)
     (+ (* o 7) #-debug (svref +note-to-white+ n) #+debug (or (svref +note-to-white+ n) (error "Error in NOTETOWHITE")))))
+;; convert write-note (mod 7) value into a note value (mod 12)
 (defun whitetonote (w)
   (declare (type integer w))
   (multiple-value-bind (o n) (floor w 7)
     (+ (* o 12) (svref +white-to-note+ n))))
 
 (declaim (type (vector boolean) +nokey-quality+))
-(defparameter +interval-quality+ (vector nil t t nil nil t t))
+(defparameter +interval-quality+ (vector nil t t nil nil t t)) ; given diatonic interval number as index, contains nil if it can be perfect or t if it's maj/min
 
-;; return a white note (0-6) or nil if not possible
-(defun notespelling (note acc)		; note = midi, acc = -2/-1/0/1/2
+;; return white note spelling (0 - 6) or nil if not possible
+;; note = note value
+;; acc = accidental modification (-2 to 2)
+(defun notespelling (note acc)
   (declare (type rational note) (type (integer -2 2) acc))
   (multiple-value-bind (o n) (floor (- note acc) 12)
     (let ((x (svref +note-to-white+ n)))
       (when x (values x o)))))
-(defun qnotespelling (note acc)		; acc = -2/-1/0/1/2
+;; acc = (-2 to 2) or (-1 . -1/2), etc.
+(defun qnotespelling (note acc)
   (declare (type rational note) (type (cons (integer -2 2) (rational -1/2 1/2)) acc))
   (multiple-value-bind (o n) (floor (- note (car acc) (cdr acc)) 12)
     (let ((x (when (integerp n) (svref +note-to-white+ n))))
       (when x (values x o)))))
 
+;; converts an accidental value or quartertone to a normalized quartertone format
+;; x = (-2 to 2) or (-1 . -1/2), etc.
+;; returns: (-2 . 0), (-1 . 0), (-1 . -1/2), etc.
 (defun convert-qtone (x)
   (declare (type (or (cons (integer -2 2) (rational -1/2 1/2)) (integer -2 2)) x))
   (if (consp x) x (cons x 0)))
 
-;; return values: int-value (0 - 6), int-quality (0 = perfect, -1/1 = min./maj., -2/2... = dim./aug., nil = ???)
+;; finds the diatonic interval between two note/accidental pairs
+;; return values: interval number (0 - 6), interval quality (0 = perfect, -1/1 = min./maj., -2/2... = dim./aug., etc.)
 (defun interval (note1 acc1 note2 acc2)
   (declare (type rational note1 note2) (type (integer -2 2) acc1 acc2))
   (multiple-value-bind (s1 o1) (notespelling note1 acc1)
@@ -111,19 +126,14 @@
 		  (let ((x (- (- n2 n1) (svref +white-to-note+ b) (* (floor (- sp2 sp1) 7) 12))))
 		    (if (svref +interval-quality+ b)
 			(if (>= x 0) (1+ x) x) ; maj./min.
-			(cond ((> x 0) (1+ x)) ; aud./dim.
+			(cond ((> x 0) (1+ x)) ; aug./dim.
 			      ((< x 0) (1- x))
 			      (t 0))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; UTILITY
 
-;;(declaim (inline consify))
-;; turns into cons: list of 2 elements that doesn't have a cons in 1st or second 2nd position (preserves list of lists)
-;; (defun consify (val)
-;;   (if (and (consp val) (not (consp (car val))) (consp (cdr val)) (not (consp (cadr val))) (null (cddr val)))
-;;       (cons (car val) (cadr val)) val))
-
+;; returns: t if num is a power of 2 (ex. 1/4, 1/2, 1, 2, 8, etc.)
 (defun expof2 (num)
   (declare (type rational num))
   (loop
@@ -131,6 +141,8 @@
    when (= n 1) do (return t)
    until (< n 1)))
 
+;; returns: list of lowest common denominators (duplicates are removed)
+;; examples: (lowmult 5) = (5), (lowmult 6) = (2 3), (lowmult 10) = (2 5), (lowmult 100) = (2 5)
 (defun lowmult (n)
   (declare (type rational n))
   (loop
@@ -141,7 +153,8 @@
    collect i
    and do (loop do (setf n j j (/ n i)) while (integerp j))))
 
-;; (defun primes2 (ubound)			; prime numbers excluding 1
+;; returns: prime numbers up to ubound excluding 1
+;; (defun primes2 (ubound)
 ;;   (declare (type (integer 2) ubound))
 ;;   (loop
 ;;    for i from 2 to ubound
@@ -149,12 +162,16 @@
 ;;    collect i into pl
 ;;    finally (return pl)))
 
-(defun notexpof2s (ubound)
+;; returns: odd numbers up to ubound (with exception of 2)
+(defun notdivby2s (ubound)
   (declare (type (integer 2) ubound))
   (cons 2 (loop for i from 3 to ubound unless (integerp (/ i 2)) collect i)))
 
-;; list = list of conses (start, end), o1 = start, o2 = end (can be <= o1 if don't care)
-;; returns list of conses
+;; given list of conses representing (possibly overlapping) segments/distances, find all the "holes" in between these segments
+;; list = list of conses (start . end)
+;; o1 = starting value
+;; o2 = end (can be <= o1 if don't care)
+;; returns: list of conses (the "holes")
 (defun get-holes (list o1 o2)
   (declare (type list list) (type real o1 o2))
   (loop
@@ -168,6 +185,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PROPERTIES/MARKS
 
+;; use the following functions to access/set properties and marks
 (declaim (inline addprop))
 (defgeneric addprop (obj prop))
 (defmethod addprop ((obj meas) prop)
@@ -245,11 +263,13 @@
     (popprop-aux obj (remove f (obj-props obj) :test #'equal))
     f))
 
+;; combine marks/properties in list of objects (measures, parts, timesigs, mark objects), removing duplicates
+;; returns: the new marks list
 (defun combprops (objlist)
   (declare (type list objlist))
   (remove-duplicates (loop for o of-type (or meas part timesig-repl mark) in objlist append (obj-props o)) :test #'equal))
 
-;; NON-DESTRUCTIVE (copied notes share mark-lists)
+;; aliasa for note/rest objects
 (declaim (inline addmark getmark getmarks rmmark combmarks popmark))
 (defun addmark (&rest x) (apply #'addprop x))
 (defun getmark (&rest x) (apply #'getprop x))
@@ -261,10 +281,14 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; EVENTS
 
+;; ts = a timesig objects
+;; returns: number of beats in a measure
 (defun timesig-nbeats (ts)
   (declare (type timesig-repl ts))
-  (/ (timesig-num ts) (* (timesig-den ts) (timesig-beat* ts)))) ; number of beats in a measure
+  (/ (timesig-num ts) (* (timesig-den ts) (timesig-beat* ts)))) 
 
+;; ts = a timesig object
+;; returns: metrical divisions, determined by lookup or a function that returns a reasonable default
 (defun timesig-div* (ts)
   (declare (type timesig-repl ts))
   (or (force-list2all (timesig-div ts))
@@ -283,12 +307,18 @@
 		  when x do (return (loop for y of-type list in x collect (mapcar (lambda (z) (declare (type (rational 0) z)) (/ z d)) y))))))))
 
 (declaim (type (rational (0)) *effective-grace-dur-mul*))
-(defparameter *effective-grace-dur-mul* 1/2) ; multiplier for effective duration of grace notes--use this in any algorithm that needs a small durational value for grace notes
+(defparameter *effective-grace-dur-mul* 1/2) ; setting--multiplier for effective duration of grace notes--use this in any algorithm that needs a small durational value for grace notes
 
 (declaim (inline event-tupfrac))
+;; ev = note/rest event
+;; returns: duration/time multiplier for tuplet note/rest
 (defun event-tupdurmult (ev) (declare (type ex-base ev)) (if (listp (car (event-tup ev))) (cdr (event-tup ev)) (event-tup ev)))
+;; returns: the tuplet fraction (portion of the whole tuplet that this event takes up)
 (defun event-tupfrac (ev) (declare (type ex-base ev)) (car (event-tup ev)))
 
+;; dur = duration
+;; dmu = time/duration multipliers (a list representing the multiplier of each nested level)
+;; returns: actual duration taking tuplet time modification into account
 (declaim (inline event-effectdur event-writtendur* event-writtennote))
 (defun effectdur (dur dmu)
   (declare (type (rational (0)) dur) (type list dmu))
@@ -297,18 +327,27 @@
    for e of-type (rational (0)) in dmu
    do (setf d (* d e))
    finally (return d)))
-(defun event-effectdur (ev &optional (dmu t)) ; dmu override used by beaming function
+;; dmu = dmu argument override, needed by some functions
+;; returns: effective duration of an event (taking tuplets into account)
+(defun event-effectdur (ev &optional (dmu t))
   (declare (type (or noteex restex) ev) (type (or boolean list) dmu))
   (effectdur (event-dur* ev) (if (truep dmu) (event-tupdurmult ev) dmu)))
+;; returns: grace note duration multiplied by effective-grace-dur-mul setting
 (defun event-graceeffdur (ev)
   (declare (type dur-base ev))
   (let ((gd (event-gracedur ev)))
     (when gd (* gd *effective-grace-dur-mul*))))
-;; returns 1/4 = quarter, 1/8 = eighth, 3/8 = dotted quarter, etc.
-(defun event-writtendur (ev ts &optional (dmu t)) ; returns written duration (dotted notes are fractions)--dmu override for beaming function--ts is either beat or timesig
+;; ev = note/rest event
+;; ts = timesig object
+;; dmu = dmu argument override, needed by some functions
+;; returns: written duration (1/4 = quarter, 1/8 = eighth, 3/8 = dotted quarter, etc.)
+(defun event-writtendur (ev ts &optional (dmu t))
   (declare (type (or noteex restex) ev) (type (or timesig-repl (rational (0))) ts) (type (or boolean list) dmu))
   (* (or (event-gracedur ev) (event-effectdur ev dmu))
      (if (timesigp ts) (timesig-beat* ts) ts)))
+;; figures out if dots are needed
+;; w = written duration (1/4 = quarter, 1/8 = eighth, 3/8 = dotted quarter, etc.)
+;; return values: base written duration (1/4 = quarter, 1/8 = eighth, 3/8 = dotted quarter, etc.), number of dots
 (defun writtendur* (w)
   (declare (type (rational (0)) w))
   (if (expof2 w) (values w 0)
@@ -317,12 +356,19 @@
 	    (let ((w2 (* w 4/7)))
 	      (if (expof2 w2) (values w2 2)
 		  #+debug (error "Error in WRITTENDUR*")))))))
+;; ev = note/rest event
+;; ts = timesig object
+;; return values: base written duration (1/4 = quarter, 1/8 = eighth, 3/8 = dotted quarter, etc.), number of dots
 (defun event-writtendur* (ev ts) ; returns values writtendur, number-of-dots
   (declare (type (or noteex restex) ev) (type timesig-repl ts))
   (writtendur* (event-writtendur ev ts)))
+;; ev = note event
+;; returns: notated note (ex.: g-natural, g-sharp and g-flat all return the note value for g-natural)
 (defun event-writtennote (ev)
   (declare (type noteex ev))
   (- (event-note* ev) (event-acc ev) (event-addacc ev)))
+;; ev = note event (containing a chord)
+;; returns: list of notated notes in chord
 (defun event-writtennotes (ev)
   (declare (type noteex ev))
   (loop
@@ -330,20 +376,25 @@
    and a of-type rational in (event-accs ev)
    and a2 of-type rational in (event-addaccs ev)
    collect (- e a a2)))
+;; ev = notes/rest event
+;; ts = timesig object
+;; ext = extra number of beams to subtract from actual value (useful for a few functions)
+;; returns: number of beams belonging to note (rests have 0 beams)
 (defun event-nbeams (ev ts &optional (ext 0))
   (declare (type (or noteex restex) ev) (type timesig-repl ts))
   (if (notep ev) (max (- (roundint (log (event-writtendur* ev ts) 1/2)) 2 ext) 0) 0))
 
-;; given duration of entire tuplet & dmu list, return unit of tuplet (1/8 = eighth note, etc.)
+;; dur = given duration of entire tuplet
+;; dmu = time/duration multipliers (a list representing the multiplier of each nested level)
+;; ts = timesig object
+;; returns: unit of tuplet (1/8 = eighth note, etc.)
 (defun unitwritdur (dur dmu ts) ; ndmu = the level that applies
   (declare (type (rational (0)) dur) (type list dmu) (type timesig-repl ts))
   (/ (* (effectdur dur dmu) (timesig-beat* ts)) ; written dur w/o dots info of entire tuplet
      (numerator (first dmu))))
-;;   (loop with re = (* (effectdur dur dmu) (timesig-beat* ts)) ; written dur w/o dots info of entire tuplet
-;; 	repeat (1+ ndmu) for x in dmu
-;; 	do (setf re (/ re (numerator x)))
-;; 	finally (return re)))
 
+;; ev = note/rest event
+;; returns: whether or note event represents a chord
 (declaim (inline chordp))
 (defun chordp (ev)
   (declare (type (or noteex restex) ev))
@@ -352,7 +403,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SORTING
 
-;; all-purpose sorter by: offset, grace#, voice, staff, duration, note<rest, notes
+;; all-purpose sorter
+;; sorts by (more or less): offset, gracep, voice num., staff num., duration, notep/restp, notes
+;; pass to sort function
 (defun sort-offdur (x y)
   (declare (type (or noteex restex) x y))
   (if (= (event-off x) (event-off y))
@@ -382,7 +435,10 @@
 		  (t (< gx gy)))))
       (< (event-off x) (event-off y))))
 
-;; use for guaranteeing property lists/mark lists can be compared for equality w/ equal
+;; generic property list sorter
+;; use to guarantee property lists/mark lists can be compared for equality w/ equal
+;; props = property list
+;; returns: sorted property/marks list
 (defun sort-props (props)
   (declare (type list props))
   (labels ((xx (x y)
@@ -400,9 +456,13 @@
 		     finally (< (length ee1) (length ee2))))))
     (sort (copy-list props) #'xx)))
 
+;; alias for marks
 (declaim (inline sort-marks))
 (defun sort-marks (marks) (declare (type list marks)) (sort-props marks))
 
+;; remove all marks that aren't specific things that appear in the score
+;; marks = marks list
+;; returns: another marks list
 (declaim (inline important-marks))
 (defun important-marks (marks)
   (declare (type list marks))
@@ -411,9 +471,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; CHORDS/SPLITTING
 
+;; accepts events of same offset/duration to assemble into a chord
 ;; list = sorted list of events of same offset/duration
-;; rests are discarded
-;; DESTRUCTIVE (on mark-lists--assumes throwing away note-events to make chord-event)
+;; rests are discarded, function is destructive on mark-lists--assumes throwing away note-events to make chord-event
+;; returns: note event (containing multiple notes)
 (defun make-chord (list &optional voice)
   (declare (type list list) (type (or null (integer 1)) voice))
   (multiple-value-bind (n r) (split-list (sort list #'sort-offdur) #'notep)
@@ -433,47 +494,11 @@
 		      :tiert (mapcar #'cddr x)))
 	(copy-event (first r) :marks (combmarks r)))))
 
-;; return cons of two events (either may be nil)
-;; copy = insure that returned events are copies
-;; tup is inserted into first (left-side) return only unless both is t
-;; (defun split-event (event off &optional tup dmu tup2)
-;;   (declare (type (or noteex restex) event) (type (rational 0) off) (type list tup dmu tup2))
-;;   (let ((eo (event-endoff event))
-;; 	(o (event-off event)))
-;;     (cond ((<= eo off) (cons (copy-event event :tup (cons tup dmu)) nil))
-;; 	  ((<= off o)
-;; 	   (cons nil (if tup2
-;; 			 (copy-event event :tup (cons tup2 dmu))
-;; 			 (copy-event event))))
-;; 	  (t (etypecase event 
-;; 	       (note (cons (copy-event event
-;; 				       :dur (- off o) ; shouldn't be dealing with grace note
-;; 				       :tiert (if (chordp event) (make-list (length (event-tiert event)) :initial-element (not (event-autodur event)))
-;; 						  (not (event-autodur event)))
-;; 				       :tup (cons tup dmu))
-;; 			   (if tup2
-;; 			       (if (event-autodur event)
-;; 				   (make-restex nil :off off :dur (- eo off) :voice (event-voice event)
-;; 						:tup (cons tup2 dmu))
-;; 				   (copy-event event
-;; 					       :off off
-;; 					       :dur (- eo off)
-;; 					       :tielt (if (chordp event) (make-list (length (event-tielt event)) :initial-element t) t)
-;; 					       :tup (cons tup2 dmu)))
-;; 			       (if (event-autodur event)
-;; 				   (make-restex nil :off off :dur (- eo off) :voice (event-voice event)
-;; 						:tup (event-tup event))
-;; 				   (copy-event event
-;; 					       :off off
-;; 					       :dur (- eo off)
-;; 					       :tielt (if (chordp event) (make-list (length (event-tielt event)) :initial-element t) t))))))
-;; 	       (rest (cons (copy-event event :dur (- off o) :tup (cons tup dmu)
-;; 				       :marks (if (event-marks event) (cons :splitlt (event-marks event))))
-;; 			   (if tup2
-;; 			       (copy-event event :off off :dur (- eo off) :tup (cons tup2 dmu)
-;; 					   :marks (if (event-marks event) (cons :splitrt (event-marks event))))
-;; 			       (copy-event event :off off :dur (- eo off)
-;; 					   :marks (if (event-marks event) (cons :splitrt (event-marks event))))))))))))
+;; splits an event into two events (possibly tied), given an offset split point
+;; event = note/rest event
+;; off = split point
+;; tup/dmu = a tuplet fraction/a tuplet duration multiplier to add (used by note-splitting function to create tuplets as necessary)
+;; returns: cons of two events
 (defun split-event (event off &optional tup dmu)
   (declare (type (or noteex restex) event) (type (rational 0) off) (type list tup dmu))
   (let ((eo (event-endoff event))
@@ -495,7 +520,10 @@
 			   (copy-event event :off off :dur (- eo off)
 				       :marks (if (event-marks event) (cons :splitrt (event-marks event)))))))))))
 
-;; (declaim (inline split-event*))
+;; splits events--retains tuplet information from the original event
+;; event = note/rest event
+;; off = split point
+;; returns: cons of two events
 (defun split-event2 (event off)
   (declare (type noteex event) (type (rational 0) off))
   (let ((u (car (event-tup event)))
@@ -506,6 +534,8 @@
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; USER MARKS
+
+;; *****COMMENT POINT*****
 
 ;; passes all events between and intersecting with startsyms and endsyms
 ;; events sent to fun aren't in order

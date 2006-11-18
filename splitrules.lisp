@@ -214,7 +214,7 @@
 			      (when (and tups mt (or (initdivp rule) (and (sigp rule) (rule-top rule)) (and (rule-alt rule) (rule-art rule))))
 				(loop
 				 with nu = (if (rule-comp rule) (* num 3/2) num)
-				 for j of-type (integer 2) in (notexpof2s mt) ; only primes--number isn't actual tuplet, just division
+				 for j of-type (integer 2) in (notdivby2s mt) ; only primes--number isn't actual tuplet, just division
 				 unless (expof2 (/ nu j))
 				 nconc (divs j nu))))))))
 		(unit			; unit is at divide-by-2 level
@@ -253,7 +253,7 @@
 							 (or (rule-alt rule) (rule-art rule))
 							 (and (rule-alt rule) (rule-art rule)))))
 				(loop
-				 for j of-type (integer 2) in (notexpof2s mt) ; only primes--number isn't actual tuplet, just division
+				 for j of-type (integer 2) in (notdivby2s mt) ; only primes--number isn't actual tuplet, just division
 				 unless (expof2 (/ (rule-div rule) j))
 				 nconc (divs j (rule-div rule) (rule-tup rule) (rule-dmu rule))))))))))
 	      (lambda (x0 y0)

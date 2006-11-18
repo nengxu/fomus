@@ -216,131 +216,132 @@
     (set-instruments
       (set-note-precision
 	(set-quality
-	  (multiple-value-bind (*timesigs* rm) (split-list *global* #'timesigp)
-	    #-debug (declare (ignore rm))
-	    #+debug (when rm (error "Error in FOMUS-PROC"))
-	    (multiple-value-bind (*events* mks) (split-list *events* (lambda (x) (declare (type (or note rest mark) x)) (or (notep x) (restp x)))) 
-	      (let ((pts (progn
-			   (loop with co = 0
-				 for p of-type part in *parts* and i from 0
-				 do (multiple-value-bind (ti evs ma)
-					(split-list (part-events p) #'timesigp
-						    (lambda (x) (declare (type (or note rest mark timesig) x)) (or (notep x) (restp x)))) ; separate timesigs/keysigs out of part tracks
-				      (unless (part-partid p)
-					(setf (part-partid p)
-					      (loop
-					       for s = (incf co)
-					       while (find s *parts* :key #'part-partid)
-					       finally (return s))))
-				      (map nil (lambda (x)
-						 (declare (type timesig x))
-						 (unless (timesig-partids x)
-						   (setf (timesig-partids x) (part-partid p))))
-					   ti)
-				      (map nil (lambda (x)
-						 (declare (type mark x))
-						 (unless (event-partid x)
-						   (setf (event-partid x) (part-partid p))))
-					   ma)
-				      (prenconc ti *timesigs*)
-				      (prenconc ma mks)
-				      (multiple-value-bind (eo ep) (split-list evs #'event-partid)
-					(setf (part-events p) ep)
-					(prenconc eo *events*))))
-			   (setf *timesigs* (mapcar #'make-timesigex* *timesigs*))
-			   (loop
-			    with h = (get-timesigs *timesigs* *parts*)
-			    for i from 0 and e in *parts*
-			    for (evs rm) of-type (list list) on (split-list* *events* (mapcar #'part-partid *parts*) :key #'event-partid)
-			    collect (make-partex* e i evs (gethash e h))
-			    finally (when rm (error "No matching part for event with partid ~S" (event-partid (first rm))))))))	; make copied list of part-exs w/ sorted events 
-		#+debug (fomus-proc-check pts 'start)
-		(loop for e in svdata do
-		      (destructuring-bind (&key (filename (change-filename *filename* :ext "fms")) &allow-other-keys)
-			  (rest (force-list e))
-			(save-indata (namestring (merge-pathnames filename dir)) pts mks)))
-		(when someout
-		  (setf *old-objects* nil)
-		  (track-progress +progress-int+
-		    (preproc-keysigs *timesigs*)
-		    (fixinputbeat pts *timesigs* mks)
-		    (when (find-if #'is-percussion pts)
-		      (when (>= *verbose* 2) (out "~&; Percussion..."))	; before voices & clefs
-		      (percussion pts))	; was after accs
-		    (autodurs-preproc pts)
-		    (if *auto-quantize*
-			(progn (when (>= *verbose* 2) (out "~&; Quantizing..."))
-			       (quantize *timesigs* pts) #+debug (fomus-proc-check pts 'quantize))
-			(quantize-generic pts))
-		    (when *check-ranges*
-		      (when (>= *verbose* 2) (out "~&; Ranges..."))
-		      (check-ranges pts) #+debug (fomus-proc-check pts 'ranges))	     
-		    (preproc-noteheads pts) ; set acctie TEMPSLOT for accidentals and voicing algorithms
-		    (check-mark-accs pts)
-		    (check-useraccs pts)
-		    (when *transpose*
-		      (when (>= *verbose* 2) (out "~&; Transpositions..."))
-		      (transpose pts) #+debug (fomus-proc-check pts 'transpose))
-		    (if *auto-voicing*
-			(progn (when (>= *verbose* 2) (out "~&; Voices..."))
-			       (voices pts) #+debug (fomus-proc-check pts 'voices))
-			(voices-generic pts))
-		    (distr-voices pts)
-		    (if *auto-accidentals*
-			(progn (when (>= *verbose* 2) (out "~&; Accidentals..."))
-			       (accidentals pts) #+debug (fomus-proc-check pts 'accs))
-			(accidentals-generic pts))
-		    (reset-tempslots pts nil)
-		    (if *auto-staff/clef-changes*
-			(progn (when (>= *verbose* 2) (out "~&; Staves/clefs...")) ; staves/voices are now decided
-			       (clefs pts) #+debug (fomus-proc-check pts 'clefs))
-			(clefs-generic pts))
-		    (reset-tempslots pts nil)
-		    (distribute-marks pts mks)
-		    (reset-tempslots pts nil)
-		    (setf pts (sep-staves pts))	; ********** STAVES SEPARATED
-		    (when *auto-ottavas* ; (before clean-spanners)
-		      (when (>= *verbose* 2) (out "~&; Ottavas..."))
-		      (ottavas pts) #+debug (fomus-proc-check pts 'ottavas))
-		    (when (>= *verbose* 2) (out "~&; Staff spanners..."))
-		    (clean-spanners pts +marks-spanner-staves+) #+debug (fomus-proc-check pts 'spanners1)
-		    (setf pts (sep-voices (assemble-parts pts))) ; ********** STAVES TOGETHER, VOICES SEPARATED
-		    (when (>= *verbose* 2) (out "~&; Voice spanners..."))
-		    (expand-marks pts) #+debug (fomus-proc-check pts 'expandmarks)
-		    (clean-spanners pts +marks-spanner-voices+) #+debug (fomus-proc-check pts 'spanners2)
-		    (when (>= *verbose* 2) (out "~&; Miscellaneous items..."))
-		    (when (find-if #'is-percussion pts) (autodurs *timesigs* pts)) ;; uses beamrt (autodur) TEMPSLOT until after split function
-		    (preproc-tremolos *timesigs* pts)
-		    (preproc-cautaccs pts)
-		    (when *auto-grace-slurs*
-		      (grace-slurs pts) #+debug (fomus-proc-check pts 'graceslurs))
-		    (when (>= *verbose* 2) (out "~&; Measures..."))
-		    (init-parts *timesigs* pts) ; ----- MEASURES
-		    #+debug (fomus-proc-check pts 'measures)
-		    #+debug (check-same pts "FOMUS-PROC (MEASURES)" :key (lambda (x) (meas-endoff (last-element (part-meas x)))))
-		    (when *auto-cautionary-accs*
-		      (when (>= *verbose* 2) (out "~&; Cautionary accidentals..."))
-		      (cautaccs pts) #+debug (fomus-proc-check pts 'cautaccs))
-		    (when (>= *verbose* 2) (out "~&; Chords..."))
-		    (marks-beforeafter pts)
-		    (preproc-userties pts)
-		    (preproc pts) #+debug (fomus-proc-check pts 'preproc) ; ----- CHORDS, RESTS
-		    (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties1)
-		    (when (>= *verbose* 2) (out "~&; Splits/ties/rests..."))
-		    (split pts) #+debug (fomus-proc-check pts 'ties)
-		    (reset-tempslots pts 0)
-		    (reset-resttempslots pts)
-		    (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties2)
-		    (when *auto-beams*
-		      (when (>= *verbose* 2) (out "~&; Beams..."))
-		      (beams pts) #+debug (fomus-proc-check pts 'beams))
-		    (when (>= *verbose* 2) (out "~&; Staff/voice layouts..."))
-		    (setf pts (assemble-parts pts)) #+debug (fomus-proc-check pts 'assvoices) ; ********** VOICES TOGETHER
-		    (distr-rests pts) #+debug (fomus-proc-check pts 'distrrests)
-		    (when (or *auto-multivoice-rests* *auto-multivoice-notes*)
-		      (comb-notes pts) #+debug (fomus-proc-check pts 'combnotes))
-		    (backup-props pts)
-		    (postproc-parts pts)))))))))))
+	  (set-acc-pluginvar
+	   (multiple-value-bind (*timesigs* rm) (split-list *global* #'timesigp)
+	     #-debug (declare (ignore rm))
+	     #+debug (when rm (error "Error in FOMUS-PROC"))
+	     (multiple-value-bind (*events* mks) (split-list *events* (lambda (x) (declare (type (or note rest mark) x)) (or (notep x) (restp x)))) 
+	       (let ((pts (progn
+			    (loop with co = 0
+				  for p of-type part in *parts* and i from 0
+				  do (multiple-value-bind (ti evs ma)
+					 (split-list (part-events p) #'timesigp
+						     (lambda (x) (declare (type (or note rest mark timesig) x)) (or (notep x) (restp x)))) ; separate timesigs/keysigs out of part tracks
+				       (unless (part-partid p)
+					 (setf (part-partid p)
+					       (loop
+						for s = (incf co)
+						while (find s *parts* :key #'part-partid)
+						finally (return s))))
+				       (map nil (lambda (x)
+						  (declare (type timesig x))
+						  (unless (timesig-partids x)
+						    (setf (timesig-partids x) (part-partid p))))
+					    ti)
+				       (map nil (lambda (x)
+						  (declare (type mark x))
+						  (unless (event-partid x)
+						    (setf (event-partid x) (part-partid p))))
+					    ma)
+				       (prenconc ti *timesigs*)
+				       (prenconc ma mks)
+				       (multiple-value-bind (eo ep) (split-list evs #'event-partid)
+					 (setf (part-events p) ep)
+					 (prenconc eo *events*))))
+			    (setf *timesigs* (mapcar #'make-timesigex* *timesigs*))
+			    (loop
+			     with h = (get-timesigs *timesigs* *parts*)
+			     for i from 0 and e in *parts*
+			     for (evs rm) of-type (list list) on (split-list* *events* (mapcar #'part-partid *parts*) :key #'event-partid)
+			     collect (make-partex* e i evs (gethash e h))
+			     finally (when rm (error "No matching part for event with partid ~S" (event-partid (first rm)))))))) ; make copied list of part-exs w/ sorted events 
+		 #+debug (fomus-proc-check pts 'start)
+		 (loop for e in svdata do
+		       (destructuring-bind (&key (filename (change-filename *filename* :ext "fms")) &allow-other-keys)
+			   (rest (force-list e))
+			 (save-indata (namestring (merge-pathnames filename dir)) pts mks)))
+		 (when someout
+		   (setf *old-objects* nil)
+		   (track-progress +progress-int+
+		     (preproc-keysigs *timesigs*)
+		     (fixinputbeat pts *timesigs* mks)
+		     (when (find-if #'is-percussion pts)
+		       (when (>= *verbose* 2) (out "~&; Percussion...")) ; before voices & clefs
+		       (percussion pts)) ; was after accs
+		     (autodurs-preproc pts)
+		     (if *auto-quantize*
+			 (progn (when (>= *verbose* 2) (out "~&; Quantizing..."))
+				(quantize *timesigs* pts) #+debug (fomus-proc-check pts 'quantize))
+			 (quantize-generic pts))
+		     (when *check-ranges*
+		       (when (>= *verbose* 2) (out "~&; Ranges..."))
+		       (check-ranges pts) #+debug (fomus-proc-check pts 'ranges))	     
+		     (preproc-noteheads pts) ; set acctie TEMPSLOT for accidentals and voicing algorithms
+		     (check-mark-accs pts)
+		     (check-useraccs pts)
+		     (when *transpose*
+		       (when (>= *verbose* 2) (out "~&; Transpositions..."))
+		       (transpose pts) #+debug (fomus-proc-check pts 'transpose))
+		     (if *auto-voicing*
+			 (progn (when (>= *verbose* 2) (out "~&; Voices..."))
+				(voices pts) #+debug (fomus-proc-check pts 'voices))
+			 (voices-generic pts))
+		     (distr-voices pts)
+		     (if *auto-accidentals*
+			 (progn (when (>= *verbose* 2) (out "~&; Accidentals..."))
+				(accidentals pts) #+debug (fomus-proc-check pts 'accs))
+			 (accidentals-generic pts))
+		     (reset-tempslots pts nil)
+		     (if *auto-staff/clef-changes*
+			 (progn (when (>= *verbose* 2) (out "~&; Staves/clefs...")) ; staves/voices are now decided
+				(clefs pts) #+debug (fomus-proc-check pts 'clefs))
+			 (clefs-generic pts))
+		     (reset-tempslots pts nil)
+		     (distribute-marks pts mks)
+		     (reset-tempslots pts nil)
+		     (setf pts (sep-staves pts)) ; ********** STAVES SEPARATED
+		     (when *auto-ottavas* ; (before clean-spanners)
+		       (when (>= *verbose* 2) (out "~&; Ottavas..."))
+		       (ottavas pts) #+debug (fomus-proc-check pts 'ottavas))
+		     (when (>= *verbose* 2) (out "~&; Staff spanners..."))
+		     (clean-spanners pts +marks-spanner-staves+) #+debug (fomus-proc-check pts 'spanners1)
+		     (setf pts (sep-voices (assemble-parts pts))) ; ********** STAVES TOGETHER, VOICES SEPARATED
+		     (when (>= *verbose* 2) (out "~&; Voice spanners..."))
+		     (expand-marks pts) #+debug (fomus-proc-check pts 'expandmarks)
+		     (clean-spanners pts +marks-spanner-voices+) #+debug (fomus-proc-check pts 'spanners2)
+		     (when (>= *verbose* 2) (out "~&; Miscellaneous items..."))
+		     (when (find-if #'is-percussion pts) (autodurs *timesigs* pts)) ;; uses beamrt (autodur) TEMPSLOT until after split function
+		     (preproc-tremolos *timesigs* pts)
+		     (preproc-cautaccs pts)
+		     (when *auto-grace-slurs*
+		       (grace-slurs pts) #+debug (fomus-proc-check pts 'graceslurs))
+		     (when (>= *verbose* 2) (out "~&; Measures..."))
+		     (init-parts *timesigs* pts) ; ----- MEASURES
+		     #+debug (fomus-proc-check pts 'measures)
+		     #+debug (check-same pts "FOMUS-PROC (MEASURES)" :key (lambda (x) (meas-endoff (last-element (part-meas x)))))
+		     (when *auto-cautionary-accs*
+		       (when (>= *verbose* 2) (out "~&; Cautionary accidentals..."))
+		       (cautaccs pts) #+debug (fomus-proc-check pts 'cautaccs))
+		     (when (>= *verbose* 2) (out "~&; Chords..."))
+		     (marks-beforeafter pts)
+		     (preproc-userties pts)
+		     (preproc pts) #+debug (fomus-proc-check pts 'preproc) ; ----- CHORDS, RESTS
+		     (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties1)
+		     (when (>= *verbose* 2) (out "~&; Splits/ties/rests..."))
+		     (split pts) #+debug (fomus-proc-check pts 'ties)
+		     (reset-tempslots pts 0)
+		     (reset-resttempslots pts)
+		     (clean-ties pts) #+debug (fomus-proc-check pts 'cleanties2)
+		     (when *auto-beams*
+		       (when (>= *verbose* 2) (out "~&; Beams..."))
+		       (beams pts) #+debug (fomus-proc-check pts 'beams))
+		     (when (>= *verbose* 2) (out "~&; Staff/voice layouts..."))
+		     (setf pts (assemble-parts pts)) #+debug (fomus-proc-check pts 'assvoices) ; ********** VOICES TOGETHER
+		     (distr-rests pts) #+debug (fomus-proc-check pts 'distrrests)
+		     (when (or *auto-multivoice-rests* *auto-multivoice-notes*)
+		       (comb-notes pts) #+debug (fomus-proc-check pts 'combnotes))
+		     (backup-props pts)
+		     (postproc-parts pts))))))))))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MAIN

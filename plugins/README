@@ -1,4 +1,5 @@
-This README contains some information for developing plugins.
+This README contains some information for developing plugins
+
 
 
 DEFPLUGIN
@@ -32,10 +33,12 @@ Example:
     (:documentation "(Experimental) Note-spelling algorithm by Kilian Sprotte using an adaptive search approach"))
 
 
+
 CALLBACK FUNCTION
 
 There needs to be a callback function, specified by the :entryfun argument to DEFFOMUSPLUGIN.  The API is different for each plugin type
 and might have to change depending on plugin requirements.
+
 
 
 DATA
@@ -50,7 +53,11 @@ Some data that can be imported from the fomus package that might be useful (thin
 *verbose* ; the verbosity level (usually only print something if *verbose* >= 2)
 
 
+
 FUNCTIONS
 
-force-list (atom) ; leaves atom alone if it's a list, otherwise wraps it in a list
-out (&rest args) ; arguments are passed to (format t ...) and followed up by a (finish-output)
+See "misc.lisp" for general miscellaneous things and "util.lisp" for fomus-specific functions
+An important one is print-dot in util.lisp--prints a progress dot only if some number of seconds has elapsed since the last one (insert this somewhere in your code)
+
+
+
