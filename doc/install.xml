@@ -77,18 +77,22 @@ CL-USER> (use-package :fm)]]>
        Type the following to get a list of installation options:
       <example>
         <title>Running the Installation Script 1</title>
+        <programlisting>
 <![CDATA[
 cd path_to_install_directory
 ./install.sh --help]]>
+       </programlisting>
       </example>
       By default, the script tries to install the program into the subdirectories in <literal>/usr/local</literal>.  The commands for a default installation using SBCL 
       would look like this:
       <example>
         <title>Running the Installation Script 2</title>
+        <programlisting>
 <![CDATA[
 su -
 cd path_to_install_directory
 ./install.sh --sbcl]]>
+       </programlisting>
       </example>
       There is also an option for uninstalling.  To see how to use as an executable, see <link linkend="interface.cmd" endterm="interface.cmd.title"/> and
       <link linkend="interface.text" endterm="interface.text.title"/>.
@@ -119,6 +123,7 @@ cd path_to_install_directory
       <application>FOMUS</application> command-line program.
       <example>
         <title>Emacs Init Lines 1</title>
+	<programlisting>
 <![CDATA[
 ;; fomus extension--editing works well enough in lisp mode
 (add-to-list 'auto-mode-alist '("\\.fms$" . lisp-mode))
@@ -136,14 +141,15 @@ cd path_to_install_directory
 (defun custom-slime-mode-hook ()
   (local-set-key "\C-c\C-o" 'run-fomus))
 (add-hook 'slime-mode-hook 'custom-slime-mode-hook)]]>
+	</programlisting>
       </example>
-      (I'm not sure why the lines are all run together.  FIXME)
     </para>
     <para>
       Another option would be to use <application>SLIME</application>'s <function>SLIME-INTERACTIVE-EVAL</function> function instead of
       <function>SHELL-COMMAND</function>:
       <example>
         <title>Emacs Init Lines 2</title>
+       <programlisting>
 <![CDATA[
 ;; save buffers and invoke fomus in the default Lisp
 (setq fomus-args "")
@@ -153,6 +159,7 @@ cd path_to_install_directory
   (let ((a (read-from-minibuffer "FOMUS arguments: " fomus-args)))
     (setq fomus-args a)
     (slime-interactive-eval (format "(fomus %S %s)" buffer-file-name a))))]]>
+       </programlisting>
       </example>
     </para>
   </section>

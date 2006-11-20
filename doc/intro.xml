@@ -12,7 +12,6 @@
     <application><ulink url="http://www.lispworks.com/">LispWorks</ulink></application> (version 4).
     As the program becomes more stable, it will also be tested in other lisp implementations.  Supported operating systems are
     Linux, Max OS X and Windows.
-    <!--  <application><ulink url="http://clisp.cons.org/">CLISP</ulink></application> -->
     The purpose of it is to facilitate the conversion of "raw" algorithmic output data into readable music notation, a process that can be
     frustrating and time consuming since it often requires dumping data into some intermediary format (such as MIDI) and importing
     it into a notation program that only does a mediocre job of conversion.  
