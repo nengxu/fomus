@@ -15,18 +15,22 @@
 (defparameter *auto-quantize-mod* nil)
 (defparameter *auto-quantize-plugin* t)
 (declaim (inline auto-quantize-fun))
-(defun auto-quantize-fun () (if (truep *auto-quantize-plugin*) :quantize1 *auto-quantize-plugin*))
+(defun auto-quantize-fun () (if (truep *auto-quantize-plugin*) :quantize1-mse *auto-quantize-plugin*))
 
 (declaim (type boolean *auto-quantize*) 
 	 (type integer *default-grace-num*))
 (defparameter *auto-quantize* t)
 (defparameter *default-grace-num* 0) 
 
-(defun byfit-score (evpts qpts)
+(defun byfit-score-mse (evpts qpts)
+  (declare (type list evpts) (type list qpts))
+  (sqrt (loop for e of-type (real 0) in evpts sum (let ((x (diff (loop-return-firstmin (diff i e) for i of-type (rational 0) in qpts) e))) (* x x)))))
+(defun byfit-score-ave (evpts qpts)
   (declare (type list evpts) (type list qpts))
   (sqrt (loop for e of-type (real 0) in evpts sum (let ((x (diff (loop-return-firstmin (diff i e) for i of-type (rational 0) in qpts) e))) (* x x)))))
 
-(defun quantize-byfit (timesigs parts)
+(defun quantize-byfit (timesigs parts scfun)
+  (declare (type list timesigs parts) (type (function (t t) t) scfun))
   (let ((h (get-timesigs timesigs parts)))
     (flet ((adj (l)			; list?
 	     (declare (type list l))
@@ -39,7 +43,7 @@
 	   (sel (l) ; select best (orig-point-list . quant-point-list) match
 	     (declare (type list l))
 	     (loop-return-argmin
-	      (byfit-score (car x) (cdr x))
+	      (funcall scfun (car x) (cdr x))
 	      for x of-type (cons list list) in (remove-if (lambda (x) (declare (type (cons list list) x)) (or (null (car x)) (null (cdr x)))) l))))
       (labels ((dv (o1 o2 pts rl lm)
 		 (let ((du (- o2 o1)))
@@ -138,9 +142,10 @@
   (unless (eq (auto-quantize-fun) :quantize1) (load-fomus-plugin (auto-quantize-fun))))
 
 (defun quantize (timesigs parts)
-  (if (eq (auto-quantize-fun) :quantize1)
-      (quantize-byfit timesigs parts)
-      (call-plugin (auto-quantize-fun) (list "Unknown quantize plugin ~S" *auto-quantize-plugin*) timesigs parts)))
+  (case (auto-quantize-fun)
+    (:quantize1-mse (quantize-byfit timesigs parts #'byfit-score-mse))
+    (:quantize1-ave (quantize-byfit timesigs parts #'byfit-score-ave))
+    (otherwise (call-plugin (auto-quantize-fun) (list "Unknown quantize plugin ~S" *auto-quantize-plugin*) timesigs parts))))
 
 (defun quantize-generic (parts)
   (loop for p in parts do

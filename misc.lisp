@@ -80,8 +80,8 @@
   (car (last list)))
 
 ;; installs reader macro #Z (all the good ones are taken)
-(if (get-dispatch-macro-character #\# #\Z)
-    (warn "Reinstalling dispatch macro #Z"))
+(when (get-dispatch-macro-character #\# #\Z)
+  (format t ";; WARNING: Reinstalling dispatch macro #Z~%"))
 (set-dispatch-macro-character
  #\# #\Z
  (lambda (s c n)
@@ -617,7 +617,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; MORE GENERAL
 
-;; removes newlines from a string
+;; removes newlines and double spaces from a string
 (defun remove-newlines (str)
   (declare (type string str))
   (loop with c = 0
@@ -627,6 +627,14 @@
 	unless (and (char= p #\space) (char= x #\space))
 	collect x into r and do (incf c)
 	finally (return (make-array c :element-type 'character :initial-contents r))))
+
+;; the return string needs to be run through FORMAT
+(defun commentify (str in)
+  (declare (type string str) (type (integer 1) in))
+  (loop with in = (format nil "~%~A " (make-string in :initial-element #\;))
+	for p = (position #\newline str :start (if p (1+ p) 0))
+	while p do (setf str (conc-strings (subseq str 0 p) in (subseq str (1+ p))))
+	finally (return str)))
 
 ;; cartesian distance
 (declaim (inline distance))

@@ -412,11 +412,11 @@ fomus my_data_file.fms]]>
         <title>FOMUS Usage 15</title>
 	<programlisting>
 <![CDATA[
-fomus -lw "path_to/myfomusfile_chunk1.fms" "path_to/myfomusfile_chunk2.fms" "path_to/myfomusfile_chunk3.fms"]]>
+fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/myfomusfile_chunk3.fms]]>
 	</programlisting>
       </example>
-      In each case, two or three chunks are produced from either another <function><link linkend="function.fomus">FOMUS</link></function>
-      command or from reading and parsing an input file.
+      In each case, two or three chunks are either each created from another <function><link linkend="function.fomus">FOMUS</link></function>
+      command or read in from an input file.  The chunks are combined together and output as one file.
     </para>
   </section>
   <section>

@@ -36,7 +36,7 @@
        (lambda (file)
 	 (multiple-value-bind (value error)
 	     (ignore-errors (register-fomus-plugin file))
-	   (or value (format t "WARNING: Can't register plugin file ~S~%  ~A~%" (namestring file) error))))
+	   (or value (format t ";; WARNING: Can't register plugin file ~S~%;    ~A~%" (namestring file) (commentify (format nil "~A" error) 1)))))
        (nconc (directory (merge-pathnames "plugins/*.lisp" +fomus-dir+))
 	      (directory (merge-pathnames "plugins/backends/*.lisp" +fomus-dir+))))
   (format t "~&"))
@@ -52,7 +52,7 @@
 
 ;; print load greeting
 (eval-when (:load-toplevel :execute)
-  (when (>= *verbose* 1) (format t "~&;; ~A v~A.~A.~A~%~A~%"
+  (when (>= *verbose* 1) (format t "~&~%;; ~A v~A.~A.~A~%~A~%"
 				 +title+
 				 (first +version+) (second +version+) (third +version+)
 				 (conc-stringlist (loop for e in +banner+ collect (format nil ";; ~A~%" e))))))
@@ -63,7 +63,7 @@
 (eval-when (:load-toplevel :execute)
   (unless (find-symbol "+FOMUS-INSTALL+" :common-lisp-user)
     (load-initfile)
-    (register-plugins)))
+    #-fomus-noautoreg (register-plugins)))
 
 (defun fomus-exe (initfile opts basename quality verbosity &rest filename)
   (let ((*package* (find-package "FOMUS")))

@@ -59,7 +59,7 @@
     <application>FOMUS</application> is still in its initial (alpha) development stage, so please expect many bugs.
     If you wish to report one, please look at the <varname><link linkend="setting.debug.filename">DEBUG-FILENAME</link></varname>
     setting to see how to create a debug file and e-mail it to <email>dpsenick(at)uiuc(dot)edu</email>.
-    Please send me suggestions and comments if you have any.
+    Please send me suggestions and comments.
   </para>
   <para>
   Thanks to Rick Taube, Kilian Sprotte, Mika Kuuskankare and Rob Canning for their help and suggestions.

@@ -5,7 +5,7 @@
 ;; util.lisp
 ;;**************************************************************************************************
 
-;; *****COMMENTING IN PROGRESS*****
+;; *****COMMENTING...*****
 
 (in-package :fomus)
 (compile-settings)
@@ -267,7 +267,7 @@
 ;; returns: the new marks list
 (defun combprops (objlist)
   (declare (type list objlist))
-  (remove-duplicates (loop for o of-type (or meas part timesig-repl mark) in objlist append (obj-props o)) :test #'equal))
+  (remove-duplicates (loop for o of-type (or meas part timesig-repl mark) in objlist nconc (copy-list (obj-props o))) :test #'equal))
 
 ;; aliasa for note/rest objects
 (declaim (inline addmark getmark getmarks rmmark combmarks popmark))
@@ -806,7 +806,7 @@
 ;; INTERNAL OBJECT CONSTRUCTORS
 
 ;; make functions
-;;(declaim (inline make-eventex* make-partex*))
+(declaim (inline make-eventex*))
 (defgeneric make-eventex* (ev ts pa))
 (defmethod make-eventex* ((ev note) ts pa)
   (declare (type timesig-repl ts) (type partex pa))
@@ -896,7 +896,8 @@
 (defmethod make-timesigex* ((ts timesig-repl))
   (let ((nt (copy-timesig-repl ts
 			       :div (force-list2all (timesig-div ts))
-			       :time (cons (first (timesig-time ts)) (second (timesig-time ts))))))
+			       :time (cons (first (timesig-time ts)) (second (timesig-time ts)))
+			       :props (copy-tree (timesig-props ts)))))
     (timesig-check nt)
     nt))
 
@@ -1108,10 +1109,7 @@ Directories are created as needed."
        do (format t "~:[~;~%~];; Type: ~A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" nx (symbol-name (plugin-type (cdr (first l))))
 		  (loop for e in (sort l #'string< :key (lambda (x) (symbol-name (car x))))
 		     collect (symbol-name (car e)) collect (plugin-file (cdr e))
-		     collect (loop with z = (plugin-desc (cdr e)) and in = (format nil "~%; ")
-				for p = (position #\newline z :start (if p (1+ p) 0))
-				while p do (setf z (conc-strings (subseq z 0 p) in (subseq z (1+ p))))
-				finally (return z)))))))
+		     collect (commentify (plugin-desc (cdr e)) 1))))))
 
 ;; user fun
 (defun load-fomus-plugin (keyname)

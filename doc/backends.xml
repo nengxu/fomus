@@ -501,7 +501,7 @@
       channels are necessary (see the <varname><link linkend="midi.play">PLAY</link></varname> option).
       Also, the <varname><link linkend="midi.cm.args">CM-ARGS</link></varname> option may be used to send <application>Common Music</application> specific
       arguments to its <function>EVENTS</function> or <function>RTS</function> function, whichever is used.
-      <application>FOMUS</application> uses floating point MIDI velocity (or amplitude) values (ie. <literal>0.0</literal> to <literal>1.0</literal>).
+      <application>FOMUS</application> uses floating point velocity (or amplitude) values (0.0 to 1.0).
     </para>
     <section>
       <title>MIDI Options</title>
