@@ -424,8 +424,11 @@
         <listitem>
           <para>
   	  Designates which plugin is to be used for quantizing.
-  	  Current possible values are <literal>T</literal> and <literal>:QUANTIZE1</literal>.
-  	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:QUANTIZE1</literal>.
+  	  Current possible values are <literal>T</literal>, <literal>:QUANTIZE1-RMSE</literal> and <literal>:QUANTIZE1-AVE</literal>.
+	  <literal>:QUANTIZE1-MSE</literal> finds the closest fit to notation by minimizing the root mean squared error 
+	   between the user's values and possible notational values.
+	  <literal>:QUANTIZE1-AVE</literal> finds the closets fit by minimizing average error.
+	  <literal>T</literal> represents the default plugin and is equivalent to <literal>:QUANTIZE1-RMSE</literal>.
   	</para>
         </listitem>
       </varlistentry>

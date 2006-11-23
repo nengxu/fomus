@@ -15,19 +15,19 @@
 (defparameter *auto-quantize-mod* nil)
 (defparameter *auto-quantize-plugin* t)
 (declaim (inline auto-quantize-fun))
-(defun auto-quantize-fun () (if (truep *auto-quantize-plugin*) :quantize1-mse *auto-quantize-plugin*))
+(defun auto-quantize-fun () (if (truep *auto-quantize-plugin*) :quantize1-rmse *auto-quantize-plugin*))
 
 (declaim (type boolean *auto-quantize*) 
 	 (type integer *default-grace-num*))
 (defparameter *auto-quantize* t)
 (defparameter *default-grace-num* 0) 
 
-(defun byfit-score-mse (evpts qpts)
+(defun byfit-score-rmse (evpts qpts)
   (declare (type list evpts) (type list qpts))
   (sqrt (loop for e of-type (real 0) in evpts sum (let ((x (diff (loop-return-firstmin (diff i e) for i of-type (rational 0) in qpts) e))) (* x x)))))
 (defun byfit-score-ave (evpts qpts)
   (declare (type list evpts) (type list qpts))
-  (sqrt (loop for e of-type (real 0) in evpts sum (let ((x (diff (loop-return-firstmin (diff i e) for i of-type (rational 0) in qpts) e))) (* x x)))))
+  (ave-list (loop for e of-type (real 0) in evpts collect (diff (loop-return-firstmin (diff i e) for i of-type (rational 0) in qpts) e))))
 
 (defun quantize-byfit (timesigs parts scfun)
   (declare (type list timesigs parts) (type (function (t t) t) scfun))
@@ -143,7 +143,7 @@
 
 (defun quantize (timesigs parts)
   (case (auto-quantize-fun)
-    (:quantize1-mse (quantize-byfit timesigs parts #'byfit-score-mse))
+    (:quantize1-rmse (quantize-byfit timesigs parts #'byfit-score-rmse))
     (:quantize1-ave (quantize-byfit timesigs parts #'byfit-score-ave))
     (otherwise (call-plugin (auto-quantize-fun) (list "Unknown quantize plugin ~S" *auto-quantize-plugin*) timesigs parts))))
 
