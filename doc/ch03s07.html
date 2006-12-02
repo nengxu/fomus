@@ -17,18 +17,18 @@
     </p><p>
       There are several ways to tell <span class="application">FOMUS</span> to merge chunks.  Some examples are given here in both
       Lisp and command-line syntax:
-      </p><div class="example"><a id="id290620"></a><p class="title"><b>Example&#160;3.14.&#160;FOMUS Usage 13</b></p><pre class="programlisting">
+      </p><div class="example"><a id="id290668"></a><p class="title"><b>Example&#160;3.14.&#160;FOMUS Usage 13</b></p><pre class="programlisting">
 
 (fomus (list (fomus ...arguments_for_chunk1...) (fomus ...arguments_for_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)
 	</pre></div><p>
-      </p><div class="example"><a id="id290636"></a><p class="title"><b>Example&#160;3.15.&#160;FOMUS Usage 14</b></p><pre class="programlisting">
+      </p><div class="example"><a id="id290683"></a><p class="title"><b>Example&#160;3.15.&#160;FOMUS Usage 14</b></p><pre class="programlisting">
 
 (fomus (list (fomus ...arguments_for_chunk1...) "path_to/myfomusfile_chunk2.fms") :filename "path_to/myoutputfile" :output :cmn)
 	</pre></div><p>
-      </p><div class="example"><a id="id290650"></a><p class="title"><b>Example&#160;3.16.&#160;FOMUS Usage 15</b></p><pre class="programlisting">
+      </p><div class="example"><a id="id290698"></a><p class="title"><b>Example&#160;3.16.&#160;FOMUS Usage 15</b></p><pre class="programlisting">
 
-fomus -lw "path_to/myfomusfile_chunk1.fms" "path_to/myfomusfile_chunk2.fms" "path_to/myfomusfile_chunk3.fms"
+fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/myfomusfile_chunk3.fms
 	</pre></div><p>
-      In each case, two or three chunks are produced from either another <code class="function"><a href="ch03s02.html#function.fomus">FOMUS</a></code>
-      command or from reading and parsing an input file.
+      In each case, two or three chunks are either each created from another <code class="function"><a href="ch03s02.html#function.fomus">FOMUS</a></code>
+      command or read in from an input file.  The chunks are combined together and output as one file.
     </p></div><div class="navfooter"><hr /><table width="100%" summary="Navigation footer"><tr><td width="40%" align="left"><a accesskey="p" href="ch03s06.html">Prev</a>&#160;</td><td width="20%" align="center"><a accesskey="u" href="ch03.html">Up</a></td><td width="40%" align="right">&#160;<a accesskey="n" href="ch03s08.html">Next</a></td></tr><tr><td width="40%" align="left" valign="top">Command Line Interface&#160;</td><td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td><td width="40%" align="right" valign="top">&#160;Other Interface Functions</td></tr></table></div></body></html>

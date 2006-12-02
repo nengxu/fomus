@@ -139,7 +139,7 @@
 
 (declaim (inline load-quantize-plugins))
 (defun load-quantize-plugins ()
-  (unless (eq (auto-quantize-fun) :quantize1) (load-fomus-plugin (auto-quantize-fun))))
+  (unless (member (auto-quantize-fun) '(:quantize1-rmse :quantize1-ave)) (load-fomus-plugin (auto-quantize-fun))))
 
 (defun quantize (timesigs parts)
   (case (auto-quantize-fun)
