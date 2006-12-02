@@ -14,11 +14,11 @@
 (declaim (type boolean *auto-staff/clef-changes*))
 (defparameter *auto-staff/clef-changes* t)
 
-(declaim (type symbol *auto-staff/clefs-mod* *auto-staff/clefs-plugin*))
-(defparameter *auto-staff/clefs-mod* nil)
-(defparameter *auto-staff/clefs-plugin* t)
+(declaim (type symbol *auto-staff/clefs-plugin* *auto-staff/clefs-module*))
+(defparameter *auto-staff/clefs-plugin* nil)
+(defparameter *auto-staff/clefs-module* t)
 (declaim (inline auto-clefs-fun))
-(defun auto-clefs-fun () (if (truep *auto-staff/clefs-plugin*) :staves/clefs1 *auto-staff/clefs-plugin*))
+(defun auto-clefs-fun () (if (truep *auto-staff/clefs-module*) :staves/clefs1 *auto-staff/clefs-module*))
 
 (declaim (type (real 0) *clef-force-clef-change-dist*))
 (defparameter *clef-force-clef-change-dist* 2) ; 2 can be nil
@@ -215,9 +215,9 @@
 					    (clefs-getclef nil nil i))
 				  (1+ i)))))))))))
 
-(declaim (inline load-staff/clef-plugins))
-(defun load-staff/clef-plugins ()
-  (unless (eq (auto-clefs-fun) :staves/clefs1) (load-fomus-plugin (auto-clefs-fun))))
+(declaim (inline load-staff/clef-modules))
+(defun load-staff/clef-modules ()
+  (unless (eq (auto-clefs-fun) :staves/clefs1) (load-fomus-module (auto-clefs-fun))))
 
 (defun clefs (parts)
   (loop
@@ -247,7 +247,7 @@
      (multiple-value-bind (evs prs)
 	 (if (eq (auto-clefs-fun) :staves/clefs1)
 	     (clefs-bylegscore no (part-instr p) (part-name p))
-	     (call-plugin (auto-clefs-fun) (list "Unknown staff/clefs assignment plugin ~S" *auto-staff/clefs-plugin*) no (part-instr p) (part-name p)))
+	     (call-module (auto-clefs-fun) (list "Unknown staff/clefs assignment module ~S" *auto-staff/clefs-module*) no (part-instr p) (part-name p)))
        (setf (part-events p) (sort (nconc re evs) #'sort-offdur))
        (mapc (lambda (x) (declare (type cons x)) (addprop p x)) prs)))
    (loop ; temporarily assign rests to staves (will become defaults if distr-rests isn't run)
@@ -309,11 +309,11 @@
 (defparameter *grandstaff-hide-rests* t) ; nil (t or :some) or :all, can override in part properties?
 (defparameter *min-grandstaff-hide-rests-dur* 1)
 
-(declaim (type symbol *auto-distr-rests-mod* *auto-distr-rests-plugin*))
-(defparameter *auto-distr-rests-mod* nil)
-(defparameter *auto-distr-rests-plugin* t)
+(declaim (type symbol *auto-distr-rests-plugin* *auto-distr-rests-module*))
+(defparameter *auto-distr-rests-plugin* nil)
+(defparameter *auto-distr-rests-module* t)
 (declaim (inline auto-distr-rests-fun))
-(defun auto-distr-rests-fun () (if (truep *auto-distr-rests-plugin*) :rests1 *auto-distr-rests-plugin*))
+(defun auto-distr-rests-fun () (if (truep *auto-distr-rests-module*) :rests1 *auto-distr-rests-module*))
 
 ;; call AFTER ass-voices but BEFORE anything else (need to know where the rests are)
 ;; assigns all rests to staves and hides some rests
@@ -431,5 +431,5 @@
 (defun distr-rests (parts)
   (case (auto-distr-rests-fun)
     (:rests1 (distr-rests-byconfl parts))
-    (otherwise (error "Unknown rest to staves distribution plugin ~S" *auto-distr-rests-plugin*))))
+    (otherwise (error "Unknown rest to staves distribution module ~S" *auto-distr-rests-module*))))
 

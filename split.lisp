@@ -483,15 +483,15 @@
 		      (mapcar (lambda (ev gr) (declare (type cons ev) (type list gr)) (sort (nconc gr (drst ev rl)) #'sort-offdur)) (splitnode-evs re) grs))
 		    (splitnode-div re))))))))
 
-(declaim (type symbol *split-mod* *split-plugin*))
-(defparameter *split-mod* nil)
-(defparameter *split-plugin* t)
+(declaim (type symbol *split-plugin* *split-module*))
+(defparameter *split-plugin* nil)
+(defparameter *split-module* t)
 (declaim (inline split-fun))
-(defun split-fun () (if (truep *split-plugin*) :split1 *split-plugin*))
+(defun split-fun () (if (truep *split-module*) :split1 *split-module*))
 
-(declaim (inline load-split-plugins))
-(defun load-split-plugins ()
-  (unless (eq (split-fun) :split1) (load-fomus-plugin (split-fun))))
+(declaim (inline load-split-modules))
+(defun load-split-modules ()
+  (unless (eq (split-fun) :split1) (load-fomus-module (split-fun))))
 
 ;; the main function--events must be organized into measures (by offsets) first
 (defun split (parts)
@@ -510,7 +510,7 @@
 						   (declare (type meas f))
 						   (if (eq (split-fun) :split1)
 						       (split-engine-byscore (mapcar #'meas-events ml) (meas-off f) (meas-endoff f) (meas-timesig f))
-						       (call-plugin (split-fun) (list "Unknown split plugin ~S" *split-plugin*)
+						       (call-module (split-fun) (list "Unknown split module ~S" *split-module*)
 								    (mapcar #'meas-events ml) (meas-off f) (meas-endoff f) (meas-timesig f))))
 		      (mapc
 		       (lambda (re m)

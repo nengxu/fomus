@@ -13,11 +13,11 @@
 (declaim (type boolean *auto-ottavas*))
 (defparameter *auto-ottavas* t)
 
-(declaim (type symbol *auto-ottavas-mod* *auto-ottavas-plugin*))
-(defparameter *auto-ottavas-mod* nil)
-(defparameter *auto-ottavas-plugin* t)
+(declaim (type symbol *auto-ottavas-plugin* *auto-ottavas-module*))
+(defparameter *auto-ottavas-plugin* nil)
+(defparameter *auto-ottavas-module* t)
 (declaim (inline auto-ottavas-fun))
-(defun auto-ottavas-fun () (if (truep *auto-ottavas-plugin*) :ottavas1 *auto-ottavas-plugin*))
+(defun auto-ottavas-fun () (if (truep *auto-ottavas-module*) :ottavas1 *auto-ottavas-module*))
 
 ;; maximum number of beats of rest before new ottava must be started
 (declaim (type (real (0)) *max-ottava-rest-dist*))
@@ -71,7 +71,7 @@
    (get-usermarks (part-events p) :8down :start8down- :8down- :end8down- (lambda (e m) (declare (type (or noteex restex) e) (ignore m)) (addmark e :8down)) (part-name p))
    (case (auto-ottavas-fun)
      (:ottavas1 (ottavas-byleglines (part-instr p) (part-events p)))
-     (otherwise (error "Unknown ottavas plugin ~S" *auto-ottavas-plugin*)))))
+     (otherwise (error "Unknown ottavas module ~S" *auto-ottavas-module*)))))
 
 (defun ottavas-generic (parts)
   (loop for p of-type partex in parts when (is-percussion p) do (ottavas-rmmarks (part-events p))))

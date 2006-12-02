@@ -1,6 +1,6 @@
 ;; -*- lisp -*-
 
-;; TIMEDUMP--Backend Plugin
+;; TIMEDUMP--Backend Module
 ;; David Psenicka
 
 ;;   A very simple backend that sends timing information (measure onsets, offsets, durations and time signatures) to a user-defined callback
@@ -21,7 +21,7 @@
 
 ;; Example:
 
-;; (load-fomus-plugin :timedump) ; (don't normally have to do this, but it needs to be loaded so the symbols are accessible)
+;; (load-fomus-module :timedump) ; (don't normally have to do this, but it needs to be loaded so the symbols are accessible)
 ;; (use-package :fomus-timedump)
 ;; (defun savetimes (list filename)
 ;;   (format t ";; Dumping measure downbeats to ~S~%" (concatenate 'string filename ".txt"))
@@ -31,7 +31,7 @@
 ;; (fomus "/home/david/code/projects/perc/score1.fms" :filename "/home/david/code/projects/perc/score1" :output (list :timedump :callback #'savetimes))
 
 
-(deffomusplugin
+(deffomusmodule
     (:keyname :timedump) (:type :backend) (:entryfun do-timedump)
     (:export #:timedump #:timedump-off #:timedump-endoff #:timedump-dur #:timedump-timesig #:timedump-barline)
     (:import-from #:fomus #:force-list #:*verbose* #:out)

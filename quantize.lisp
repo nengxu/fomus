@@ -11,11 +11,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; QUANTIZE
 
-(declaim (type symbol *auto-quantize-mod* *auto-quantize-plugin*))
-(defparameter *auto-quantize-mod* nil)
-(defparameter *auto-quantize-plugin* t)
+(declaim (type symbol *auto-quantize-plugin* *auto-quantize-module*))
+(defparameter *auto-quantize-plugin* nil)
+(defparameter *auto-quantize-module* t)
 (declaim (inline auto-quantize-fun))
-(defun auto-quantize-fun () (if (truep *auto-quantize-plugin*) :quantize1-rmse *auto-quantize-plugin*))
+(defun auto-quantize-fun () (if (truep *auto-quantize-module*) :quantize1-rmse *auto-quantize-module*))
 
 (declaim (type boolean *auto-quantize*) 
 	 (type integer *default-grace-num*))
@@ -137,15 +137,15 @@
 						     :call-rev nil)))
 			 (setf (part-events p) (sort (part-events p) #'sort-offdur)))))))))
 
-(declaim (inline load-quantize-plugins))
-(defun load-quantize-plugins ()
-  (unless (member (auto-quantize-fun) '(:quantize1-rmse :quantize1-ave)) (load-fomus-plugin (auto-quantize-fun))))
+(declaim (inline load-quantize-modules))
+(defun load-quantize-modules ()
+  (unless (member (auto-quantize-fun) '(:quantize1-rmse :quantize1-ave)) (load-fomus-module (auto-quantize-fun))))
 
 (defun quantize (timesigs parts)
   (case (auto-quantize-fun)
     (:quantize1-rmse (quantize-byfit timesigs parts #'byfit-score-rmse))
     (:quantize1-ave (quantize-byfit timesigs parts #'byfit-score-ave))
-    (otherwise (call-plugin (auto-quantize-fun) (list "Unknown quantize plugin ~S" *auto-quantize-plugin*) timesigs parts))))
+    (otherwise (call-module (auto-quantize-fun) (list "Unknown quantize module ~S" *auto-quantize-module*) timesigs parts))))
 
 (defun quantize-generic (parts)
   (loop for p in parts do

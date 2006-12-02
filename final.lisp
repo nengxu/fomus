@@ -31,14 +31,14 @@
        (return t)))))
 
 (defparameter +fomus-dir+ #+asdf (or (ignore-errors (asdf:component-pathname (asdf:find-system :fomus))) *load-truename*) #-asdf *load-truename*)
-(defun register-plugins ()
+(defun register-modules ()
   (map nil
        (lambda (file)
 	 (multiple-value-bind (value error)
-	     (ignore-errors (register-fomus-plugin file))
-	   (or value (format t ";; WARNING: Can't register plugin file ~S~%;    ~A~%" (namestring file) (commentify (format nil "~A" error) 1)))))
-       (nconc (directory (merge-pathnames "plugins/*.lisp" +fomus-dir+))
-	      (directory (merge-pathnames "plugins/backends/*.lisp" +fomus-dir+))))
+	     (ignore-errors (register-fomus-module file))
+	   (or value (format t ";; WARNING: Can't register module file ~S~%;    ~A~%" (namestring file) (commentify (format nil "~A" error) 1)))))
+       (nconc (directory (merge-pathnames "modules/*.lisp" +fomus-dir+))
+	      (directory (merge-pathnames "modules/backends/*.lisp" +fomus-dir+))))
   (format t "~&"))
 
 (eval-when (:load-toplevel :execute)
@@ -63,13 +63,13 @@
 (eval-when (:load-toplevel :execute)
   (unless (find-symbol "+FOMUS-INSTALL+" :common-lisp-user)
     (load-initfile)
-    #-fomus-noautoreg (register-plugins)))
+    #-fomus-noautoreg (register-modules)))
 
 (defun fomus-exe (initfile opts basename quality verbosity &rest filename)
   (let ((*package* (find-package "FOMUS")))
     (catcherr
       (load-initfile initfile nil)
-      (register-plugins)
+      (register-modules)
       (let* ((v (when (find #\w opts) t))
 	     (o (nconc (when (string/= quality "") (list :quality (ignore-errors (read-from-string quality))))
 		       (when (string/= basename "") (list :filename basename))

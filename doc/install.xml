@@ -115,7 +115,7 @@ cd path_to_install_directory
       that all parts of the program are consistent.
     </para>
     <para>
-      Also, <application>FOMUS</application> automatically tries to register plugins by default when it loads into Lisp.
+      Also, <application>FOMUS</application> automatically tries to register modules by default when it loads into Lisp.
       Adding the feature <literal>:FOMUS-NOAUTOREG</literal> tells the application to skip this step.  Plugins will then be
       inaccessible so only <application>FOMUS</application>'s built-in functions can be used.
     </para>

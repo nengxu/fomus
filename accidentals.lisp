@@ -13,11 +13,11 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; DEFAULT ACCIDENTALS ALGORITHM
 
-(declaim (type symbol *auto-accs-mod* *auto-accs-plugin*))
-(defparameter *auto-accs-mod* nil) ; deprecated setting
-(defparameter *auto-accs-plugin* t) ; setting
+(declaim (type symbol *auto-accs-plugin* *auto-accs-module*))
+(defparameter *auto-accs-plugin* nil) ; deprecated setting
+(defparameter *auto-accs-module* t) ; setting
 (declaim (inline auto-accs-fun))
-(defun auto-accs-fun () (if (truep *auto-accs-plugin*) :nokey1 *auto-accs-plugin*))
+(defun auto-accs-fun () (if (truep *auto-accs-module*) :nokey1 *auto-accs-module*))
 
 (declaim (type boolean *auto-accidentals* *auto-cautionary-accs*))
 (defparameter *auto-accidentals* t) ; setting
@@ -243,15 +243,15 @@
 (declaim (type boolean *use-double-accs*))
 (defparameter *use-double-accs* nil) ; setting
 
-(declaim (inline load-acc-plugins))
-(defun load-acc-plugins ()
-  (unless (eq (auto-accs-fun) :nokey1) (load-fomus-plugin (auto-accs-fun))))
+(declaim (inline load-acc-modules))
+(defun load-acc-modules ()
+  (unless (eq (auto-accs-fun) :nokey1) (load-fomus-module (auto-accs-fun))))
 
-;; wrapper to bind variable returned by plugin (informs fomus of which caut. accidentals algorithm to use, probably choice between nokey and key)
-(declaim (special *plugin-cautacc-fun* *plugin-postacc-fun*))
-(defmacro set-acc-pluginvar (&body forms)
-  `(let ((*plugin-cautacc-fun* nil)
-	 (*plugin-postacc-fun* nil))
+;; wrapper to bind variable returned by module (informs fomus of which caut. accidentals algorithm to use, probably choice between nokey and key)
+(declaim (special *module-cautacc-fun* *module-postacc-fun*))
+(defmacro set-acc-modulevar (&body forms)
+  `(let ((*module-cautacc-fun* nil)
+	 (*module-postacc-fun* nil))
     ,@forms))
 
 ;; dispatch function for accidentals processing--called before chords exist and before voices are separated
@@ -269,12 +269,12 @@
 					      #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
 				   (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
 					      #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity))
-			       (multiple-value-bind (r1 r2 r3) (call-plugin (auto-accs-fun) (list "Unknown accidental assignment plugin ~S" *auto-accs-plugin*) evs)
-				 (setf *plugin-cautacc-fun* r2 *plugin-postacc-fun* r3)
+			       (multiple-value-bind (r1 r2 r3) (call-module (auto-accs-fun) (list "Unknown accidental assignment module ~S" *auto-accs-module*) evs)
+				 (setf *module-cautacc-fun* r2 *module-postacc-fun* r3)
 				 r1)))
 		    #'sort-offdur)))))
 
-;; wrapper to set semitones/quartones according to selected accidentals plugin
+;; wrapper to set semitones/quartones according to selected accidentals module
 (defmacro set-note-precision (&body forms)
   `(let ((*note-precision* (if *quartertones* 1/2 1)))
     ,@forms))
@@ -285,7 +285,7 @@
 ;; 	    (otherwise 1))))
 ;;     ,@forms))
 
-;; called when no accidentals plugin is chosen (gives dumb assignments)
+;; called when no accidentals module is chosen (gives dumb assignments)
 (defun accidentals-generic (parts)
   (flet ((so (d)
 	   (lambda (x y)
@@ -370,7 +370,7 @@
 						#'sort-offdur)))
 			 (mapcar #'part-meas pa))))
 	  (if (eq (auto-accs-fun) :nokey1) (acc-nokey-cautaccs ms)
-	      (funcall (or *plugin-cautacc-fun* #'acc-nokey-cautaccs) ms)))))
+	      (funcall (or *module-cautacc-fun* #'acc-nokey-cautaccs) ms)))))
 
 ;; find user CAUTACC marks and insert note numbers
 ;; returns: nil
@@ -445,7 +445,7 @@
 		  (multiple-value-bind (evs rs) (split-list (meas-events m) #'notep)
 		    (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
 			  (if (eq (auto-accs-fun) :nokey1) (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur)))
-			      (funcall (or *plugin-postacc-fun* #'acc-nokey-postaccs) (copy-list (sort ev #'sort-offdur)))))
+			      (funcall (or *module-postacc-fun* #'acc-nokey-postaccs) (copy-list (sort ev #'sort-offdur)))))
 		    (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur)))))
       (loop for p of-type partex in parts unless (is-percussion p) do
 	    (loop for m of-type meas in (part-meas p) do

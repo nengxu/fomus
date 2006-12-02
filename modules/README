@@ -1,13 +1,13 @@
-This README contains some information for developing plugins
+This README contains some information for developing modules
 
 
 
-DEFPLUGIN
+DEFMODULE
 
-Put this declaration at the top of the plugin file (it needs to be at the top) to define the plugin.  FOMUS will automatically scan the plugin
+Put this declaration at the top of the module file (it needs to be at the top) to define the module.  FOMUS will automatically scan the module
 directory and use these headers to register, compile and load them.
 
-DEFPLUGIN is a wrapper for DEFPACKAGE and accepts the following keywords:
+DEFMODULE is a wrapper for DEFPACKAGE and accepts the following keywords:
 fomus-specific: type keyname use initfun entryfun description preload filename-ext
 arguments passed to defpackage: shadowing-import-from package-name import-from intern size export
 
@@ -15,17 +15,17 @@ type = one of :accidentals :voices :staves/clefs :splitrules :quantize or :backe
 keyname = keyword ID for this module
 initfun = callback initialization function w/ no arguments (not really necessary in Lisp, but it's included anyways)
 entryfun = function to replace fomus's default function (arguments differ depending on context)
-documentation = passed to defpackage and also printed out when list-fomus-plugins is called
+documentation = passed to defpackage and also printed out when list-fomus-modules is called
 preload = form that is executed before anything else (for loading dependencies)
-filename-ext = string such as "xml" or "ly" added to output filename--only use w/ backends (optional--without this, the base filename is passed to the plugin function)
-(all other arguments) = same as equivalent args in defpackage (deffomusplugin acts as an extension to defpackage)
+filename-ext = string such as "xml" or "ly" added to output filename--only use w/ backends (optional--without this, the base filename is passed to the module function)
+(all other arguments) = same as equivalent args in defpackage (deffomusmodule acts as an extension to defpackage)
 
-DEFPLUGIN takes care of defining the package, also adds a FOMUS-PLUGINNAME module to the *MODULES* list (FOMUS uses this)
+DEFMODULE takes care of defining the package, also adds a FOMUS-MODULENAME module to the *MODULES* list (FOMUS uses this)
 It also adds an (in-package ...)
 
 Example:
 
-(deffomusplugin
+(deffomusmodule
     (:keyname :nokey2) (:type :accidentals) (:entryfun acc-nokey2)
     (:use :iterate) ; automatically uses common-lisp and fomus packages
     (:export #:make-int-var-from-to #:make-int-var-domain #:post #:ads #:example #:acc-nokey2)
@@ -36,8 +36,8 @@ Example:
 
 CALLBACK FUNCTION
 
-There needs to be a callback function, specified by the :entryfun argument to DEFFOMUSPLUGIN.  The API is different for each plugin type
-and might have to change depending on plugin requirements.
+There needs to be a callback function, specified by the :entryfun argument to DEFFOMUSMODULE.  The API is different for each module type
+and might have to change depending on module requirements.
 
 
 

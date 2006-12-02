@@ -55,8 +55,8 @@
 	   (:musicxml-finale (save-xmlfinale parts (format-comment +xml-comment+) filename options))
 	   #-fomus-nomidi (:midi (save-midi parts filename options play))
 	   (otherwise
-	    (load-fomus-plugin backend)
-	    (call-plugin backend '("Invalid backend ~S" backend) ; exported +title+ and +version+ so they can just be accessed as variables--seems redundant if they are passed as arguments
+	    (load-fomus-module backend)
+	    (call-module backend '("Invalid backend ~S" backend) ; exported +title+ and +version+ so they can just be accessed as variables--seems redundant if they are passed as arguments
 			 parts filename options process view)))
       (#+cmu unix:unix-chdir #+sbcl sb-posix:chdir #+openmcl ccl:cwd #+allegro excl:chdir #+lispworks hcl:change-directory #+clisp ext:cd (namestring dir)))))
 

@@ -207,16 +207,16 @@
   (when (and (numberp *verbose*) (>= *verbose* 2)) (out "~&; Checking types..."))
   (check-setting-types)
   (check-settings)
-  (load-quantize-plugins)
-  (load-split-plugins)
-  (load-acc-plugins)
-  (load-voices-plugins)
-  (load-staff/clef-plugins)
+  (load-quantize-modules)
+  (load-split-modules)
+  (load-acc-modules)
+  (load-voices-modules)
+  (load-staff/clef-modules)
   (set-fomusproc
     (set-instruments
       (set-note-precision
 	(set-quality
-	  (set-acc-pluginvar
+	  (set-acc-modulevar
 	   (multiple-value-bind (*timesigs* rm) (split-list *global* #'timesigp)
 	     #-debug (declare (ignore rm))
 	     #+debug (when rm (error "Error in FOMUS-PROC"))

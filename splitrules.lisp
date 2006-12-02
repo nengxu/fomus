@@ -11,9 +11,8 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SPLIT RULES
 
-(declaim (type list *default-tuplets*) (type symbol *tuplet-mod* *tuplet-function*))
+(declaim (type list *default-tuplets*) (type symbol *tuplet-function*))
 (defparameter *default-tuplets* nil)
-(defparameter *tuplet-mod* nil)
 (defparameter *tuplet-function* t)
 (declaim (inline tuplet-mod))
 (defun tuplet-mod () (if (truep *tuplet-function*) :pow2 *tuplet-function*))

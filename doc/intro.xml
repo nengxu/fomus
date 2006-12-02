@@ -51,7 +51,7 @@
   <para>
     <application>FOMUS</application> integrates with <application><ulink url="http://commonmusic.sf.net">Common Music</ulink></application>,
     using some of its functionality if present and also functioning as a backend.
-    <application>FOMUS</application> has also been designed to allow selection of plugin modules that use different algorithms to perform the same tasks.
+    <application>FOMUS</application> has also been designed to allow selection of modules that use different algorithms to perform the same tasks.
     As new functions are added, users can select the ones that give them the best results.
     These will be added to the program over time.
   </para>

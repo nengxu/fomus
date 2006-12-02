@@ -32,23 +32,7 @@
 ;;; ftp://ftp.inria.fr/INRIA/Projects/contraintes/publications/ADAPTIVE/saga01.html
 
 
-;; DEFPLUGIN accepts the following keywords:
-;; fomus-specific: type keyname use initfun entryfun description preload filename-ext
-;; arguments passed to defpackage: shadowing-import-from package-name import-from intern size export
-;;
-;; type = one of :accidentals :voices :staves/clefs :splitrules or :backend
-;; keyname = keyword ID for this module
-;; initfun = callback initialization function w/ no arguments (not really necessary in Lisp, but it's included anyways)
-;; entryfun = function to replace fomus's default function (arguments differ depending on context)
-;; documentation = passed to defpackage and also printed out when list-fomus-plugins is called
-;; preload = form that is executed before anything else (for loading dependencies)
-;; filename-ext = string such as "xml" or "ly" added to output filename--only use w/ backends
-;; (all other arguments) = same as equivalent args in defpackage (deffomusplugin acts as an extension to defpackage)
-
-;; DEFPLUGIN takes care of defining the package, also adds a FOMUS-PLUGINNAME module to the *MODULES* list (FOMUS uses this)
-;; It also adds an (in-package ...)
-
-(deffomusplugin
+(deffomusmodule
     (:keyname :nokey2) (:type :accidentals) (:entryfun acc-nokey2)
     (:use :iterate) ; automatically uses common-lisp and fomus packages
     (:export #:make-int-var-from-to #:make-int-var-domain #:post #:ads #:example #:acc-nokey2)
