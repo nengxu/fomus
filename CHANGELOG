@@ -1,22 +1,28 @@
+v0.2.12
+	Some module-compiling/loading enhancements w/ ASDF (Kilian)
+	Fixed huge performance bottleneck noticeable especially in OpenMCL--now runs at least 30x faster in OpenMCL and slightly faster in other Lisps
+	      (small tweak in quantize function was all that was needed)
+	Changed "plugins" to "modules" everywhere (seems to be a better name for them)
+
 v0.2.11
 	Fixed some spanner bugs
-	Timedump backend plugin
+	Timedump backend module
 
 v0.2.10
 	Squashed a few bugs
 	:NOTES keyword in .fms files for specifying chords
 	AUTO-DYN-NODUP setting and cleaning repeated dynamic marks (more user control to be added)
 	OFF tags in .fms file for shifting offsets over sections of file
-	FOMUS uses ASDF (and ASDF-Binary-Locations) to determine where plugin .fasl files are placed
+	FOMUS uses ASDF (and ASDF-Binary-Locations) to determine where module .fasl files are placed
 	Changed some setting names
 	Fixed LilyPond backend bug involving alternate noteheads and grace notes
 	Added MARKS slot to percussion instrument definition
 	Added some more LilyPond settings
-	Straightened out deffomusplugin and made it look more like defpackage
+	Straightened out deffomusmodule and made it look more like defpackage
 	Fixed bug with beaming in compound meters
 
 v0.2.9
-	Fixed a plugins bug (deffomusplugin macro)
+	Fixed a modules bug (deffomusmodule macro)
 	Fixed bug where automatically generated timesigs copied unwanted properties (ie. specified barlines) from neighboring timesigs
 
 v0.2.8
@@ -27,7 +33,7 @@ v0.2.8
 
 v0.2.7
 	.fms file load errors now show entry number and line where error occurred
-	Load-on-demand plugins for accidentals, voices, staves/clefs, splitrules and backends
+	Load-on-demand modules for accidentals, voices, staves/clefs, splitrules and backends
 	Added :IGNORE mark (does nothing)
 	Can compile command-line interface w/ CLISP
 	(Experimental) Adaptive search (Kilian)

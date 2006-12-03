@@ -69,7 +69,7 @@
 (defmacro compile-settings ()
   '(eval-when (:compile-toplevel)
     #+debug (declaim (optimize (safety 3) (debug 3)))
-    #-debug (declaim (optimize (speed 3) #+(and cmu (not warn)) (ext:inhibit-warnings 3))
+    #-debug (declaim (optimize (speed 3) (debug 0) (safety 0) #+(and cmu (not warn)) (ext:inhibit-warnings 3))
 	     #+(and sbcl (not warn)) (sb-ext:muffle-conditions sb-ext:compiler-note))))
 (compile-settings)
 

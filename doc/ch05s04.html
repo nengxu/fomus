@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Alphabetical Listing of Settings</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.68.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch05.html" title="Chapter&#160;5.&#160;Settings" /><link rel="prev" href="ch05s03.html" title="Complete FOMUS Settings" /><link rel="next" href="ch06.html" title="Chapter&#160;6.&#160;Marks" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Alphabetical Listing of Settings</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch05s03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;5.&#160;Settings</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch06.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id306113"></a>Alphabetical Listing of Settings</h2></div></div></div><div class="variablelist"><dl><dt><span class="term"><code class="varname"><a id="setting.acc.caut.acc.dist"></a>:ACC-CAUT-ACC-DIST</code></span></dt><dd><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Alphabetical Listing of Settings</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.68.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch05.html" title="Chapter&#160;5.&#160;Settings" /><link rel="prev" href="ch05s03.html" title="Complete FOMUS Settings" /><link rel="next" href="ch06.html" title="Chapter&#160;6.&#160;Marks" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Alphabetical Listing of Settings</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch05s03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;5.&#160;Settings</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch06.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id306110"></a>Alphabetical Listing of Settings</h2></div></div></div><div class="variablelist"><dl><dt><span class="term"><code class="varname"><a id="setting.acc.caut.acc.dist"></a>:ACC-CAUT-ACC-DIST</code></span></dt><dd><p>
   	    This number represents the maximum distance a cautionary accidental may be from the note that causes it.
   	  </p></dd><dt><span class="term"><code class="varname"><a id="setting.acc.throughout.meas"></a>:ACC-THROUGHOUT-MEAS</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, accidentals carry to the end of the measure.
@@ -9,14 +9,14 @@
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> automatically determines note spellings.
   	  If set to <code class="literal">NIL</code>, a generic set of note spellings is used (all notes receive flats except for F sharp).
 	  The user may supply note spellings to override <span class="application">FOMUS</span>'s spellings.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.accs.plugin"></a>:AUTO-ACCS-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for determining note spellings.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.accs.module"></a>:AUTO-ACCS-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for determining note spellings.
   	  Current possible values are <code class="literal">T</code>, <code class="literal">:NOKEY1</code> and <code class="literal">:NOKEY2</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:NOKEY1</code>.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.beam.plugin"></a>:AUTO-BEAM-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for beaming.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:NOKEY1</code>.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.beam.module"></a>:AUTO-BEAM-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for beaming.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:BEAMS1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:BEAMS1</code>.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:BEAMS1</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.beams"></a>:AUTO-BEAMS</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> determines beaming based on time signature information and
   	  decisions it makes regarding irregular measure divisions.
@@ -24,10 +24,10 @@
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.cautionary.accs"></a>:AUTO-CAUTIONARY-ACCS</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> inserts several different kinds of cautionary accidentals.
     	  The user can supply her own cautionary accidentals with the <code class="function"><a href="ch06s02.html#mark.cautacc">:CAUTACC</a></code> mark.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.distr.rests.plugin"></a>:AUTO-DISTR-RESTS-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for determining how rests are distributed among staves.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.distr.rests.module"></a>:AUTO-DISTR-RESTS-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for determining how rests are distributed among staves.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:RESTS1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:RESTS1</code>.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:RESTS1</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.dyn.nodup"></a>:AUTO-DYN-NODUP</code></span></dt><dd><p>
   	    If set to <code class="literal">T</code>, indicates that <span class="application">FOMUS</span> should eliminate all redundant dynamic markings.
   	  </p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.grace.slurs"></a>:AUTO-GRACE-SLURS</code></span></dt><dd><p>
@@ -35,10 +35,10 @@
   	  If set to <code class="literal">NIL</code>, the user must supply all grace note slurs with
   	  <code class="function"><a href="ch06s02.html#mark.graceslur-">:STARTGRACESLUR-</a></code>,
 	  <code class="function"><a href="ch06s02.html#mark.graceslur-">:GRACESLUR-</a></code> and <code class="function"><a href="ch06s02.html#mark.graceslur-">:ENDGRACESLUR-</a></code> marks.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.multivoice.comb.plugin"></a>:AUTO-MULTIVOICE-COMB-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for determining how simultaneous notes from different voices are combined into chords on the same staff.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.multivoice.comb.module"></a>:AUTO-MULTIVOICE-COMB-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for determining how simultaneous notes from different voices are combined into chords on the same staff.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:COMB1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:COMB1</code>.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:COMB1</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.multivoice.notes"></a>:AUTO-MULTIVOICE-NOTES</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> combines simultaneous notes from different voices into chords.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.multivoice.rests"></a>:AUTO-MULTIVOICE-RESTS</code></span></dt><dd><p>
@@ -48,10 +48,10 @@
   	  If set to <code class="literal">NIL</code>, the user must supply all ottava brackets with
 	  <code class="function"><a href="ch06s02.html#mark.8up">:8UP</a></code>, <code class="function"><a href="ch06s02.html#mark.8down">:8DOWN</a></code>
   	  and related spanner marks.	  
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.ottavas.plugin"></a>:AUTO-OTTAVAS-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for determining where ottava brackets occur.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.ottavas.module"></a>:AUTO-OTTAVAS-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for determining where ottava brackets occur.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:OTTAVAS1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:OTTAVAS1</code>.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:OTTAVAS1</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.override.timesigs"></a>:AUTO-OVERRIDE-TIMESIGS</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> extends or contracts measures within certain bounds,
   	  adding new time signatures as necessary to fit measures into the user-supplied time signatures given
@@ -77,25 +77,25 @@
 	  floating point numbers are treated with the <code class="function">RATIONALIZE</code> function in this case (this isn't recommended).
   	  If no quantizing is done and offsets and durations of events don't fit into anything that is "notatable" then 
 	  <span class="application">FOMUS</span> will complain with an error.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.quantize.plugin"></a>:AUTO-QUANTIZE-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for quantizing.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.quantize.module"></a>:AUTO-QUANTIZE-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for quantizing.
   	  Current possible values are <code class="literal">T</code>, <code class="literal">:QUANTIZE1-RMSE</code> and <code class="literal">:QUANTIZE1-AVE</code>.
 	  <code class="literal">:QUANTIZE1-MSE</code> finds the closest fit to notation by minimizing the root mean squared error 
 	   between the user's values and possible notational values.
 	  <code class="literal">:QUANTIZE1-AVE</code> finds the closets fit by minimizing average error.
-	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:QUANTIZE1-RMSE</code>.
+	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:QUANTIZE1-RMSE</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.staff/clef.changes"></a>:AUTO-STAFF/CLEF-CHANGES</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> automatically determines staff and clef changes for voices.
   	  If set to <code class="literal">NIL</code>, the user must supply all staff and clef changes with <code class="literal">:STAFF</code>, <code class="literal">:CLEF</code>
   	  and related marks.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.staff/clefs.plugin"></a>:AUTO-STAFF/CLEFS-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used to determine automatic staff and clef changes.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.staff/clefs.module"></a>:AUTO-STAFF/CLEFS-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used to determine automatic staff and clef changes.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:STAVES/CLEFS1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:STAVES/CLEFS1</code>.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.voices.plugin"></a>:AUTO-VOICES-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for determining how notes are distributed into separate voices.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:STAVES/CLEFS1</code>.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.voices.module"></a>:AUTO-VOICES-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for determining how notes are distributed into separate voices.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:VOICES1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:VOICES1</code>.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:VOICES1</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.auto.voicing"></a>:AUTO-VOICING</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> automatically decides how to distribute notes among multiple voices,
   	  given the choices specified in the <code class="classname">NOTE</code>, <code class="classname">REST</code> and <code class="classname">MARK</code> objects.
@@ -183,7 +183,7 @@
   	  Entries in this list replace entries in <span class="application">FOMUS</span>'s own default table if they exist.
   	  Each member of this list is itself a list, containing an integer or ratio lookup value as the first element followed by one or more lists of integers/ratios
   	  that each add up to the first number.
-    	  </p><div class="example"><a id="id307828"></a><p class="title"><b>Example&#160;5.1.&#160;DEFAULT-MEAS-DIVS Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id307825"></a><p class="title"><b>Example&#160;5.1.&#160;DEFAULT-MEAS-DIVS Setting</b></p><pre class="programlisting">
 
 :default-meas-divs
   '((3 (2 1) (1 2))
@@ -208,7 +208,7 @@
   	  Entries in this replace entries in <span class="application">FOMUS</span>'s own default table if they exist.
   	  Each member of this list is itself a list, containing an integer lookup value as the first element followed by one or more lists of integers
   	  that each add up to the first number.
-    	  </p><div class="example"><a id="id307932"></a><p class="title"><b>Example&#160;5.2.&#160;DEFAULT-TUPLET-DIVS Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id307930"></a><p class="title"><b>Example&#160;5.2.&#160;DEFAULT-TUPLET-DIVS Setting</b></p><pre class="programlisting">
 
 :default-meas-divs
   '((3 (2 1) (1 2))
@@ -231,7 +231,7 @@
 	    appropriate for the context it is in (a power of 2 of the actual number of durational units).  
 	    Thus, several entries for septuplets might exist: <code class="literal">'(7 4)</code> for the majority of cases and <code class="literal">'(7 5)</code> for 
 	    cases where, for example, 7 eighth notes might span an entire 5/8 measure or a section of a larger tuplet.
-    	  </p><div class="example"><a id="id308037"></a><p class="title"><b>Example&#160;5.3.&#160;DEFAULT-TUPLETS Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id308034"></a><p class="title"><b>Example&#160;5.3.&#160;DEFAULT-TUPLETS Setting</b></p><pre class="programlisting">
 
 :default-meas-divs '((3 2) (6 5) (5 4) (7 4) (7 5) (13 8) (13 10))
               </pre></div><p>
@@ -266,11 +266,11 @@
   	  A group type is one of the symbols <code class="literal">:GROUP</code>, <code class="literal">:GRANDSTAFF</code> or <code class="literal">:CHOIRGROUP</code>.
   	</p><p>
   	  A look at the following examples might make this clearer:
-    	  </p><div class="example"><a id="id308269"></a><p class="title"><b>Example&#160;5.4.&#160;ENSEMBLE-TYPE Setting 1</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id308266"></a><p class="title"><b>Example&#160;5.4.&#160;ENSEMBLE-TYPE Setting 1</b></p><pre class="programlisting">
 
 :ensemble-type :orchestra
               </pre></div><p>
-    	  </p><div class="example"><a id="id308283"></a><p class="title"><b>Example&#160;5.5.&#160;ENSEMBLE-TYPE Setting 2</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id308280"></a><p class="title"><b>Example&#160;5.5.&#160;ENSEMBLE-TYPE Setting 2</b></p><pre class="programlisting">
 
 :ensemble-type
   '((:my-orchestra
@@ -305,7 +305,7 @@
   	  This string represents the path and filename to which <span class="application">FOMUS</span> adds an appropriate extension when it saves
   	  output in various formats.
   	  This setting in combination with the <code class="varname"><a href="ch05s04.html#setting.output">OUTPUT</a></code> setting determines the actual output filenames.
-    	  </p><div class="example"><a id="id308469"></a><p class="title"><b>Example&#160;5.6.&#160;FILENAME Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id308466"></a><p class="title"><b>Example&#160;5.6.&#160;FILENAME Setting</b></p><pre class="programlisting">
 
 :filename "path_to_output_directory/myoutput"
               </pre></div><p>
@@ -355,7 +355,7 @@
   	  A group type is one of the symbols <code class="literal">:GROUP</code>, <code class="literal">:GRANDSTAFF</code> or <code class="literal">:CHOIRGROUP</code>.
   	</p><p>
   	  A look at the following example might make this clearer:
-    	  </p><div class="example"><a id="id308788"></a><p class="title"><b>Example&#160;5.7.&#160;INSTR-GROUPS Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id308786"></a><p class="title"><b>Example&#160;5.7.&#160;INSTR-GROUPS Setting</b></p><pre class="programlisting">
 
 :instr-groups
   '((:orchestra
@@ -384,7 +384,7 @@
 	  existing default values (see the <em class="structfield"><code><a href="ch04s02.html#part.instr">INSTR</a></code></em> slot in the
 	  <code class="classname"><a href="ch04s02.html#class.part">PART</a></code> object
 	  and <a href="ch04s02.html#example.part.instr.slot.setting">PART-INSTR Slot Setting</a> for an example of this).
-    	  </p><div class="example"><a id="id308892"></a><p class="title"><b>Example&#160;5.8.&#160;INSTRUMENT Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id308889"></a><p class="title"><b>Example&#160;5.8.&#160;INSTRUMENT Setting</b></p><pre class="programlisting">
 
 :instrument
   (list (make-instr :recorder :clefs :treble)
@@ -507,15 +507,15 @@
 	  <code class="literal">:MUSICXML-SIBELIUS</code>, <code class="literal">:MUSICXML-FINALE</code>, <code class="literal">:CMN</code>, <code class="literal">:LILYPOND</code> and <code class="literal">:MIDI</code>.
   	  More information on these is given in <a href="ch07.html" title="Chapter&#160;7.&#160;Outputs">Outputs</a>.
   	  The following are examples of valid output specifications:
-  	  </p><div class="example"><a id="id309863"></a><p class="title"><b>Example&#160;5.9.&#160;OUTPUT Setting 1</b></p><pre class="programlisting">
+  	  </p><div class="example"><a id="id309860"></a><p class="title"><b>Example&#160;5.9.&#160;OUTPUT Setting 1</b></p><pre class="programlisting">
 
 :output '(:data (:lilypond :view t))
               </pre></div><p>
-  	  </p><div class="example"><a id="id309877"></a><p class="title"><b>Example&#160;5.10.&#160;OUTPUT Setting 2</b></p><pre class="programlisting">
+  	  </p><div class="example"><a id="id309874"></a><p class="title"><b>Example&#160;5.10.&#160;OUTPUT Setting 2</b></p><pre class="programlisting">
 
 :output '(:lilypond :filename "myfile.ly" :view nil)
               </pre></div><p>
-  	  </p><div class="example"><a id="id309890"></a><p class="title"><b>Example&#160;5.11.&#160;OUTPUT Setting 3</b></p><pre class="programlisting">
+  	  </p><div class="example"><a id="id309887"></a><p class="title"><b>Example&#160;5.11.&#160;OUTPUT Setting 3</b></p><pre class="programlisting">
 
 :output :cmn
               </pre></div><p>
@@ -533,7 +533,7 @@
 	  If a list is specified, it contains a symbol specifying a default percussion instrument followed by keyword/argument pairs indicating slot values that replace 
 	  existing default values (see the <em class="structfield"><code><a href="ch04s09.html#instr.percs">PERCS</a></code></em> slot in the
 	  <code class="classname"><a href="ch04s09.html#struct.instr">INSTR</a></code> object for an example of this).          
-    	  </p><div class="example"><a id="id309995"></a><p class="title"><b>Example&#160;5.12.&#160;PERCUSSION Setting</b></p><pre class="programlisting">
+    	  </p><div class="example"><a id="id309993"></a><p class="title"><b>Example&#160;5.12.&#160;PERCUSSION Setting</b></p><pre class="programlisting">
 
 :instrument
   (list (make-perc :anvil :note -3 :voice 2 :midinote-ex 79)
@@ -551,9 +551,9 @@
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.quartertones"></a>:QUARTERTONES</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, <span class="application">FOMUS</span> rounds pitches to quartertone values
 	  and uses quartertone notation in the score.
-	  This only works if the algorithm specified by the <code class="varname"><a href="ch05s04.html#setting.auto.accs.plugin">AUTO-ACCS-PLUGIN</a></code> setting
+	  This only works if the algorithm specified by the <code class="varname"><a href="ch05s04.html#setting.auto.accs.module">AUTO-ACCS-MODULE</a></code> setting
 	  supports it.
-	  <span class="application">FOMUS</span>'s default plugin <code class="literal">:NOKEY1</code> supports quartertones.
+	  <span class="application">FOMUS</span>'s default module <code class="literal">:NOKEY1</code> supports quartertones.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.shortlongshort.notes.level"></a>:SHORTLONGSHORT-NOTES-LEVEL</code></span></dt><dd><p>
   	  Indicates how "short-long-short" note patterns are allowed to appear.
   	  An example of such a pattern is an eighth note followed by a quarter note then an eighth note, and is treated as
@@ -563,10 +563,10 @@
   	  only if it occupies an entire measure, and <code class="literal">:SIG</code> specifies that it can appear if it occupies a duration
   	  larger than a beat.
   	  <code class="literal">T</code> is equivalent to <code class="literal">:ALL</code>.
-  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.split.plugin"></a>:SPLIT-PLUGIN</code></span></dt><dd><p>
-  	  Designates which plugin is to be used for splitting and tying notes.
+  	</p></dd><dt><span class="term"><code class="varname"><a id="setting.split.module"></a>:SPLIT-MODULE</code></span></dt><dd><p>
+  	  Designates which module is to be used for splitting and tying notes.
   	  Current possible values are <code class="literal">T</code> and <code class="literal">:SPLIT1</code>.
-  	  <code class="literal">T</code> represents the default plugin and is equivalent to <code class="literal">:SPLIT1</code>.
+  	  <code class="literal">T</code> represents the default module and is equivalent to <code class="literal">:SPLIT1</code>.
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.subtitle"></a>:SUBTITLE</code></span></dt><dd><p>
   	  This is an optional string value containing the subtitle of the composition.	  
   	</p></dd><dt><span class="term"><code class="varname"><a id="setting.syncopated.notes.level"></a>:SYNCOPATED-NOTES-LEVEL</code></span></dt><dd><p>

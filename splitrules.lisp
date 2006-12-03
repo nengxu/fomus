@@ -65,17 +65,16 @@
 (defprint-class sig-nodiv comp tlt trt)
 (defprint-class unit-nodiv tup comp dmu tlt trt rst)
 
-;;(declaim (inline basesplitp basenodivp basecompp baseunitp baseinitp initdivp sigp unitp sig-nodiv-p unit-nodiv-p))
-(defun basesplitp (o) (typep o 'basesplit))
-(defun basenodivp (o) (typep o 'basenodiv))
-(defun basecompp (o) (typep o 'basecomp))
-(defun baseunitp (o) (typep o 'baseunit))
-(defun baseinitp (o) (typep o 'baseinit))
-(defun initdivp (o) (typep o 'initdiv))
-(defun sigp (o) (typep o 'sig))
-(defun unitp (o) (typep o 'unit))
-(defun sig-nodiv-p (o) (typep o 'sig-nodiv))
-(defun unit-nodiv-p (o) (typep o 'unit-nodiv))
+(defmacro basesplitp (o) `(typep ,o 'basesplit))
+(defmacro basenodivp (o) `(typep ,o 'basenodiv))
+(defmacro basecompp (o) `(typep ,o 'basecomp))
+(defmacro baseunitp (o) `(typep ,o 'baseunit))
+(defmacro baseinitp (o) `(typep ,o 'baseinit))
+(defmacro initdivp (o) `(typep ,o 'initdiv))
+(defmacro sigp (o) `(typep ,o 'sig))
+(defmacro unitp (o) `(typep ,o 'unit))
+(defmacro sig-nodiv-p (o) `(typep ,o 'sig-nodiv))
+(defmacro unit-nodiv-p (o) `(typep ,o 'unit-nodiv))
 
 (defmacro make-initdiv (&rest args) `(make-instance 'initdiv ,@args))
 (defmacro make-sig (&rest args) `(make-instance 'sig ,@args))
@@ -98,11 +97,11 @@
 (defparameter *double-dotted-notes* t) ; = t if can use double dotted notes 
 (defparameter *tuplet-dotted-rests* t)
 
-(defun split-rules-bylevel (rule tups) ; tups = tuplets are allowed, :s = simple
+(defun split-rules-bylevel (rule tups)	; tups = tuplets are allowed
   (declare (type baserule rule) (type boolean tups))
   (let ((mt (first (if (baseunitp rule)
 		       (loop for e on *max-tuplet* for xxx in (rule-tup rule) finally (return e))
-		       *max-tuplet*)))) ; max tuplet for next nesting level
+		       *max-tuplet*))))	; max tuplet for next nesting level
     (flet ((dv2 (n)
 	     (declare (type (integer 1) n))
 	     (loop for n2 = (/ n 2) while (integerp n2) do (setf n n2))
@@ -130,7 +129,7 @@
 			    (declare (type (member t :all :top :sig) sy))
 			    (or (find sy '(t :all :sig))
 				(and (eq sy :top) (or (initdivp rule) (rule-top rule)))))
-			  (in (n al ar in &optional ir) ; n = division ratio, ir = if rule is irregular & 2/3 duration is expof2
+			  (in (n al ar in &optional ir)	; n = division ratio, ir = if rule is irregular & 2/3 duration is expof2
 			    (declare (type (rational (0) (1)) n) (type boolean al ar) (type list in))
 			    (if (if (rule-comp rule) (>= num (/ n)) (> num (/ n)))
 				(make-sig :time (cons (* (rule-num rule) n) (rule-den rule)) :comp (rule-comp rule) :beat (rule-beat rule)
@@ -228,9 +227,9 @@
 		     (flet ((un (n wh al ar &optional d) ; d is fraction of total number of divs
 			      (declare (type (rational (0) (1)) n) (type (member :l :r) wh) (type boolean al ar) (type (or (integer 1) null) d))
 			      (make-unit :div (if d (dv2 d) 2) :tup (tu n) :dmu (rule-dmu rule)
-					     :alt (if (eq wh :l) (and (rule-alt rule) al) (and (rule-alt rule) (rule-art rule) al))
-					     :art (if (eq wh :r) (and (rule-art rule) ar) (and (rule-alt rule) (rule-art rule) ar))
-					     :irr (not ex) :comp (rule-comp rule)))
+					 :alt (if (eq wh :l) (and (rule-alt rule) al) (and (rule-alt rule) (rule-art rule) al))
+					 :art (if (eq wh :r) (and (rule-art rule) ar) (and (rule-alt rule) (rule-art rule) ar))
+					 :irr (not ex) :comp (rule-comp rule)))
 			    (und (n tl tr) (make-unit-nodiv :tup (tu n) :dmu (rule-dmu rule) :tlt tl :trt tr :comp (rule-comp rule))))
 		       (nconc (loop for nn of-type (integer 2) in (or (lowmult (rule-div rule)) '(2))
 				    nconc (loop for j from 1 below nn collect

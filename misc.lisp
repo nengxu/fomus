@@ -529,12 +529,12 @@
 			      (or (funcall scoregreaterfun (a*-node-score x) (a*-node-score y))
 				  (unless (funcall scoregreaterfun (a*-node-score y) (a*-node-score x))
 				    (< (a*-node-id x) (a*-node-id y)))))
-			    :initial-contents ic :initial-size (roundint (* heaplim 1.5))))
+			    :initial-contents ic :initial-size (* heaplim 2)))
 	      (rh (when heaplim (make-heap (lambda (x y)
 					     (or (funcall remscoregreaterfun (a*-node-score x) (a*-node-score y))
 						 (unless (funcall remscoregreaterfun (a*-node-score y) (a*-node-score x))
 						   (> (a*-node-id x) (a*-node-id y)))))
-					   :initial-contents ic :initial-size (roundint (* heaplim 1.5))))))
+					   :initial-contents ic :initial-size (* heaplim 2)))))
 	  (loop
 	   for n = (pp h)
 	   unless n do (return retdefault)
@@ -645,6 +645,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; pathname compatibility - deliberately borrowed from cl-fad
 
+(declaim (inline component-present-p directory-pathname-p))
 (defun component-present-p (value)
   "Helper function for DIRECTORY-PATHNAME-P which checks whether VALUE
 is neither NIL nor the keyword :UNSPECIFIC."

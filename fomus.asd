@@ -14,7 +14,7 @@
 (asdf:defsystem "fomus"
   
   :description "Lisp music notation formatter"
-  :version "0.2.11"
+  :version "0.2.12"
   :author "David Psenicka"
   :licence "LLGPL"
 
@@ -27,7 +27,7 @@
    (:file "classes" :depends-on ("data"))
    (:file "util" :depends-on ("classes"))
 
-   (:file "splitrules" :depends-on ("data"))
+   (:file "splitrules" :depends-on ("util"))
    
    (:file "accidentals" :depends-on ("util"))
    (:file "beams" :depends-on ("util"))

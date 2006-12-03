@@ -45,23 +45,23 @@
 	     (loop-return-argmin
 	      (funcall scfun (car x) (cdr x))
 	      for x of-type (cons list list) in (remove-if (lambda (x) (declare (type (cons list list) x)) (or (null (car x)) (null (cdr x)))) l))))
-      (labels ((dv (o1 o2 pts rl lm)
+      (labels ((dv (o1 o2 pts rl lm) ; pts = user points
+		 (declare (type (rational 0) o1 o2) (type (rational (0)) lm) (type baserule rl))
 		 (let ((du (- o2 o1)))
 		   (when (and pts (>= du lm))
 		     (sel (cons (cons pts (list o1 o2))
-				(loop for (s . r) in (split-rules-bylevel rl
-									  (and (or (null *min-tuplet-dur*) (>= du *min-tuplet-dur*))
-									       (or (null *max-tuplet-dur*) (<= du *max-tuplet-dur*))))
-				      unless (some (lambda (x) (or (unit-nodiv-p x) (sig-nodiv-p x))) r) ; no nodivs
-				      collect (flet ((of (o) (declare (type (rational 0) o)) (+ o1 (* o du))))
-						(adj
-						 (loop for (o1 o2) of-type ((rational 0 1) (or (rational 0 1) null)) on (cons 0 (append (force-list s) '(1)))
-						       #-clisp while #-clisp o2
-						       for oo1 = #-clisp (of o1) #+clisp (if o2 (of o1) (loop-finish))
-						       #-clisp and #+clisp for oo2 = (of o2) and ru in r
-						       for di = (dv oo1 oo2 (remove-if (lambda (e) (or (< e oo1) (> e oo2))) pts) ru lm)
-						       #+debug when #+debug (and (unitp ru) (rule-sim ru)) #+debug do #+debug (error "Error in QUANTIZE-BYFIT")
-						       if di collect di #|else do (return-from qua)|#))))))))))
+				(unless (or (unit-nodiv-p rl) (sig-nodiv-p rl) (every (lambda (x) (declare (type (rational 0) x)) (or (<= x o1) (>= x o2))) pts))
+				  (loop for (s . r) in (split-rules-bylevel
+							rl (and (or (null *min-tuplet-dur*) (>= du *min-tuplet-dur*))
+								(or (null *max-tuplet-dur*) (<= du *max-tuplet-dur*))))
+					collect (flet ((of (o) (declare (type (rational 0) o)) (+ o1 (* o du))))
+						  (adj
+						   (loop for (o1 o2) of-type ((rational 0 1) (or (rational 0 1) null)) on (cons 0 (append (force-list s) '(1)))
+							 #-clisp while #-clisp o2
+							 for oo1 = #-clisp (of o1) #+clisp (if o2 (of o1) (loop-finish))
+							 #-clisp and #+clisp for oo2 = (of o2) and ru in r
+							 for di = (dv oo1 oo2 (remove-if (lambda (e) (or (< e oo1) (> e oo2))) pts) ru lm)
+							 when di collect di #|else do (return-from qua)|#)))))))))))
 	(loop for p of-type partex in parts
 	      for ph = (gethash p h)	; ph = timesigs for part
 	      do (let* ((ee (sort (delete-duplicates (loop for e of-type (or noteex restex) in (part-events p) collect (event-off e) collect (event-endoff e))) #'<)) ; offset points
@@ -73,10 +73,11 @@
 					    (loop with eo = (or (if n (timesig-off n) (last-element ep)) (return nil)) ; last offset
 						  for o from (timesig-off e) below eo by (timesig-nbeats e)
 						  do (loop until (or (null ep) (>= (first ep) o)) do (pop ep))
-						  collect (let ((o2 (+ o (timesig-nbeats e)))) (dv o o2
-												   (loop for e in ep while (<= e o2) collect e)
-												   (first-splitrule e)
-												   (* (/ (beat-division e)) 3/4)))
+						  collect (let ((o2 (+ o (timesig-nbeats e)))) 
+							    (dv o o2
+								(loop for e in ep while (<= e o2) collect e)
+								(first-splitrule e)
+								(/ 3/4 (beat-division e))))
 						  do (print-dot)))))
 			     #'<)))
 		   (loop with mg = (or (max-list (loop for e in (part-events p) when (event-grace e) collect (event-grace e)))

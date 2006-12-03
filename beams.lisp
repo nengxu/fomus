@@ -71,8 +71,6 @@
 	       (nconc (beams-rules e1 off 4/8 beamdur timesig)
 		      (when (> writdur 4/8) (beams-rules e2 off2 (- writdur 4/8) beamdur timesig)))))))))
 
-; (debugn-if (= (meas-off m) 6) "~S"
-
 ;; must be before postproc adds tuplet marks???
 (defun beams-standbydiv (meas)		; list of measures
   (declare (type list meas))
