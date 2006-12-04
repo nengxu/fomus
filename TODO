@@ -4,12 +4,12 @@ Immediate:
 
     Bugs:
       XML output blows up (with percussion instruments?)
-      Weird number choices for some tuplets (12 instead of 6, 10 instead of 5, etc.)
+      Weird number choices for some tuplets (12 instead of 6, 10 instead of 5, etc.)--should check neighboring tuplet numbers for consistency
       Double brackets shouldn't appear in the same place (6 violins example)
       Send list of XML issues to Sibelius/Finale tech. support
       In CLISP/Cygwin output from executables isn't suppressed (fixable?)
     Documentation:
-      Plugin interface
+      Module interface
       Proofreading
       More examples (eventually indexed and covering most/all features)
     Backends:
@@ -18,7 +18,6 @@ Immediate:
       CMN tremolos
       CMN cautionary accidentals on chords
       CMN part groups/brackets
-      LilyPond not tying repeated notes in chords where other notes are tied (fixable in next LilyPond version)
       MIDI output testing/adjusting/fine tuning
     Improvements:
       Shortcuts for some marks (example: (:slurto 1) to slur to next note, (:slurto 2) for next two, etc.)
@@ -28,10 +27,8 @@ Immediate:
       Finish key signatures support
       Finish implementing :invisible mark
       Allow forcing of staff choices (individual notes and entire voice)
-      Improve staff and clef decisions
       More control over harmonics
-      More speed improvements (why is it 10x slower in OpenMCL?)
-      Quantization plugins
+      Quantization modules
     Additions:
       Onset-to-onset durations
       Specifying percussion from MIDI info
@@ -46,7 +43,7 @@ Immediate:
 
 Short Term:
 
-    Ornaments with accidentals greater than a whole/half step
+    Ornaments/trills with accidentals greater than a whole/half step (if notatable in backends)
     Proportional notation
     Support for polymeters in backends
 
