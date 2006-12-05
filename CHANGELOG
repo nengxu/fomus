@@ -1,3 +1,6 @@
+v0.2.13
+	Fixed errors compiling/loading modules
+
 v0.2.12
 	Some module-compiling/loading enhancements w/ ASDF (Kilian)
 	Fixed huge performance bottleneck noticeable especially in OpenMCL--now runs at least 30x faster in OpenMCL and slightly faster in other Lisps

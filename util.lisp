@@ -1039,12 +1039,12 @@
   (initfun nil :type symbol)
   (entryfun nil :type symbol)
   (desc "" :type string)
-  (recompile-if-needed t :type boolean))
+  #|(recompile-if-needed t :type boolean)|#) ;; will always try to recompile on every call now (checks file dates)--where does this actually get set anyways?
 
 (defparameter *fomus-modules* (make-hash-table :test 'eq))
 (defparameter +module-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
 
-(defun compile-module (lisp-file fasl-file keyname)
+(defun compile-module-if-needed (lisp-file fasl-file keyname)
   "Compile LISP-FILE into FASL-FILE, if needed. Returns FASL-FILE or NIL, if nothing happened."
   (when (or (not (probe-file fasl-file))
 	    (>= (file-write-date lisp-file) (file-write-date fasl-file)))
@@ -1095,7 +1095,7 @@ Directories are created as needed."
     (when (and (first filename-ext) (not (eq (first type) :backend))) (error "Non-backend shouldn't declare a filename extension"))
     (let ((pk (module-package (first keyname)))
 	  (cf (module-outname filename (eq (first type) :backend))))
-      (compile-module filename cf (first keyname)) ; make sure it compiles
+      (compile-module-if-needed filename cf (first keyname)) ; make sure it compiles
       (setf (gethash (first keyname) *fomus-modules*) (make-module :type (first type) :file filename :pack pk
 								   :initfun (first initfun) :entryfun (first entryfun) :desc (first documentation))))
     (when load (load-fomus-module (first keyname))))
@@ -1108,20 +1108,19 @@ Directories are created as needed."
 					       when (member (module-type v) ty) collect (cons h v)) (lambda (x) (module-type (cdr x))))
 			 #'< :key (lambda (x) (position (module-type (cdar x)) +module-types+)))
        for nx = nil then t
-       do (format t "~:[~;~%~];; Type: ~A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" nx (symbol-name (module-type (cdr (first l))))
+       do (format t "~:[~;~%~];; -----Type: ~A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" nx (symbol-name (module-type (cdr (first l))))
 		  (loop for e in (sort l #'string< :key (lambda (x) (symbol-name (car x))))
 		     collect (symbol-name (car e)) collect (module-file (cdr e))
 		     collect (commentify (module-desc (cdr e)) 1))))))
 
 ;; user fun
 (defun load-fomus-module (keyname)
-  (flet ((module-provided-p (module)
-	   (find (module-package module) *fomus-modules* :test #'string=)))
+  (flet ((module-provided-p (module) ; why bother putting this in flet? it's only called once
+	   (find (module-pack module) *modules* :test #'string=)))
     (let* ((module (or (gethash keyname *fomus-modules*) (error "Module ~S is not registered or does not exist" keyname)))
 	   (fasl-path (module-outname (module-file module) (eq (module-type module) :backend))))
-      (when (or (not (module-provided-p module))
-		(and (module-recompile-if-needed module)
-		     (compile-module (module-file module) fasl-path keyname)))
+      (when (or (compile-module-if-needed (module-file module) fasl-path keyname) ; will always recompile/reload if file changed
+		(not (module-provided-p module)))
 	(when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading module ~S..." keyname))
 	(load fasl-path :verbose nil :print nil)
 	(when (module-initfun module)
