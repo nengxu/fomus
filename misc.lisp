@@ -630,9 +630,10 @@
 (defun commentify (str in)
   (declare (type string str) (type (integer 1) in))
   (loop with in = (format nil "~%~A " (make-string in :initial-element #\;))
-	for p = (position #\newline str :start (if p (1+ p) 0))
-	while p do (setf str (conc-strings (subseq str 0 p) in (subseq str (1+ p))))
-	finally (return str)))
+	and sr = (string-trim '(#\newline) str)
+	for p = (position #\newline sr :start (if p (1+ p) 0))
+	while p do (setf sr (conc-strings (subseq sr 0 p) in (subseq sr (1+ p))))
+	finally (return sr)))
 
 ;; cartesian distance
 (declaim (inline distance))

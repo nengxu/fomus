@@ -44,7 +44,7 @@
 (declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float
 	       *voice-high/low-beat-dist-sc* *voice-leading-beat-dist-sc* *voice-octave-dist-sc* *voice-full-beat-dist-sc*)
 	 (type #-(or openmcl allegro) (float 0) #+(or openmcl allegro) float *voice-full-beat-dist*)
-	 (type (float (0)) *voice-octave-dist-sc1*))
+	 (type #-(or openmcl allegro) (float (0)) #+(or openmcl allegro) float *voice-octave-dist-sc1*))
 (declaim (special *voice-high/low-beat-dist-sc* *voice-leading-beat-dist-sc* *voice-octave-dist-sc1*
 		  *voice-octave-dist-sc* *voice-full-beat-dist* *voice-full-beat-dist-sc*)) ; adj is 1 + lowest (farthest) value
 (declaim (type #-(or openmcl allegro) (float 0 1) #+(or openmcl allegro) float +voices-notedist-aux-const+))
