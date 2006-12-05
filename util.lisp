@@ -1115,7 +1115,7 @@ Directories are created as needed."
 
 ;; user fun
 (defun load-fomus-module (keyname)
-  (flet ((module-provided-p (module) ; why bother putting this in flet? it's only called once
+  (flet ((module-provided-p (module)
 	   (find (module-pack module) *modules* :test #'string=)))
     (let* ((module (or (gethash keyname *fomus-modules*) (error "Module ~S is not registered or does not exist" keyname)))
 	   (fasl-path (module-outname (module-file module) (eq (module-type module) :backend))))
