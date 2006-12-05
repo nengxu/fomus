@@ -1065,12 +1065,14 @@ Directories are created as needed."
 								   (conc-strings z "/modules/backends/")
 								   (conc-strings z "/modules/"))
 					  :name (pathname-name lisp-file))))
-		 (unless (directory (directory-wildcard z))
+		 ;; experienced weird problems w/ wildcards (esp. w/ cmucl)--
+		 ;; if fomus was compiled then fasl-proto-path should exist anyways (should be "package.fasl" or whatever)--
+		 ;; seems much simpler
+		 (unless (or (probe-file fasl-proto-path) (probe-file (change-filename fasl-proto-path :ext "lisp"))) 
 		   (error "FOMUS compile directory ~S doesn't exist (this is a bug)" z)) ; small sanity check
 		 (ignore-errors (ensure-directories-exist f))
-		 f)
-	       ;; fallback to normal...
-	       (compile-file-pathname lisp-file)))
+		 f) 
+	       (compile-file-pathname lisp-file))) ;; fallback to normal...
   #-asdf (compile-file-pathname lisp-file))
 
 ;; user fun
@@ -1114,7 +1116,7 @@ Directories are created as needed."
 ;; user fun
 (defun load-fomus-module (keyname)
   (flet ((module-provided-p (module)
-	   (find (module-pack module) *fomus-modules* :test #'string=)))
+	   (find (module-package module) *fomus-modules* :test #'string=)))
     (let* ((module (or (gethash keyname *fomus-modules*) (error "Module ~S is not registered or does not exist" keyname)))
 	   (fasl-path (module-outname (module-file module) (eq (module-type module) :backend))))
       (when (or (not (module-provided-p module))
@@ -1132,4 +1134,3 @@ Directories are created as needed."
     (if pl (apply (find-symbol (symbol-name (module-entryfun pl)) (find-package (module-pack pl))) args)
 	(apply #'error err))))
 
-;; (asdf:output-files (make-instance 'asdf:compile-op) (first (asdf:module-components (asdf:find-system :fomus))))

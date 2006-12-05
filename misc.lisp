@@ -59,14 +59,12 @@
 ;; tries to deal with implementation/playform-specific quirks involving trailing '/' characters
 (declaim (inline change-filename))
 (defun change-filename (filename &key (dir (pathname-directory filename)) (name (pathname-name filename)) (ext (pathname-type filename)))
-  (declare (type (or pathname string null) filename name ext) (type (or pathname string list) dir))
+  (declare (type (or pathname string list) filename name ext) (type (or pathname string list) dir))
   (namestring (make-pathname :device (pathname-device filename)
 			     :directory
-			     #-(or lispworks clisp) dir
-			     #+(or lispworks clisp) (if (or (stringp dir) (pathnamep dir))
-							(pathname-directory #+(and (or unix linux darwin clisp) (not cygwin)) (conc-strings dir "/")
-									    #-(and (or unix linux darwin clisp) (not cygwin)) dir)
-							dir)
+			     (if (or (stringp dir) (pathnamep dir))
+				 (pathname-directory (conc-strings dir "/"))
+				 dir)
 			     :name name :type ext)))
 
 ;; tests for t
@@ -79,9 +77,9 @@
   (declare (type list list))
   (car (last list)))
 
-;; installs reader macro #Z (all the good ones are taken)
-(when (get-dispatch-macro-character #\# #\Z)
-  (format t ";; WARNING: Reinstalling dispatch macro #Z~%"))
+;; installs reader macro #Z
+;; (when (get-dispatch-macro-character #\# #\Z) ; some Lisps return an error function, so don't bother printing warning
+;;   (format t ";; WARNING: Reinstalling dispatch macro #Z~%"))
 (set-dispatch-macro-character
  #\# #\Z
  (lambda (s c n)
@@ -645,43 +643,47 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; pathname compatibility - deliberately borrowed from cl-fad
 
-(declaim (inline component-present-p directory-pathname-p))
-(defun component-present-p (value)
-  "Helper function for DIRECTORY-PATHNAME-P which checks whether VALUE
-is neither NIL nor the keyword :UNSPECIFIC."
-  (and value (not (eql value :unspecific))))
+;; SAVE THIS (don't need at the moment, the directory function causes silly errors in some Lisps)
 
-(defun directory-pathname-p (pathspec)
-  "Returns NIL if PATHSPEC \(a pathname designator) does not designate
-a directory, PATHSPEC otherwise.  It is irrelevant whether file or
-directory designated by PATHSPEC does actually exist."
-  (and 
-    (not (component-present-p (pathname-name pathspec)))
-    (not (component-present-p (pathname-type pathspec)))
-    pathspec))
+;; (declaim (inline component-present-p #|directory-pathname-p|#))
+;; (defun component-present-p (value)
+;;   "Helper function for DIRECTORY-PATHNAME-P which checks whether VALUE
+;; is neither NIL nor the keyword :UNSPECIFIC."
+;;   (and value (not (eql value :unspecific))))
 
-(defun pathname-as-directory (pathspec)
-  "Converts the non-wild pathname designator PATHSPEC to directory
-form."
-  (let ((pathname (pathname pathspec)))
-    (when (wild-pathname-p pathname)
-      (error "Can't reliably convert wild pathnames."))
-    (cond ((not (directory-pathname-p pathspec))
-           (make-pathname :directory (append (or (pathname-directory pathname)
-                                                 (list :relative))
-                                             (list (file-namestring pathname)))
-                          :name nil
-                          :type nil
-                          :defaults pathname))
-          (t pathname))))
+;; (defun directory-pathname-p (pathspec)
+;;   "Returns NIL if PATHSPEC \(a pathname designator) does not designate
+;; a directory, PATHSPEC otherwise.  It is irrelevant whether file or
+;; directory designated by PATHSPEC does actually exist."
+;;   (and 
+;;    (not (component-present-p (pathname-name pathspec)))
+;;    (not (component-present-p (pathname-type pathspec)))
+;;    pathspec))
 
-(defun directory-wildcard (dirname)
-  "Returns a wild pathname designator that designates all files within
-the directory named by the non-wild pathname designator DIRNAME."
-  (when (wild-pathname-p dirname)
-    (error "Can only make wildcard directories from non-wildcard directories."))
-  (make-pathname :name #-:cormanlisp :wild #+:cormanlisp "*"
-                 :type #-(or :clisp :cormanlisp) :wild
-                       #+:clisp nil
-                       #+:cormanlisp "*"
-                 :defaults (pathname-as-directory dirname)))
+;; ;; pathspec/dirname won't have wildcards in it
+;; (defun pathname-as-directory (pathspec)
+;;   "Converts the non-wild pathname designator PATHSPEC to directory
+;; form."
+;;   (let ((pathname (pathname pathspec)))
+;;     (when (wild-pathname-p pathname)
+;;       (error "Can't reliably convert wild pathnames."))
+;;     (cond ((not (directory-pathname-p pathspec))
+;;            (make-pathname :directory (append (or (pathname-directory pathname)
+;;                                                  (list :relative))
+;;                                              (list (file-namestring pathname)))
+;;                           :name nil
+;;                           :type nil
+;;                           :defaults pathname))
+;;           (t pathname))))
+
+;; (defun directory-wildcard (dirname)
+;;   "Returns a wild pathname designator that designates all files within
+;; the directory named by the non-wild pathname designator DIRNAME."
+;;   (when (wild-pathname-p dirname)
+;;     (error "Can only make wildcard directories from non-wildcard directories."))
+;;   (make-pathname :name #-:cormanlisp :wild #+:cormanlisp "*"
+;;                  :type #-(or :clisp :cormanlisp) :wild
+;; 		 #+:clisp nil
+;; 		 #+:cormanlisp "*"
+;;                  :defaults (pathname-as-directory dirname)))
+
