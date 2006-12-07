@@ -1,5 +1,5 @@
 v0.2.13
-	Fixed errors compiling/loading modules
+	Fixed errors w/ compiling/loading modules
 
 v0.2.12
 	Some module-compiling/loading enhancements w/ ASDF (Kilian)
