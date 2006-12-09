@@ -31,8 +31,7 @@
        (return t)))))
 
 (defparameter +fomus-dir+ #+asdf (or (ignore-errors (asdf:component-pathname (asdf:find-system :fomus))) *load-truename*) #-asdf *load-truename*)
-(defun register-fomus-modules (&optional (info t))
-  (when info (out ";; Registering modules...~%"))
+(defun register-fomus-modules ()
   (map nil
        (lambda (file)
 	 (multiple-value-bind (value error)
@@ -71,7 +70,7 @@
   (let ((*package* (find-package "FOMUS")))
     (catcherr
       (load-initfile initfile nil)
-      (register-fomus-modules nil)
+      (register-fomus-modules)
       (let* ((v (when (find #\w opts) t))
 	     (o (nconc (when (string/= quality "") (list :quality (ignore-errors (read-from-string quality))))
 		       (when (string/= basename "") (list :filename basename))

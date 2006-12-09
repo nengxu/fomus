@@ -255,7 +255,7 @@
 	   (type (or (integer 1) null) simultlim) (type (or null integer) tpose) (type (or (integer 1) cons) cleflegls) (type (or null (integer 1) cons) 8uplegls 8dnlegls)
 	   (type list percs) (type (or null (integer 0 127) cons) midiprgch-im) (type (or null (integer 0 127) cons) midiprgch-ex))
   (make-instr-aux :sym sym :clefs clefs :staves staves :minp minp :maxp maxp :simultlim simultlim :tpose tpose :cleflegls cleflegls
-			   :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex))
+		  :8uplegls 8uplegls :8dnlegls 8dnlegls :percs percs :midiprgch-im midiprgch-im :midiprgch-ex midiprgch-ex))
 
 (declaim (type cons +instr-type+))
 (defparameter +instr-type+
