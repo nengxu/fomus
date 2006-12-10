@@ -3,13 +3,20 @@
   <section>
   <para>
     Settings are arguments or parameters used to pass data to <application>FOMUS</application> for processing.
-    There are a lot of them, but only a few of them are essential or even important for most users.
-    The most useful ones are listed below--many of the ones that aren't on this list are there
-    to provide some way of tweaking <application>FOMUS</application>'s decisions or turning various
-    decision-making algorithms on and off.
+    There are a lot of them, but only a few of them are really necessary for most users.
+    The most useful ones are listed below--look at these first before searching through the complete list.
+    Many of the ones that aren't on the most useful list exist to provide some way of tweaking output or turning various modules on and off.
     Setting values can be passed to the <function>FOMUS</function> function as keyword/argument pairs or 
     bound as special variables, the names of which are derived by surrounding the symbol names with asterisks.
     All of the variables are exported symbols in the <literal>FOMUS</literal> package.
+  </para>
+  <para>
+   Settings that end in <literal>-MODULE</literal> allow switching and replacing various sections of <application>FOMUS</application>
+   with other algorithms.  The code for these modules is located in the <filename>modules</filename> subdirectory.  Adding new or replacement functionality to
+   <application>FOMUS</application> is done by dropping module files in here.
+   The documentation here only lists built-in options (at the moment there is only one choice for most of these)--a 
+   complete list of modules to choose from may be obtained with the 
+   <function><link linkend="function.list.fomus.modules">LIST-FOMUS-MODULES</link></function> function.
   </para>
   <para>  
     See <link linkend="init" endterm="init.title"/> for an explanation of how to modify default values for any of these settings.
@@ -260,8 +267,9 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining note spellings.
-  	  Current possible values are <literal>T</literal>, <literal>:NOKEY1</literal> and <literal>:NOKEY2</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:NOKEY1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal>, <literal>:KEY1</literal>, <literal>:NOKEY1</literal>.
+  	  <literal>T</literal> represents the default module and is equivalent to <literal>:KEY1</literal>.
+	  Output from <literal>:KEY1</literal> is nearly the same as <literal>:NOKEY1</literal> when no key signatures are specified.
   	</para>
         </listitem>
       </varlistentry>
@@ -270,7 +278,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for beaming.
-  	  Current possible values are <literal>T</literal> and <literal>:BEAMS1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:BEAMS1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:BEAMS1</literal>.
   	</para>
         </listitem>
@@ -299,7 +307,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining how rests are distributed among staves.
-  	  Current possible values are <literal>T</literal> and <literal>:RESTS1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:RESTS1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:RESTS1</literal>.
   	</para>
         </listitem>
@@ -328,7 +336,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining how simultaneous notes from different voices are combined into chords on the same staff.
-  	  Current possible values are <literal>T</literal> and <literal>:COMB1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:COMB1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:COMB1</literal>.
   	</para>
         </listitem>
@@ -365,7 +373,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining where ottava brackets occur.
-  	  Current possible values are <literal>T</literal> and <literal>:OTTAVAS1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:OTTAVAS1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:OTTAVAS1</literal>.
   	</para>
         </listitem>
@@ -424,7 +432,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for quantizing.
-  	  Current possible values are <literal>T</literal>, <literal>:QUANTIZE1-RMSE</literal> and <literal>:QUANTIZE1-AVE</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal>, <literal>:QUANTIZE1-RMSE</literal> and <literal>:QUANTIZE1-AVE</literal>.
 	  <literal>:QUANTIZE1-MSE</literal> finds the closest fit to notation by minimizing the root mean squared error 
 	   between the user's values and possible notational values.
 	  <literal>:QUANTIZE1-AVE</literal> finds the closets fit by minimizing average error.
@@ -447,7 +455,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used to determine automatic staff and clef changes.
-  	  Current possible values are <literal>T</literal> and <literal>:STAVES/CLEFS1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:STAVES/CLEFS1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:STAVES/CLEFS1</literal>.
   	</para>
         </listitem>
@@ -457,7 +465,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining how notes are distributed into separate voices.
-  	  Current possible values are <literal>T</literal> and <literal>:VOICES1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:VOICES1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:VOICES1</literal>.
   	</para>
         </listitem>
@@ -1240,7 +1248,7 @@
         <listitem>
           <para>
   	  This is either a list or a list of lists specifying one or more output files with optional keyword/argument pairs for tweaking their contents.
-  	  Current possible output symbols are <literal>:DATA</literal> or <literal>:FOMUS</literal>, <literal>:RAW</literal>, <literal>:MUSICXML</literal>, 
+  	  <application>FOMUS</application>'s built-in output symbols are <literal>:DATA</literal> or <literal>:FOMUS</literal>, <literal>:RAW</literal>, <literal>:MUSICXML</literal>, 
 	  <literal>:MUSICXML-SIBELIUS</literal>, <literal>:MUSICXML-FINALE</literal>, <literal>:CMN</literal>, <literal>:LILYPOND</literal> and <literal>:MIDI</literal>.
   	  More information on these is given in <link linkend="outputs" endterm="outputs.title"/>.
   	  The following are examples of valid output specifications:
@@ -1344,7 +1352,7 @@
         <listitem>
           <para>
   	  Designates which module is to be used for splitting and tying notes.
-  	  Current possible values are <literal>T</literal> and <literal>:SPLIT1</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal> and <literal>:SPLIT1</literal>.
   	  <literal>T</literal> represents the default module and is equivalent to <literal>:SPLIT1</literal>.
   	</para>
         </listitem>
@@ -1413,7 +1421,7 @@
         <listitem>
           <para>
   	  Designates which function is to be used for determining tuplet ratios.
-  	  Current possible values are <literal>T</literal>, <literal>:POW2</literal> and <literal>:DUR</literal>.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal>, <literal>:POW2</literal> and <literal>:DUR</literal>.
   	  <literal>T</literal> represents the default function and is equivalent to <literal>:POW2</literal>.
 	  <literal>:POW2</literal> determines tuplet ratios based on the rule that the number of tuplet divisions replace (in most cases)
 	  the number of durational units equaling the next lowest power of two.  <application>FOMUS</application> thus notates 7 in the time of 4
