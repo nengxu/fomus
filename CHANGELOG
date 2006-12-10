@@ -1,4 +1,5 @@
 v0.2.14
+	Fix in MIDI backend for instruments that don't have a MIDI program change number (defaults to 0)
 	Support for key signatures finished (auto-accidentals algorithm takes key signature into account)--some testing/tweaking still necessary
 
 v0.2.13
