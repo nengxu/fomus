@@ -286,7 +286,7 @@
 		  (loop with aps and is and el and ps = (loop repeat nports collect (let ((x (make-array 16 :initial-element nil))) ; list of 16-ch arrays
 										      (setf (svref x 9) t) (when *quartertones* (setf (svref x 8) t)) x))
 			for p in (loop for p in parts
-				       for ex = (instr-midiprgch-ex (part-instr p))
+				       for ex = (or (instr-midiprgch-ex (part-instr p)) 0)
 				       when (consp ex) nconc (destructuring-bind (pp &key pizz stopped open harmonic) ex
 							       (declare (ignore pp))
 							       (loop for e in (list pizz stopped open harmonic)
@@ -302,7 +302,7 @@
 				       collect p
 				       finally (setf aps (nreverse aps)))
 			for in = (part-instr p)
-			for ex = (first (force-list (instr-midiprgch-ex in)))
+			for ex = (first (force-list (or (instr-midiprgch-ex in) 0)))
 			and (midi-ch . midi-vel) = (destructuring-bind (&key midi-ch (midi-vel 1) &allow-other-keys) (part-opts p) (cons midi-ch midi-vel))
 			for (po . ch) =
 			(let ((c (or midi-ch ; c = (port . chan)
@@ -359,7 +359,7 @@
 											   (t pizz))
 									  and (pizzch stoppedch opench harmonicch) =
 									  (unless pmn (destructuring-bind (x &key pizz stopped open harmonic)
-											  (force-list (instr-midiprgch-ex in))
+											  (force-list (or (instr-midiprgch-ex in) 0))
 											(declare (ignore x)) (list pizz stopped open harmonic)))
 									  and (of . du)
 									  in (flet ((gem (di pr) ; grace notes, di = direction, pr = offsets so far
