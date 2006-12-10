@@ -406,18 +406,18 @@
 	(lg (let ((x (mloop for p of-type partex in parts minimize
 			    (mloop for e of-type (or noteex restex) in (part-events p) for g = (event-grace e) when g minimize g))))
 	      (if x (min (1- x) -1) -1))))
-    (loop for p of-type partex in parts
+    (loop for p of-type partex in parts 
 	  for ts = (gethash p h)
 	  and evs = (part-events p)
-	  do
+	  unless (is-percussion p) do
 	  (loop with kk = nil
 		for (s ns) of-type (timesig-repl (or timesig-repl null)) on ts
 		for o = (timesig-off s)
 		and ks = (getprop s :keysig)
 		when ks do (setf kk (keysig-accs (rest ks)))
 		do (loop
-		    while (if ns (< (event-off (first evs)) (timesig-off ns)) evs)
-		    for e of-type (or noteex restex) = (pop evs)
+		    #-clisp while #-clisp (if ns (< (event-off (first evs)) (timesig-off ns)) evs)
+		    for e of-type (or noteex restex) = #-clisp (pop evs) #+clisp (if (if ns (< (event-off (first evs)) (timesig-off ns)) evs) (pop evs) (return))
 		    for (n . a) of-type ((or (integer 0) null) . (or (integer -1 1) null)) = (find (event-note* e) kk :key #'car)
 		    when n do (push (make-instance 'noteex :beamlt 'f :note (list n a) :off (event-off e) :dur (cons 1 lg))
 				    (part-events p))))
@@ -428,13 +428,16 @@
 			    (mloop for m of-type meas in (part-meas p) minimize
 				   (mloop for e of-type (or noteex restex) in (meas-events m) for g = (event-grace e) when g minimize g)))))
 	      (if x (min (1- x) -1) -1))))
-    (loop for p of-type partex in parts do
-	  (loop for m of-type meas in (part-meas p) do
-		(let ((kk (let ((x (getprop m :keysig))) (if x (rest x) '(:cmaj))))
-		      (o (meas-off m)))
-		  (loop for (n . a) of-type ((integer 0) . (integer -1 1)) in (keysig-accs kk)
-			do (push (make-instance 'noteex :beamlt 'f :note (cons n a) :off o :dur (cons 1 lg))
-				 (meas-events m))))
+    (loop for p of-type partex in parts
+	  unless (is-percussion p) do 
+	  (loop with kk = nil
+		for m of-type meas in (part-meas p)
+		for o = (meas-off m)
+		and ks = (getprop (meas-timesig m) :keysig)
+		when ks do (setf kk (keysig-accs (rest ks)))
+		do (loop for (n . a) of-type ((integer 0) . (integer -1 1)) in kk
+			 do (push (make-instance 'noteex :beamlt 'f :note (cons n a) :off o :dur (cons 1 lg))
+				  (meas-events m)))
 		(setf (meas-events m) (sort (meas-events m) #'sort-offdur))))))
 
 ;; delete the "fake" key signatures
@@ -453,20 +456,20 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACCIDENTALS POST PROCESSING
 
-;; final processing of all FORCEACC, CAUTACC and SHOWACC and HIDEACC marks (decides when to hide/show naturals and repeated accidentals in measures)
+;; final processing of all FORCEACC, CAUTACC, SHOWACC and HIDEACC marks (decides when to hide/show naturals and repeated accidentals in measures)
 ;; rests are removed before calling, called after chords and ties are added
 ;; events = note events in 1 measure
 ;; returns: nil
 (defun acc-nokey-postaccs (events)
   (declare (type cons events))
-  (let ((as (make-array 128 :element-type '(or null (cons (integer -2 2) (rational -1/2 1/2))) :initial-element nil))
-	(ac (make-array 128 :element-type '(or null (cons (integer -2 2) (rational -1/2 1/2))) :initial-element nil)))
+  (let ((as (make-array 128 :element-type '(or null (cons (integer -2 2) (rational -1/2 1/2))) :initial-element nil)) ; accidentals so far
+	(ac (make-array 128 :element-type 'boolean :initial-element nil))) ; next one cautionary accidental?
     (flet ((fixacc (e n a a2 tl)
 	     (declare (type noteex e) (type rational n) (type (integer -2 2) a) (type (rational -1/2 1/2) a2) (type boolean tl))
 	     (let ((w (- n a a2)))
 	       (if tl
-		   (setf (svref as w) (unless (and (= a 0) (= a2 0)) (cons a a2)) (svref ac w) t)
-		   (if (popmark e :forceacc)
+		   (setf (svref as w) (unless (and (= a 0) (= a2 0)) (cons a a2)) (svref ac w) t) ; right side of tie
+		   (if (popmark e :forceacc) ; user :forceacc mark
 		       (progn
 			 (setf (svref as w) (cons a a2))
 			 (rmmark e (list :cautacc n)) 

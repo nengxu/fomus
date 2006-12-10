@@ -328,6 +328,35 @@
 	</mediaobject>
 	</blockquote>
       </example>
+      <example>
+        <title id="example.txtmarks2">Key Signatures</title>
+	<programlisting>
+<![CDATA[
+(fomus
+ :output '(:lilypond :view t)
+ :filename "test.xxx"
+ :verbose 1
+ :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
+ :auto-cautionary-accs t
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr '(:piano :simultlim 1)
+   :events
+   (loop
+    for off from 0 to 8 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25)))))))]]>
+	</programlisting>
+	<blockquote>
+	<mediaobject>
+	  <imageobject><imagedata fileref="ex_keysigs1.jpg" format="JPG"/></imageobject>
+	  <caption>Output</caption> 
+	</mediaobject>
+	</blockquote>
+      </example>
   </section>
   <section>
     <title>Common Music Examples</title>

@@ -4,10 +4,11 @@
 (in-package :fomus)
 
 (fomus
- :output '(:lilypond :view t) 
+ :output '(:lilypond :view t)
+ :filename "test.xxx"
  :verbose 1
  :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
- :auto-accs-module :key1
+ :auto-cautionary-accs t
  :parts
  (list
   (make-part
