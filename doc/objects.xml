@@ -534,7 +534,7 @@
 	      and the second element being an integer value describing the "position" that the grace note occupies.
 	      Grace notes with the same offset are organized with respect to this position number.
 	      Lower position grace notes occur earlier in the score than higher position notes.
-	      Also, grace notes with the same position form chords, and notes with negative positions are notated with a slash.
+	      Grace notes with the same position form chords, and notes with negative positions are notated with a slash.
 	      The duration value at the front of the list is still interpreted in terms of beats and notated as such even though
 	      the note does not take up time in the measure.
 	      Specifying a duration of <literal>'(1/4 -1)</literal>, for example, specifies a grace sixteenth note with a slash

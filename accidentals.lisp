@@ -17,7 +17,7 @@
 (defparameter *auto-accs-plugin* nil) ; deprecated setting
 (defparameter *auto-accs-module* t) ; setting
 (declaim (inline auto-accs-fun))
-(defun auto-accs-fun () (if (truep *auto-accs-module*) :nokey1 *auto-accs-module*))
+(defun auto-accs-fun () (if (truep *auto-accs-module*) :key1 *auto-accs-module*))
 
 (declaim (type boolean *auto-accidentals* *auto-cautionary-accs*))
 (defparameter *auto-accidentals* t) ; setting
@@ -245,7 +245,7 @@
 
 (declaim (inline load-acc-modules))
 (defun load-acc-modules ()
-  (unless (eq (auto-accs-fun) :nokey1) (load-fomus-module (auto-accs-fun))))
+  (unless (member (auto-accs-fun) '(:nokey1 :key1)) (load-fomus-module (auto-accs-fun))))
 
 ;; wrapper to bind variable returned by module (informs fomus of which caut. accidentals algorithm to use, probably choice between nokey and key)
 (declaim (special *module-cautacc-fun* *module-postacc-fun*))
@@ -256,23 +256,26 @@
 
 ;; dispatch function for accidentals processing--called before chords exist and before voices are separated
 ;; returns: modified parts, sorted according to sort-offdur
-(defun accidentals (parts)
+(defun accidentals (parts timesigs)
+  (declare (type list parts timesigs))
   (loop
+   initially (when (eq (auto-accs-fun) :key1) (acc-fakekeysig parts timesigs))
    for e of-type partex in parts
    unless (is-percussion e)
    do (multiple-value-bind (evs rs) (split-list (part-events e) #'notep)
 	(setf (part-events e)
 	      (sort (nconc rs
-			   (if (eq (auto-accs-fun) :nokey1)
+			   (if (member (auto-accs-fun) '(:nokey1 :key1))
 			       (if *quartertones*
 				   (acc-nokey evs (if *use-double-accs* +acc-qtones-double+ +acc-qtones-single+)
 					      #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
 				   (acc-nokey evs (if *use-double-accs* +acc-double+ +acc-single+)
-					      #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity))
+					      #'notespelling #'nokey-notepen #'nokey-intscore (part-name e) #'identity)) 
 			       (multiple-value-bind (r1 r2 r3) (call-module (auto-accs-fun) (list "Unknown accidental assignment module ~S" *auto-accs-module*) evs)
 				 (setf *module-cautacc-fun* r2 *module-postacc-fun* r3)
 				 r1)))
-		    #'sort-offdur)))))
+		    #'sort-offdur)))
+   finally (when (eq (auto-accs-fun) :key1) (acc-delfakes parts))))
 
 ;; wrapper to set semitones/quartones according to selected accidentals module
 (defmacro set-note-precision (&body forms)
@@ -287,6 +290,7 @@
 
 ;; called when no accidentals module is chosen (gives dumb assignments)
 (defun accidentals-generic (parts)
+  (declare (type list parts))
   (flet ((so (d)
 	   (lambda (x y)
 	     (let ((ax (if (consp x) (car x) x))
@@ -395,6 +399,57 @@
 	for k = (popprop ts :keysig)
 	when k do (addprop ts (cons :keysig (mapcar (lambda (x) (declare (type symbol x)) (or (lookup x +keysig-eqs+) x)) (rest k))))))
 
+;; add grace notes with accidentals to fool FOMUS into thinking about key signatures
+(defun acc-fakekeysig (parts timesigs)
+  (declare (type list parts timesigs))
+  (let ((h (get-timesigs timesigs parts))
+	(lg (let ((x (mloop for p of-type partex in parts minimize
+			    (mloop for e of-type (or noteex restex) in (part-events p) for g = (event-grace e) when g minimize g))))
+	      (if x (min (1- x) -1) -1))))
+    (loop for p of-type partex in parts
+	  for ts = (gethash p h)
+	  and evs = (part-events p)
+	  do
+	  (loop with kk = nil
+		for (s ns) of-type (timesig-repl (or timesig-repl null)) on ts
+		for o = (timesig-off s)
+		and ks = (getprop s :keysig)
+		when ks do (setf kk (keysig-accs (rest ks)))
+		do (loop
+		    while (if ns (< (event-off (first evs)) (timesig-off ns)) evs)
+		    for e of-type (or noteex restex) = (pop evs)
+		    for (n . a) of-type ((or (integer 0) null) . (or (integer -1 1) null)) = (find (event-note* e) kk :key #'car)
+		    when n do (push (make-instance 'noteex :beamlt 'f :note (list n a) :off (event-off e) :dur (cons 1 lg))
+				    (part-events p))))
+	  (setf (part-events p) (sort (part-events p) #'sort-offdur)))))
+(defun acc-postfakekeysig (parts)
+  (declare (type list parts))
+  (let ((lg (let ((x (mloop for p of-type partex in parts minimize
+			    (mloop for m of-type meas in (part-meas p) minimize
+				   (mloop for e of-type (or noteex restex) in (meas-events m) for g = (event-grace e) when g minimize g)))))
+	      (if x (min (1- x) -1) -1))))
+    (loop for p of-type partex in parts do
+	  (loop for m of-type meas in (part-meas p) do
+		(let ((kk (let ((x (getprop m :keysig))) (if x (rest x) '(:cmaj))))
+		      (o (meas-off m)))
+		  (loop for (n . a) of-type ((integer 0) . (integer -1 1)) in (keysig-accs kk)
+			do (push (make-instance 'noteex :beamlt 'f :note (cons n a) :off o :dur (cons 1 lg))
+				 (meas-events m))))
+		(setf (meas-events m) (sort (meas-events m) #'sort-offdur))))))
+
+;; delete the "fake" key signatures
+(defun acc-delfakes (parts)
+  (declare (type list parts))
+  (loop for p of-type partex in parts
+	do (setf (part-events p)
+		 (sort (loop for e of-type (or noteex restex) in (part-events p) unless (and (typep e 'noteex) (event-fakenote e)) collect e) #'sort-offdur))))
+(defun acc-postdelfakes (parts)
+  (declare (type list parts))
+  (loop for p of-type partex in parts
+	do (loop for m of-type meas in (part-meas p) do
+		 (setf (meas-events m)
+		       (sort (loop for e of-type (or noteex restex) in (meas-events m) unless (and (typep e 'noteex) (event-fakenote e)) collect e) #'sort-offdur)))))
+  
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; ACCIDENTALS POST PROCESSING
 
@@ -440,13 +495,17 @@
 (defun postaccs (parts)
   (declare (type list parts))
   (if *acc-throughout-meas*
-      (loop for p of-type partex in parts unless (is-percussion p) do
-	    (loop for m of-type meas in (part-meas p) do
-		  (multiple-value-bind (evs rs) (split-list (meas-events m) #'notep)
-		    (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
-			  (if (eq (auto-accs-fun) :nokey1) (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur)))
-			      (funcall (or *module-postacc-fun* #'acc-nokey-postaccs) (copy-list (sort ev #'sort-offdur)))))
-		    (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur)))))
+      (loop
+       initially (when (eq (auto-accs-fun) :key1) (acc-postfakekeysig parts))
+       for p of-type partex in parts unless (is-percussion p) do
+       (loop for m of-type meas in (part-meas p) do
+	     (multiple-value-bind (evs rs) (split-list (meas-events m) #'notep)
+	       (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
+		     (if (member (auto-accs-fun) '(:key1 :nokey1))
+			 (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))) 
+			 (funcall (or *module-postacc-fun* #'acc-nokey-postaccs) (copy-list (sort ev #'sort-offdur)))))
+	       (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur))))
+       finally (when (eq (auto-accs-fun) :key1) (acc-postdelfakes parts)))
       (loop for p of-type partex in parts unless (is-percussion p) do
 	    (loop for m of-type meas in (part-meas p) do
 		  (loop for e of-type (or noteex restex) in (meas-events m)

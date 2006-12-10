@@ -35,7 +35,7 @@
     (:keyname :timedump) (:type :backend) (:entryfun do-timedump)
     (:export #:timedump #:timedump-off #:timedump-endoff #:timedump-dur #:timedump-timesig #:timedump-barline)
     (:import-from #:fomus #:force-list #:*verbose* #:out)
-    (:documentation "A simple backend that sends time info to a user callback function (for storing time info, creating click tracks, etc.--see timedump.lisp for info)"))
+    (:documentation "A simple backend that sends measure offsets to a user callback function (for storing time info, creating click tracks, etc.--see timedump.lisp for info)"))
 
 ;; timesig is given in the form of a cons
 ;; barline is the barline property (:double, etc.) for the measure if present (applies to the BEGINNING of the measure)

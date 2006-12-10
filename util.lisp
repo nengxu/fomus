@@ -1043,7 +1043,7 @@
 
 (defparameter *fomus-modules* (make-hash-table :test 'eq))
 (defparameter +module-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
-(defparameter +module-defaults+ '(:nokey1 :voices1 :staves/clefs1 :split1 :quantize1-rmse nil))
+(defparameter +module-defaults+ '((:key1 :nokey1) :voices1 :staves/clefs1 :split1 :quantize1-rmse nil))
 
 (defun compile-module-if-needed (lisp-file fasl-file keyname)
   "Compile LISP-FILE into FASL-FILE, if needed. Returns FASL-FILE or NIL, if nothing happened."
@@ -1106,17 +1106,18 @@ Directories are created as needed."
 (defun list-fomus-modules (&rest type)
   (let ((ty (or type +module-types+)))
     (loop for l in (sort (split-into-groups (loop for h being each hash-key in *fomus-modules* using (hash-value v)
-					       when (member (module-type v) ty) collect (cons h v)) (lambda (x) (module-type (cdr x))))
+						  when (member (module-type v) ty) collect (cons h v)) (lambda (x) (module-type (cdr x))))
 			 #'< :key (lambda (x) (position (module-type (cdar x)) +module-types+)))
-       for nx = nil then t
-       do (format t "~:[~;~%~];; -----Type: ~A--------------------~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" nx (symbol-name (module-type (cdr (first l))))
-		  (nconc
-		   (unless (eq (module-type (cdr (first l))) :backend)
-		     (loop for e in (force-list (lookup (module-type (cdr (first l))) (pairlis +module-types+ +module-defaults+)))
-			   nconc (list e "(internal)" "(FOMUS's default function)")))
-		   (loop for e in (sort l #'string< :key (lambda (x) (symbol-name (car x))))
-			 collect (symbol-name (car e)) collect (module-file (cdr e))
-			 collect (commentify (module-desc (cdr e)) 1)))))))
+	  for nx = nil then t
+	  do (format t "~:[~;~%~];; ----Type: ~67,1,,'-A~%~{~%; Key: :~A   File: ~A~%; ~A~%~}" nx (symbol-name (module-type (cdr (first l))))
+		     (nconc
+		      (unless (eq (module-type (cdr (first l))) :backend)
+			(loop for e in (force-list (lookup (module-type (cdr (first l))) (pairlis +module-types+ +module-defaults+)))
+			      and fi = nil then t
+			      nconc (list e "(internal)" (format nil "FOMUS ~:[default ~;~]internal function" fi))))
+		      (loop for e in (sort l #'string< :key (lambda (x) (symbol-name (car x))))
+			    collect (symbol-name (car e)) collect (module-file (cdr e))
+			    collect (commentify (module-desc (cdr e)) 1)))))))
 
 ;; user fun
 (defun load-fomus-module (keyname)
@@ -1137,4 +1138,3 @@ Directories are created as needed."
   (let ((pl (gethash keyname *fomus-modules*)))
     (if pl (apply (find-symbol (symbol-name (module-entryfun pl)) (find-package (module-pack pl))) args)
 	(apply #'error err))))
-

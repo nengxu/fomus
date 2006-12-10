@@ -4,6 +4,23 @@
 (in-package :fomus)
 
 (fomus
+ :output '(:lilypond :view t) 
+ :verbose 1
+ :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
+ :auto-accs-module :key1
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr '(:piano :simultlim 1)
+   :events
+   (loop
+    for off from 0 to 8 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25)))))))
+
+(fomus
  (list (fomus
 	:output '(:none) 
 	:verbose 1
@@ -43,7 +60,7 @@
  :verbose 2
  :quality 2
  :ensemble-type :orchestra
- :auto-accs-module :nokey2
+ ;; :auto-accs-module :nokey2
  :parts
  (list
   (make-part

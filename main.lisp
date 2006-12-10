@@ -289,7 +289,7 @@
 		     (distr-voices pts)
 		     (if *auto-accidentals*
 			 (progn (when (>= *verbose* 2) (out "~&; Accidentals..."))
-				(accidentals pts) #+debug (fomus-proc-check pts 'accs))
+				(accidentals pts *timesigs*) #+debug (fomus-proc-check pts 'accs))
 			 (accidentals-generic pts))
 		     (reset-tempslots pts nil)
 		     (if *auto-staff/clef-changes*

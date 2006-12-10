@@ -327,7 +327,7 @@
 (defprint-class partex id partid name abbrev instr events props opts userord)
 
 ;; beam slots aren't used until later--use them as temp storage
-(declaim (inline event-userstaff event-userclef event-acctie event-textdir event-nomerge #|event-noddot|#))
+(declaim (inline event-userstaff event-userclef event-acctie event-textdir event-nomerge event-fakenote #|event-noddot|#))
 (defun event-userstaff (ev) (declare (type noteex ev)) (event-beamlt ev))
 (defsetf event-userstaff (ev) (x) `(setf (event-beamlt ,ev) ,x))
 (defun event-userclef (ev) (declare (type noteex ev)) (event-beamrt ev))
@@ -338,6 +338,7 @@
 (defsetf event-textdir (ev) (x) `(setf (event-beamlt ,ev) ,x))
 (defun event-nomerge (ev) (declare (type restex ev)) (event-inv ev))
 (defsetf event-nomerge (ev) (x) `(setf (event-inv ,ev) ,x))
+(defun event-fakenote (ev) (declare (type noteex ev)) (eq (event-beamlt ev) 'f))
 ;; (defun event-noddot (ev) (declare (type noteex ev)) (event-beamlt ev))
 ;; (defsetf event-noddot (ev) (x) `(setf (event-beamlt ,ev) ,x))
 (defun event-autodur (ev) (declare (type noteex ev)) (event-beamrt ev))

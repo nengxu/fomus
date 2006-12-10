@@ -1,3 +1,6 @@
+v0.2.14
+	Support for key signatures finished (auto-accidentals algorithm takes key signature into account)--some testing/tweaking still necessary
+
 v0.2.13
 	Fixed errors w/ compiling/loading modules
 
