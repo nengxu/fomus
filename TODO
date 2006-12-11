@@ -23,7 +23,6 @@ Immediate:
       Check Finale and Siblius updates for changes in MusicXML import
       Laissez vibrer ties (options to automatically add l.v. ties with autodurs)
       Finish chunks support
-      Finish key signatures support
       Finish implementing :invisible mark
       Allow forcing of staff choices (individual notes and entire voice)
       More control over harmonics
