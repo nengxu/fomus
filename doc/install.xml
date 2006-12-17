@@ -69,9 +69,8 @@ CL-USER> (use-package :fm)]]>
     <title id="install.cmd.title">Installing as an Executable</title>
     <para>
       The script file <filename>install.sh</filename> can be run at a UNIX command prompt to install <application>FOMUS</application> as a command-line
-      executable program.  At this point, this can only be done with <application>SBCL</application>, <application>CMUCL</application>, <application>CLISP</application> and 
-      <application>OpenMCL</application> in a UNIX environment (it's been tested in OS X and Linux), though a look at the script should show how
-      to install it with other Lisps in any other environment. 
+      executable program.  Right now this can only be done with <application>SBCL</application>, <application>CMUCL</application>, <application>CLISP</application> and 
+      <application>OpenMCL</application> in UNIX (it's been tested in OS X and Linux).
       </para>
       <para>
        Type the following to get a list of installation options:
@@ -94,8 +93,8 @@ cd path_to_install_directory
 ./install.sh --sbcl]]>
        </programlisting>
       </example>
-      There is also an option for uninstalling.  To see how to use as an executable, see <link linkend="interface.cmd" endterm="interface.cmd.title"/> and
-      <link linkend="interface.text" endterm="interface.text.title"/>.
+      There is also an option for uninstalling.  To see how to run <application>FOMUS</application> as an executable, 
+      see <link linkend="interface.cmd" endterm="interface.cmd.title"/> and <link linkend="interface.text" endterm="interface.text.title"/>.
     </para>
   </section>
   <section>
@@ -116,7 +115,7 @@ cd path_to_install_directory
     </para>
     <para>
       Also, <application>FOMUS</application> automatically tries to register modules by default when it loads into Lisp.
-      Adding the feature <literal>:FOMUS-NOAUTOREG</literal> tells the application to skip this step.  Plugins will then be
+      Adding the feature <literal>:FOMUS-NOAUTOREG</literal> tells the application to skip this step.  Modules will then be
       inaccessible so only <application>FOMUS</application>'s built-in functions can be used.
     </para>
   </section>
