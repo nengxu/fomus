@@ -267,9 +267,8 @@
         <listitem>
           <para>
   	  Designates which module is to be used for determining note spellings.
-  	  <application>FOMUS</application>'s built-in values are <literal>T</literal>, <literal>:KEY1</literal>, <literal>:NOKEY1</literal>.
-  	  <literal>T</literal> represents the default module and is equivalent to <literal>:KEY1</literal>.
-	  Output from <literal>:KEY1</literal> is nearly the same as <literal>:NOKEY1</literal> when no key signatures are specified.
+  	  <application>FOMUS</application>'s built-in values are <literal>T</literal>, <literal>:ACC1</literal>, 
+  	  <literal>T</literal> represents the default module and is equivalent to <literal>:ACC1</literal>.
   	</para>
         </listitem>
       </varlistentry>

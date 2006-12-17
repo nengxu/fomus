@@ -377,19 +377,19 @@ fomus my_data_file.fms]]>
     <title id="interface.chunks.title">Chunks</title>
     <para>
       <application>FOMUS</application> can "splice" together the outputs of two or more runs of the <function><link linkend="function.fomus">FOMUS</link></function>
-      command.  This allows sections or parts to be produced separately and put together into a complete score.  Each section or part 
-      (referred to here as a "chunk") can then be produced with different arguments.  
+      command.  This allows sections or parts ("chunks") to be produced separately and put together later into a complete score.  This allows the user
+      to use different arguments and settings values with different sections of the score.  
     </para>
     <para>
-      Support for this is considered unstable at the moment.  Bugs (there are probably at least a few) will be squashed and more enhancements will be added shortly.
-      <application>FOMUS</application> outputs a chunk object automatically on each successful run.  
-      If no outputs are specified, then <literal>:CHUNK</literal> or <literal>:NONE</literal> must be specified to prevent <application>FOMUS</application>
-      from complaining that there are no outputs.
-      A chunk is actually all of the measures in the processed output that contain anything other than measure rests.
-      Chunks can only be merged together if there are no such overlapping measures.  (At the moment, chunks can't be "relocated" or given an offset--this 
-      obvious features will be added soon.)  <application>FOMUS</application> considers parts with matching 
+      This feature is unstable at the moment.
+      <application>FOMUS</application> outputs a chunk object automatically on each successful run of the <function>FOMUS</function> command.  
+      If no outputs are specified, then <literal>:CHUNK</literal> or <literal>:NONE</literal> must be given as a backend.
+      A chunk is actually all of the measures in the processed output that contain anything other than a measure rest (ie. all of the measures that
+      contain notation).  A chunk can then be either a part, several parts in a range of measures, every odd measure, etc..
+      Chunks can only be merged together if there are no notational overlaps.  (At the moment, chunks can't be "relocated" or given an offset--this 
+      will be added soon.)  <application>FOMUS</application> considers parts with matching 
       <structfield><link linkend="note.partid">PARTID</link></structfield> values to be the same and will match them accordingly.  Chunks may contain
-      parts that aren't in other chunks--<application>FOMUS</application> assembles all unique parts into one score and reorders them again after merging.
+      parts that aren't in other chunks--<application>FOMUS</application> matches and adds parts into one score and reorders them again after merging.
     </para>
     <para>
       There are several ways to tell <application>FOMUS</application> to merge chunks.  Some examples are given here in both
@@ -415,8 +415,8 @@ fomus my_data_file.fms]]>
 fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/myfomusfile_chunk3.fms]]>
 	</programlisting>
       </example>
-      In each case, two or three chunks are either each created from another <function><link linkend="function.fomus">FOMUS</link></function>
-      command or read in from an input file.  The chunks are combined together and output as one file.
+      In each case, two or three chunks are either created from another <function><link linkend="function.fomus">FOMUS</link></function>
+      command or read in from an input file.  The chunks are then combined together and output as one file.
     </para>
   </section>
   <section>
@@ -432,10 +432,12 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
       <para>
         Lists all working <application>FOMUS</application> modules (and additional backends) that can be selected as replacements or additions
 	to <application>FOMUS</application>'s default functionality.
-	An example of a module might be a note-spelling algorithm optimized for some certain type of input,
+	An example of a module might be an alternate note-spelling algorithm (optimized for some certain type of input),
 	a different quantizing algorithm or another backend that extends the number of output formats available.
 	The code for these modules is located in the <filename>modules</filename> subdirectory.  Adding new or replacement functionality to
-	<application>FOMUS</application> is done by dropping files in here. The function only lists modules that compile successfully when the source file is found.
+	<application>FOMUS</application> is done by dropping files in here. 
+	When <application>FOMUS</application> loads it automatically finds all of these files and tries to compile the ones that are out of date.  Only the ones that
+	compile successfully can be used.  A module is loaded on demand only when it is specified and needs to be called.
       </para>
       <para>
         An API documentation for writing modules will be available sometime in the future.  

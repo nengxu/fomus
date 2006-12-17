@@ -17,7 +17,7 @@
 (defparameter *auto-accs-plugin* nil) ; deprecated setting
 (defparameter *auto-accs-module* t) ; setting
 (declaim (inline auto-accs-fun))
-(defun auto-accs-fun () (if (truep *auto-accs-module*) :key1 *auto-accs-module*))
+(defun auto-accs-fun () (if (truep *auto-accs-module*) :acc1 *auto-accs-module*))
 
 (declaim (type boolean *auto-accidentals* *auto-cautionary-accs*))
 (defparameter *auto-accidentals* t) ; setting
@@ -245,7 +245,7 @@
 
 (declaim (inline load-acc-modules))
 (defun load-acc-modules ()
-  (unless (member (auto-accs-fun) '(:nokey1 :key1)) (load-fomus-module (auto-accs-fun))))
+  (unless (eq (auto-accs-fun) :acc1) (load-fomus-module (auto-accs-fun))))
 
 ;; wrapper to bind variable returned by module (informs fomus of which caut. accidentals algorithm to use, probably choice between nokey and key)
 (declaim (special *module-cautacc-fun* *module-postacc-fun*))
@@ -259,13 +259,13 @@
 (defun accidentals (parts timesigs)
   (declare (type list parts timesigs))
   (loop
-   initially (when (eq (auto-accs-fun) :key1) (acc-fakekeysig parts timesigs))
+   initially (when (eq (auto-accs-fun) :acc1) (acc-fakekeysig parts timesigs))
    for e of-type partex in parts
    unless (is-percussion e)
    do (multiple-value-bind (evs rs) (split-list (part-events e) #'notep)
 	(setf (part-events e)
 	      (sort (nconc rs
-			   (if (member (auto-accs-fun) '(:nokey1 :key1))
+			   (if (eq (auto-accs-fun) :acc1)
 			       (if *quartertones*
 				   (acc-nokey evs (if *use-double-accs* +acc-qtones-double+ +acc-qtones-single+)
 					      #'qnotespelling #'nokeyq-notepen #'nokeyq-intscore (part-name e) #'convert-qtone)
@@ -275,18 +275,12 @@
 				 (setf *module-cautacc-fun* r2 *module-postacc-fun* r3)
 				 r1)))
 		    #'sort-offdur)))
-   finally (when (eq (auto-accs-fun) :key1) (acc-delfakes parts))))
+   finally (when (eq (auto-accs-fun) :acc1) (acc-delfakes parts))))
 
 ;; wrapper to set semitones/quartones according to selected accidentals module
 (defmacro set-note-precision (&body forms)
   `(let ((*note-precision* (if *quartertones* 1/2 1)))
     ,@forms))
-;; (defmacro set-note-precision (&body forms)
-;;   `(let ((*note-precision* 
-;; 	  (case (auto-accs-fun)
-;; 	    (:nokey1 (if *quartertones* 1/2 1))
-;; 	    (otherwise 1))))
-;;     ,@forms))
 
 ;; called when no accidentals module is chosen (gives dumb assignments)
 (defun accidentals-generic (parts)
@@ -373,7 +367,7 @@
 					  (sort (loop for m of-type meas in ms nconc (delete-if-not #'notep (copy-list (meas-events m))))
 						#'sort-offdur)))
 			 (mapcar #'part-meas pa))))
-	  (if (eq (auto-accs-fun) :nokey1) (acc-nokey-cautaccs ms)
+	  (if (eq (auto-accs-fun) :acc1) (acc-nokey-cautaccs ms)
 	      (funcall (or *module-cautacc-fun* #'acc-nokey-cautaccs) ms)))))
 
 ;; find user CAUTACC marks and insert note numbers
@@ -412,7 +406,6 @@
 	  unless (is-percussion p) do
 	  (loop with kk = nil
 		for (s ns) of-type (timesig-repl (or timesig-repl null)) on ts
-		for o = (timesig-off s)
 		and ks = (getprop s :keysig)
 		when ks do (setf kk (keysig-accs (rest ks)))
 		do (loop
@@ -499,16 +492,16 @@
   (declare (type list parts))
   (if *acc-throughout-meas*
       (loop
-       initially (when (eq (auto-accs-fun) :key1) (acc-postfakekeysig parts))
+       initially (when (eq (auto-accs-fun) :acc1) (acc-postfakekeysig parts))
        for p of-type partex in parts unless (is-percussion p) do
        (loop for m of-type meas in (part-meas p) do
 	     (multiple-value-bind (evs rs) (split-list (meas-events m) #'notep)
 	       (loop for ev of-type cons in (split-into-groups evs #'event-staff) do
-		     (if (member (auto-accs-fun) '(:key1 :nokey1))
+		     (if (eq (auto-accs-fun) :acc1)
 			 (acc-nokey-postaccs (copy-list (sort ev #'sort-offdur))) 
 			 (funcall (or *module-postacc-fun* #'acc-nokey-postaccs) (copy-list (sort ev #'sort-offdur)))))
 	       (setf (meas-events m) (sort (nconc rs evs) #'sort-offdur))))
-       finally (when (eq (auto-accs-fun) :key1) (acc-postdelfakes parts)))
+       finally (when (eq (auto-accs-fun) :acc1) (acc-postdelfakes parts)))
       (loop for p of-type partex in parts unless (is-percussion p) do
 	    (loop for m of-type meas in (part-meas p) do
 		  (loop for e of-type (or noteex restex) in (meas-events m)

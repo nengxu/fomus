@@ -1043,7 +1043,7 @@
 
 (defparameter *fomus-modules* (make-hash-table :test 'eq))
 (defparameter +module-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
-(defparameter +module-defaults+ '((:key1 :nokey1) :voices1 :staves/clefs1 :split1 :quantize1-rmse nil))
+(defparameter +module-defaults+ '(:acc1 :voices1 :staves/clefs1 :split1 :quantize1-rmse nil))
 
 (defun compile-module-if-needed (lisp-file fasl-file keyname)
   "Compile LISP-FILE into FASL-FILE, if needed. Returns FASL-FILE or NIL, if nothing happened."

@@ -870,9 +870,9 @@
   <section>
     <title>CHUNK</title>
     <para>
-      When no other outputs are specified but a "chunk" is desired (see <link linkend="interface.chunks" endterm="interface.chunks.title"/>), 
-      this keyword tells <application>FOMUS</application> to go ahead and process the input without complaining.  The <literal>:NONE</literal>
-      keyword can also be used.
+      (See <link linkend="interface.chunks" endterm="interface.chunks.title"/>.)
+      This keyword tells <application>FOMUS</application> to process the input and output a chunk.  
+      Use it when there are no other backends specified (<application>FOMUS</application> complains otherwise).  The <literal>:NONE</literal> keyword can also be used.
     </para>
   </section>
 </chapter>
