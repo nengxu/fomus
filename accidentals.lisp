@@ -406,7 +406,7 @@
 	  unless (is-percussion p) do
 	  (loop with kk = nil
 		for (s ns) of-type (timesig-repl (or timesig-repl null)) on ts
-		and ks = (getprop s :keysig)
+		for ks = (getprop s :keysig)
 		when ks do (setf kk (keysig-accs (rest ks)))
 		do (loop
 		    #-clisp while #-clisp (if ns (< (event-off (first evs)) (timesig-off ns)) evs)

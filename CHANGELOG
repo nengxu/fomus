@@ -1,3 +1,7 @@
+v0.2.16
+	Efficiency tweaks
+	Fixed a dumb error in accidentals created in v0.2.15
+
 v0.2.15
 	Updated install.sh script
 

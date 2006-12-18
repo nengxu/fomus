@@ -1,20 +1,10 @@
 ;; -*-lisp-*-
 ;; ASDF System for FOMUS
 
-;; ;;; check for iterate
-;; #+fomus-usedeps
-;; (eval-when (:load-toplevel :compile-toplevel :execute)
-;;   (handler-case
-;;       (asdf:oos 'asdf:load-op '#:iterate)
-;;     (missing-component ()
-;;       nil))
-;;   (unless (member "ITERATE" *modules* :test #'equal)
-;;     (pushnew :fomus-noiterate *features*)))
-
 (asdf:defsystem "fomus"
   
   :description "Lisp music notation formatter"
-  :version "0.2.15"
+  :version "0.2.16"
   :author "David Psenicka"
   :licence "LLGPL"
 

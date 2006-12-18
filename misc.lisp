@@ -446,34 +446,60 @@
 ;; returns: the new list
 (defun merge-linear (list fun)
   (declare (type list list) (type (function (t t) t) fun))
-  (when list
-    (loop
-     with e1 = (first list)
-     #-clisp while #-clisp list
-     for e2 in #-clisp (rest list) #+clisp (when list (rest list))
-     for m = (funcall fun e1 e2)
-     if m do (setf e1 m)
-     else collect e1 into r and do (setf e1 e2)
-     finally (return (nconc r (list e1))))))
+  (if (cdr list)
+      (loop
+       with e1 = (first list)
+       for (e2 . re) on (rest list)
+       for m = (funcall fun e1 e2)
+       if m do (setf e1 m)
+       else collect e1 into r and do (setf e1 e2)
+       unless re collect e1 into r and do (return r))
+      list))
+;; (defun merge-linear (list fun)
+;;   (declare (type list list) (type (function (t t) t) fun))
+;;   (when list
+;;     (loop
+;;      with e1 = (first list)
+;;      #-clisp while #-clisp list
+;;      for e2 in #-clisp (rest list) #+clisp (when list (rest list))
+;;      for m = (funcall fun e1 e2)
+;;      if m do (setf e1 m)
+;;      else collect e1 into r and do (setf e1 e2)
+;;      finally (return (nconc r (list e1))))))
 
 ;; merges all items in a list into single items, depending on return value of fun
 ;; fun = function accepting two items, returning a merged item or nil if they aren't to be merged
 ;; call-rev = t if fun is also to be called with items in reverse order (up to two calls are made with the same two items)
 ;; returns: the new list
+(defstruct (mergestr (:predicate nil) (:copier nil)) el)
 (defun merge-all (list fun &key (call-rev t))
   (declare (type list list) (type (function (t t) t) fun) (type boolean call-rev))
-  (when list
-    (loop
-       with x = (copy-list list) with l = (last-element x)
-       until (eq (first x) l)
-       do (let* ((y (first x))
-		 (z (delete-if (lambda (e)
-				 (let ((s (if call-rev (or (funcall fun y e) (funcall fun e y))
-					      (funcall fun y e))))
-				   (when s (setf y s l s))))
-			       (rest x))))
-	    (setf x (nconc z (list y))))
-       finally (return x))))
+  (if (rest list)
+      (loop
+       with x = (mapcar (lambda (x) (make-mergestr :el x)) list) with l of-type mergestr = (last-element x) and c = (first x)
+       while (and (not (eq c l)) (rest x)) do
+       (setf x (loop for (e . er) of-type (mergestr . list) on (rest x)
+		     for m = (if call-rev (or (funcall fun (mergestr-el c) (mergestr-el e)) (funcall fun (mergestr-el e) (mergestr-el c)))
+				 (funcall fun (mergestr-el c) (mergestr-el e)))
+		     if m do (let ((ms (make-mergestr :el m))) (setf c ms l ms)) else collect e into rt
+		     when (or (not er) (eq e l)) nconc er into rt and collect c into rt and do (return rt)))
+       (setf c (first x))		; c = object being combined
+       finally (return (mapcar #'mergestr-el x)))
+      list))
+;; (defun merge-all (list fun &key (call-rev t))
+;;   (declare (type list list) (type (function (t t) t) fun) (type boolean call-rev))
+;;   (when list
+;;     (loop
+;;        with x = (copy-list list) with l = (last-element x)
+;;        until (eq (first x) l)
+;;        do (let* ((y (first x))
+;; 		 (z (delete-if (lambda (e)
+;; 				 (let ((s (if call-rev (or (funcall fun y e) (funcall fun e y))
+;; 					      (funcall fun y e))))
+;; 				   (when s (setf y s l s))))
+;; 			       (rest x))))
+;; 	    (setf x (nconc z (list y))))
+;;        finally (return x))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; PROGRESS PRINTING
