@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Text File Interface</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch03.html" title="Chapter&#160;3.&#160;Usage" /><link rel="prev" href="ch03s03.html" title="Interface 2" /><link rel="next" href="ch03s05.html" title="Common Music Interface" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Text File Interface</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch03s03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;3.&#160;Usage</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch03s05.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="interface.text"></a>Text File Interface</h2></div></div></div><p>You may also create a text file where each line of the file executes one of the commands listed in 
     <a href="ch03s03.html" title="Interface 2">Interface 2</a>.  A simple example file is given below:
-      </p><div class="example"><a id="id319170"></a><p class="title"><b>Example&#160;3.7.&#160;FOMUS Text Input File</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id319169"></a><p class="title"><b>Example&#160;3.7.&#160;FOMUS Text Input File</b></p><div class="example-contents"><pre class="programlisting">
 
 init :output (:lilypond :view t)
 (init
@@ -46,11 +46,11 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)
       </p><p>
       To process this file, use the <code class="function">FOMUS</code> command as follows:
       </p><p><code class="function">(<a id="function.fomus2"></a>FOMUS <strong class="userinput"><code>filename</code></strong> &amp;key <strong class="userinput"><code>value</code></strong> ...)</code></p><p>
-      </p><div class="example"><a id="id319319"></a><p class="title"><b>Example&#160;3.8.&#160;FOMUS Usage 7</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id319318"></a><p class="title"><b>Example&#160;3.8.&#160;FOMUS Usage 7</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus "/directory/file.fms")
 	</pre></div></div><p><br class="example-break" />
-      </p><div class="example"><a id="id319333"></a><p class="title"><b>Example&#160;3.9.&#160;FOMUS Usage 8</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id319332"></a><p class="title"><b>Example&#160;3.9.&#160;FOMUS Usage 8</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus "/directory/file.fms" :output :cmn)
 	</pre></div></div><p><br class="example-break" />
@@ -64,7 +64,7 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)
       objects (and <code class="classname"><a href="ch04s05.html#class.keysig">KEYSIG</a></code> objects when implemented), 
       and a list of keyword/argument pairs representing the keywords and values found in the <code class="literal">INIT</code> lines.
       The following example show how you can edit and resave data using these files:
-      </p><div class="example"><a id="id319433"></a><p class="title"><b>Example&#160;3.10.&#160;FOMUS Usage 9</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id319431"></a><p class="title"><b>Example&#160;3.10.&#160;FOMUS Usage 9</b></p><div class="example-contents"><pre class="programlisting">
 
 (multiple-value-bind (parts events globals args)
     (fomus-file "/directory/myfomusfile.fms")

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Lisp Examples</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch09.html" title="Chapter&#160;9.&#160;Examples" /><link rel="prev" href="ch09.html" title="Chapter&#160;9.&#160;Examples" /><link rel="next" href="ch09s03.html" title="Common Music Examples" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Lisp Examples</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch09.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;9.&#160;Examples</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch09s03.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id359591"></a>Lisp Examples</h2></div></div></div><div class="example"><a id="id359597"></a><p class="title"><b>Example&#160;9.1.&#160;Simple Example</b></p><div class="example-contents"><pre class="programlisting">
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Lisp Examples</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch09.html" title="Chapter&#160;9.&#160;Examples" /><link rel="prev" href="ch09.html" title="Chapter&#160;9.&#160;Examples" /><link rel="next" href="ch09s03.html" title="Common Music Examples" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Lisp Examples</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch09.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;9.&#160;Examples</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch09s03.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id359590"></a>Lisp Examples</h2></div></div></div><div class="example"><a id="id359596"></a><p class="title"><b>Example&#160;9.1.&#160;Simple Example</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -15,7 +15,7 @@
     collect (make-note :off off
 		       :dur (if (&lt; off 10) 1/2 1)
 		       :note (+ 48 (random 25)))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_simp_ex.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359902"></a><p class="title"><b>Example&#160;9.2.&#160;Staccato and Accent Marks</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_simp_ex.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359901"></a><p class="title"><b>Example&#160;9.2.&#160;Staccato and Accent Marks</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -34,7 +34,7 @@
 				(0 nil)
 				(1 '(:staccato))
 				(2 '(:accent))))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_accents.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359941"></a><p class="title"><b>Example&#160;9.3.&#160;Quartertones</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_accents.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359940"></a><p class="title"><b>Example&#160;9.3.&#160;Quartertones</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -50,7 +50,7 @@
     collect (make-note :off off
 		       :dur (if (&lt; off 10) 1/2 1)
 		       :note (+ 70 (/ (random 4) 2)))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_qtones.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359979"></a><p class="title"><b>Example&#160;9.4.&#160;Polyphony with Slurs</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_qtones.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359978"></a><p class="title"><b>Example&#160;9.4.&#160;Polyphony with Slurs</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -70,7 +70,7 @@
 				   :voice v
 				   :marks (when (= (random 3) 0)
 					    '(:startslur-))))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_poly_slurs.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360018"></a><p class="title"><b>Example&#160;9.5.&#160;Piano Chords</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_poly_slurs.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360017"></a><p class="title"><b>Example&#160;9.5.&#160;Piano Chords</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -89,7 +89,7 @@
 				   :dur (if (&lt; off 10) 1/2 1)
 				   :note (+ 48 (random 25))
 				   :voice '(1 2)))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_pno_chords.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360057"></a><p class="title"><b>Example&#160;9.6.&#160;Quantizing/Chords</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_pno_chords.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360055"></a><p class="title"><b>Example&#160;9.6.&#160;Quantizing/Chords</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -103,7 +103,7 @@
 	 for off = (random 30.0)
 	 and dur = (1+ (random 3.0))
 	 collect (make-note :off off :dur dur :note (+ 60 (random 25)))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_chords.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360094"></a><p class="title"><b>Example&#160;9.7.&#160;Mark Objects</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_chords.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360093"></a><p class="title"><b>Example&#160;9.7.&#160;Mark Objects</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -124,7 +124,7 @@
 	       collect (make-mark :partid (case (random 2) (0 :flute) (1 :tuba))
 				  :off (random 20.0)
 				  :marks '(:accent))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_mark_objs.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360136"></a><p class="title"><b>Example&#160;9.8.&#160;Percussion 1</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_mark_objs.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360135"></a><p class="title"><b>Example&#160;9.8.&#160;Percussion 1</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -138,7 +138,7 @@
 				   :note (case (random 2)
 					   (0 :woodblock)
 					   (1 :snaredrum)))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_perc1.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360176"></a><p class="title"><b>Example&#160;9.9.&#160;Percussion 2</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_perc1.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360174"></a><p class="title"><b>Example&#160;9.9.&#160;Percussion 2</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -152,7 +152,7 @@
 				   :note (case (random 2)
 					   (0 :woodblock)
 					   (1 :snaredrum)))))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_perc2.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360216"></a><p class="title"><b>Example&#160;9.10.&#160;Percussion with Automatic Durations</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_perc2.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360214"></a><p class="title"><b>Example&#160;9.10.&#160;Percussion with Automatic Durations</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -163,7 +163,7 @@
 	  :events (loop for o from 0 to 40 by 1/2 when (= (random 2) 0) collect
 			(make-note :off o
 				   :note :snare-drum)))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_perc_autodurs.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360254"></a><p class="title"><b>Example&#160;9.11.&#160;Semi-Orchestra Score</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_perc_autodurs.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360252"></a><p class="title"><b>Example&#160;9.11.&#160;Semi-Orchestra Score</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -208,7 +208,7 @@
 	  :name "Tuba"
 	  :instr :tuba
 	  :events (list (make-note :off 0 :dur 1 :note 36)))))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_orch_sco.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359864"></a><p class="title"><b>Example&#160;9.12.&#160;Key Signatures</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_orch_sco.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id359863"></a><p class="title"><b>Example&#160;9.12.&#160;Key Signatures</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)

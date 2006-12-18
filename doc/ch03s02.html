@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Interface 1</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch03.html" title="Chapter&#160;3.&#160;Usage" /><link rel="prev" href="ch03.html" title="Chapter&#160;3.&#160;Usage" /><link rel="next" href="ch03s03.html" title="Interface 2" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Interface 1</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;3.&#160;Usage</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch03s03.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id318191"></a>Interface 1</h2></div></div></div><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Interface 1</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch03.html" title="Chapter&#160;3.&#160;Usage" /><link rel="prev" href="ch03.html" title="Chapter&#160;3.&#160;Usage" /><link rel="next" href="ch03s03.html" title="Interface 2" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Interface 1</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;3.&#160;Usage</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch03s03.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id318190"></a>Interface 1</h2></div></div></div><p>
       The first approach involves creating all the necessary objects and assembling lists, then calling <span class="application">FOMUS</span>'s
       main function to process everything.
       The main function is <code class="function">FOMUS</code> and has the following format:
@@ -14,7 +14,7 @@
       <code class="classname"><a href="ch04s07.html#class.rest">REST</a></code> and other objects that directly affect what appears on the score.
       See the individual documentation for these for an explanation of how to use them.
       A few examples are given below (illustrations are "raw" output processed with <span class="application">LilyPond</span> version 2.4.2):
-      </p><div class="example"><a id="id318338"></a><p class="title"><b>Example&#160;3.1.&#160;FOMUS Usage 1</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id318337"></a><p class="title"><b>Example&#160;3.1.&#160;FOMUS Usage 1</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -33,7 +33,7 @@
 		       :marks (when (&lt;= (random 3) 0)
 				'(:staccato)))))))
 	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="usage_ex1.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><p><br class="example-break" />
-      </p><div class="example"><a id="id318377"></a><p class="title"><b>Example&#160;3.2.&#160;FOMUS Usage 2</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id318375"></a><p class="title"><b>Example&#160;3.2.&#160;FOMUS Usage 2</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -56,7 +56,7 @@
 					:dur dur
 					:note (+ basenote (random 25))))))))
 	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="usage_ex2.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><p><br class="example-break" />
-      </p><div class="example"><a id="id318415"></a><p class="title"><b>Example&#160;3.3.&#160;FOMUS Usage 3</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id318414"></a><p class="title"><b>Example&#160;3.3.&#160;FOMUS Usage 3</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus
  :output '(:lilypond :view t)
@@ -90,7 +90,7 @@
     </p><p>
       All of these settings are also present as special variables (see chapter <a href="ch05.html" title="Chapter&#160;5.&#160;Settings">Settings</a>).
       The following example accomplishes exactly the same thing as example <a href="ch03s02.html#example.fomus.usage1">FOMUS Usage 1</a> above:
-      </p><div class="example"><a id="id318478"></a><p class="title"><b>Example&#160;3.4.&#160;FOMUS Usage 4</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="id318477"></a><p class="title"><b>Example&#160;3.4.&#160;FOMUS Usage 4</b></p><div class="example-contents"><pre class="programlisting">
 
 (setf *output* '(:lilypond :view t))
 (fomus

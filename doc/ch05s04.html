@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Alphabetical Listing of Settings</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch05.html" title="Chapter&#160;5.&#160;Settings" /><link rel="prev" href="ch05s03.html" title="Complete FOMUS Settings" /><link rel="next" href="ch06.html" title="Chapter&#160;6.&#160;Marks" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Alphabetical Listing of Settings</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch05s03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;5.&#160;Settings</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch06.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id335368"></a>Alphabetical Listing of Settings</h2></div></div></div><div class="variablelist"><dl><dt><span class="term"><code class="varname"><a id="setting.acc.caut.acc.dist"></a>:ACC-CAUT-ACC-DIST</code></span></dt><dd><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Alphabetical Listing of Settings</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch05.html" title="Chapter&#160;5.&#160;Settings" /><link rel="prev" href="ch05s03.html" title="Complete FOMUS Settings" /><link rel="next" href="ch06.html" title="Chapter&#160;6.&#160;Marks" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Alphabetical Listing of Settings</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch05s03.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;5.&#160;Settings</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch06.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id335366"></a>Alphabetical Listing of Settings</h2></div></div></div><div class="variablelist"><dl><dt><span class="term"><code class="varname"><a id="setting.acc.caut.acc.dist"></a>:ACC-CAUT-ACC-DIST</code></span></dt><dd><p>
   	    This number represents the maximum distance a cautionary accidental may be from the note that causes it.
   	  </p></dd><dt><span class="term"><code class="varname"><a id="setting.acc.throughout.meas"></a>:ACC-THROUGHOUT-MEAS</code></span></dt><dd><p>
   	  If set to <code class="literal">T</code>, accidentals carry to the end of the measure.
@@ -183,7 +183,7 @@
   	  Entries in this list replace entries in <span class="application">FOMUS</span>'s own default table if they exist.
   	  Each member of this list is itself a list, containing an integer or ratio lookup value as the first element followed by one or more lists of integers/ratios
   	  that each add up to the first number.
-    	  </p><div class="example"><a id="id337123"></a><p class="title"><b>Example&#160;5.1.&#160;DEFAULT-MEAS-DIVS Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id337121"></a><p class="title"><b>Example&#160;5.1.&#160;DEFAULT-MEAS-DIVS Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :default-meas-divs
   '((3 (2 1) (1 2))
@@ -208,7 +208,7 @@
   	  Entries in this replace entries in <span class="application">FOMUS</span>'s own default table if they exist.
   	  Each member of this list is itself a list, containing an integer lookup value as the first element followed by one or more lists of integers
   	  that each add up to the first number.
-    	  </p><div class="example"><a id="id337227"></a><p class="title"><b>Example&#160;5.2.&#160;DEFAULT-TUPLET-DIVS Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id337226"></a><p class="title"><b>Example&#160;5.2.&#160;DEFAULT-TUPLET-DIVS Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :default-meas-divs
   '((3 (2 1) (1 2))
@@ -231,7 +231,7 @@
 	    appropriate for the context it is in (a power of 2 of the actual number of durational units).  
 	    Thus, several entries for septuplets might exist: <code class="literal">'(7 4)</code> for the majority of cases and <code class="literal">'(7 5)</code> for 
 	    cases where, for example, 7 eighth notes might span an entire 5/8 measure or a section of a larger tuplet.
-    	  </p><div class="example"><a id="id337331"></a><p class="title"><b>Example&#160;5.3.&#160;DEFAULT-TUPLETS Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id337330"></a><p class="title"><b>Example&#160;5.3.&#160;DEFAULT-TUPLETS Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :default-meas-divs '((3 2) (6 5) (5 4) (7 4) (7 5) (13 8) (13 10))
               </pre></div></div><p><br class="example-break" />
@@ -266,11 +266,11 @@
   	  A group type is one of the symbols <code class="literal">:GROUP</code>, <code class="literal">:GRANDSTAFF</code> or <code class="literal">:CHOIRGROUP</code>.
   	</p><p>
   	  A look at the following examples might make this clearer:
-    	  </p><div class="example"><a id="id337563"></a><p class="title"><b>Example&#160;5.4.&#160;ENSEMBLE-TYPE Setting 1</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id337562"></a><p class="title"><b>Example&#160;5.4.&#160;ENSEMBLE-TYPE Setting 1</b></p><div class="example-contents"><pre class="programlisting">
 
 :ensemble-type :orchestra
               </pre></div></div><p><br class="example-break" />
-    	  </p><div class="example"><a id="id337577"></a><p class="title"><b>Example&#160;5.5.&#160;ENSEMBLE-TYPE Setting 2</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id337576"></a><p class="title"><b>Example&#160;5.5.&#160;ENSEMBLE-TYPE Setting 2</b></p><div class="example-contents"><pre class="programlisting">
 
 :ensemble-type
   '((:my-orchestra
@@ -305,7 +305,7 @@
   	  This string represents the path and filename to which <span class="application">FOMUS</span> adds an appropriate extension when it saves
   	  output in various formats.
   	  This setting in combination with the <code class="varname"><a href="ch05s04.html#setting.output">OUTPUT</a></code> setting determines the actual output filenames.
-    	  </p><div class="example"><a id="id337763"></a><p class="title"><b>Example&#160;5.6.&#160;FILENAME Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id337762"></a><p class="title"><b>Example&#160;5.6.&#160;FILENAME Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :filename "path_to_output_directory/myoutput"
               </pre></div></div><p><br class="example-break" />
@@ -355,7 +355,7 @@
   	  A group type is one of the symbols <code class="literal">:GROUP</code>, <code class="literal">:GRANDSTAFF</code> or <code class="literal">:CHOIRGROUP</code>.
   	</p><p>
   	  A look at the following example might make this clearer:
-    	  </p><div class="example"><a id="id338083"></a><p class="title"><b>Example&#160;5.7.&#160;INSTR-GROUPS Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id338082"></a><p class="title"><b>Example&#160;5.7.&#160;INSTR-GROUPS Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :instr-groups
   '((:orchestra
@@ -384,7 +384,7 @@
 	  existing default values (see the <em class="structfield"><code><a href="ch04s02.html#part.instr">INSTR</a></code></em> slot in the
 	  <code class="classname"><a href="ch04s02.html#class.part">PART</a></code> object
 	  and <a href="ch04s02.html#example.part.instr.slot.setting">PART-INSTR Slot Setting</a> for an example of this).
-    	  </p><div class="example"><a id="id338187"></a><p class="title"><b>Example&#160;5.8.&#160;INSTRUMENT Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id338186"></a><p class="title"><b>Example&#160;5.8.&#160;INSTRUMENT Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :instrument
   (list (make-instr :recorder :clefs :treble)
@@ -507,15 +507,15 @@
 	  <code class="literal">:MUSICXML-SIBELIUS</code>, <code class="literal">:MUSICXML-FINALE</code>, <code class="literal">:CMN</code>, <code class="literal">:LILYPOND</code> and <code class="literal">:MIDI</code>.
   	  More information on these is given in <a href="ch07.html" title="Chapter&#160;7.&#160;Outputs">Outputs</a>.
   	  The following are examples of valid output specifications:
-  	  </p><div class="example"><a id="id339163"></a><p class="title"><b>Example&#160;5.9.&#160;OUTPUT Setting 1</b></p><div class="example-contents"><pre class="programlisting">
+  	  </p><div class="example"><a id="id339162"></a><p class="title"><b>Example&#160;5.9.&#160;OUTPUT Setting 1</b></p><div class="example-contents"><pre class="programlisting">
 
 :output '(:data (:lilypond :view t))
               </pre></div></div><p><br class="example-break" />
-  	  </p><div class="example"><a id="id339177"></a><p class="title"><b>Example&#160;5.10.&#160;OUTPUT Setting 2</b></p><div class="example-contents"><pre class="programlisting">
+  	  </p><div class="example"><a id="id339176"></a><p class="title"><b>Example&#160;5.10.&#160;OUTPUT Setting 2</b></p><div class="example-contents"><pre class="programlisting">
 
 :output '(:lilypond :filename "myfile.ly" :view nil)
               </pre></div></div><p><br class="example-break" />
-  	  </p><div class="example"><a id="id339190"></a><p class="title"><b>Example&#160;5.11.&#160;OUTPUT Setting 3</b></p><div class="example-contents"><pre class="programlisting">
+  	  </p><div class="example"><a id="id339189"></a><p class="title"><b>Example&#160;5.11.&#160;OUTPUT Setting 3</b></p><div class="example-contents"><pre class="programlisting">
 
 :output :cmn
               </pre></div></div><p><br class="example-break" />
@@ -533,7 +533,7 @@
 	  If a list is specified, it contains a symbol specifying a default percussion instrument followed by keyword/argument pairs indicating slot values that replace 
 	  existing default values (see the <em class="structfield"><code><a href="ch04s09.html#instr.percs">PERCS</a></code></em> slot in the
 	  <code class="classname"><a href="ch04s09.html#struct.instr">INSTR</a></code> object for an example of this).          
-    	  </p><div class="example"><a id="id339296"></a><p class="title"><b>Example&#160;5.12.&#160;PERCUSSION Setting</b></p><div class="example-contents"><pre class="programlisting">
+    	  </p><div class="example"><a id="id339295"></a><p class="title"><b>Example&#160;5.12.&#160;PERCUSSION Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 :instrument
   (list (make-perc :anvil :note -3 :voice 2 :midinote-ex 79)
