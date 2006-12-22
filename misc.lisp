@@ -10,16 +10,6 @@
 (in-package :fomus)
 (compile-settings)
 
-;; Note on dependencies:
-
-;; I'm trying to avoid dependencies for various reasons:
-;; 1. many people who aren't lisp gurus will not have the time/patience to figure out where to find
-;;    required dependencies, how to load them in, etc..  many people could care less
-;;    about ASDF, they just want it to compile and work
-;; 2. if a dependency breaks (in any one of the lisp environments that this program should run in),
-;;    the whole program breaks--it's hard enough just to keep it running in 5 or 6 different lisps
-;; 3. i don't want to compile/load a whole package if i only need 1 or 2 functions
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GENERAL
 
@@ -310,19 +300,19 @@
 (declaim (inline or-list and-list min-list max-list))
 (defun or-list (list)
   (declare (type list list))
-  (some #'identity list)) ; if list = nil, returns nil
+  (loop for e in list thereis e)) ; if list = nil, returns nil
 (defun and-list (list)
   (declare (type list list))
-  (every #'identity list)) ; if list = nil, returns t
+  (loop for e in list always e)) ; if list = nil, returns t
 (defun min-list (list)
   (declare (type list list))
-  (when list (mloop for e in list minimize e)))
+  (when list (mloop for e of-type real in list minimize e)))
 (defun max-list (list)
   (declare (type list list))
-  (when list (mloop for e in list maximize e)))
+  (when list (mloop for e of-type real in list maximize e)))
 (defun ave-list (nums)
   (declare (type list nums))
-  (loop for e in nums and n from 1 sum e into s finally (return (/ s n))))
+  (loop for e of-type real in nums and n from 1 sum e into s finally (return (/ s n))))
 
 ;; utility math functions
 (declaim (inline roundint diff roundto))
@@ -363,7 +353,7 @@
 ;; funs = 1 or more predicate functions that return t if list item belongs in list 1, list 2, etc..
 ;; returns: (number of funs + 1) lists returned as separate values (last value represents list of no matches)
 (defun split-list (list &rest funs)
-  (declare (type list list funs))
+  (declare (type list list))
   (loop
    with r = (loop repeat (1+ (length funs)) collect (cons nil nil))
    with re = (copy-list r)
@@ -384,8 +374,9 @@
    with r = (loop repeat (1+ (length vals)) collect (cons nil nil))
    with re = (copy-list r)
    for e in list
-   do (loop for a on r for v in vals
-	    when (funcall test (funcall key e) v) do (setf (car a) (setf (cdar a) (list e))) (return)
+   do (loop with k = (funcall key e)
+	    for a on r for v in vals
+	    when (funcall test k v) do (setf (car a) (setf (cdar a) (list e))) (return)
 	    finally (setf (car a) (setf (cdar a) (list e))))
    finally (return (mapcar #'rest re))))
 
@@ -471,20 +462,19 @@
 ;; fun = function accepting two items, returning a merged item or nil if they aren't to be merged
 ;; call-rev = t if fun is also to be called with items in reverse order (up to two calls are made with the same two items)
 ;; returns: the new list
-(defstruct (mergestr (:predicate nil) (:copier nil)) el)
 (defun merge-all (list fun &key (call-rev t))
   (declare (type list list) (type (function (t t) t) fun) (type boolean call-rev))
   (if (rest list)
       (loop
-       with x = (mapcar (lambda (x) (make-mergestr :el x)) list) with l of-type mergestr = (last-element x) and c = (first x)
+       with x = (mapcar #'list list) with l of-type cons = (last-element x) and c of-type cons = (first x)
        while (and (not (eq c l)) (rest x)) do
-       (setf x (loop for (e . er) of-type (mergestr . list) on (rest x)
-		     for m = (if call-rev (or (funcall fun (mergestr-el c) (mergestr-el e)) (funcall fun (mergestr-el e) (mergestr-el c)))
-				 (funcall fun (mergestr-el c) (mergestr-el e)))
-		     if m do (let ((ms (make-mergestr :el m))) (setf c ms l ms)) else collect e into rt
+       (setf x (loop for (e . er) of-type (cons . list) on (rest x)
+		     for m = (if call-rev (or (funcall fun (car c) (car e)) (funcall fun (car e) (car c)))
+				 (funcall fun (car c) (car e)))
+		     if m do (let ((ms (list m))) (setf c ms l ms)) else collect e into rt
 		     when (or (not er) (eq e l)) nconc er into rt and collect c into rt and do (return rt)))
        (setf c (first x))		; c = object being combined
-       finally (return (mapcar #'mergestr-el x)))
+       finally (return (mapcar #'car x)))
       list))
 ;; (defun merge-all (list fun &key (call-rev t))
 ;;   (declare (type list list) (type (function (t t) t) fun) (type boolean call-rev))

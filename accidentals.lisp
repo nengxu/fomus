@@ -409,8 +409,8 @@
 		for ks = (getprop s :keysig)
 		when ks do (setf kk (keysig-accs (rest ks)))
 		do (loop
-		    #-clisp while #-clisp (if ns (< (event-off (first evs)) (timesig-off ns)) evs)
-		    for e of-type (or noteex restex) = #-clisp (pop evs) #+clisp (if (if ns (< (event-off (first evs)) (timesig-off ns)) evs) (pop evs) (return))
+		    #-clisp while #-clisp (if ns (when evs (< (event-off (first evs)) (timesig-off ns))) evs)
+		    for e of-type (or noteex restex) = #-clisp (pop evs) #+clisp (if (if ns (when evs (< (event-off (first evs)) (timesig-off ns))) evs) (pop evs) (return))
 		    for (n . a) of-type ((or (integer 0) null) . (or (integer -1 1) null)) = (find (event-note* e) kk :key #'car)
 		    when n do (push (make-instance 'noteex :beamlt 'f :note (list n a) :off (event-off e) :dur (cons 1 lg))
 				    (part-events p))))
