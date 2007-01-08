@@ -430,14 +430,14 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
     <section>
       <para><function>(<anchor id="function.list.fomus.modules"/>LIST-FOMUS-MODULES &amp;rest <userinput>type</userinput>)</function></para>
       <para>
-        Lists all working <application>FOMUS</application> modules (and additional backends) that can be selected as replacements or additions
-	to <application>FOMUS</application>'s default functionality.
-	An example of a module might be an alternate note-spelling algorithm (optimized for some certain type of input),
+        Lists all working <application>FOMUS</application> modules and additional backends that can be selected as replacements or additions
+	to <application>FOMUS</application>'s own functionality.
+	An example of a module might be an alternate note-spelling algorithm,
 	a different quantizing algorithm or another backend that extends the number of output formats available.
 	The code for these modules is located in the <filename>modules</filename> subdirectory.  Adding new or replacement functionality to
 	<application>FOMUS</application> is done by dropping files in here. 
 	When <application>FOMUS</application> loads it automatically finds all of these files and tries to compile the ones that are out of date.  Only the ones that
-	compile successfully can be used.  A module is loaded on demand only when it is specified and needs to be called.
+	compile successfully are used, and modules are loaded only on demand when they are called.
       </para>
       <para>
         An API documentation for writing modules will be available sometime in the future.  

@@ -1,3 +1,6 @@
+v0.2.18
+	Eliminated annoying messages
+
 v0.2.17
 	Fixed another dumb error in accidentals (choked on empty parts)
 

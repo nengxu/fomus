@@ -14,7 +14,7 @@
    Settings that end in <literal>-MODULE</literal> allow switching and replacing various sections of <application>FOMUS</application>
    with other algorithms.  The code for these modules is located in the <filename>modules</filename> subdirectory.  Adding new or replacement functionality to
    <application>FOMUS</application> is done by dropping module files in here.
-   The documentation here only lists built-in options (at the moment there is only one choice for most of these)--a 
+   The documentation here only describes built-in functionality--a 
    complete list of modules to choose from may be obtained with the 
    <function><link linkend="function.list.fomus.modules">LIST-FOMUS-MODULES</link></function> function.
   </para>
