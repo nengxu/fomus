@@ -13,15 +13,15 @@
 <book>
   <bookinfo>
     <title>FOMUS Documentation</title>
-    <releaseinfo>Version 0.2.16</releaseinfo>
-    <date>12/18/2006</date>
+    <releaseinfo>Version 0.2.18</releaseinfo>
+    <date>1/9/2007</date>
     <author>
       <firstname>David</firstname>
       <surname>Psenicka</surname>
       <email>dpsenick(at)uiuc(dot)edu</email>
     </author>
     <legalnotice>
-      <para>Copyright &copy; 2005, 2006 David Psenicka, All Rights Reserved</para>
+      <para>Copyright &copy; 2005, 2006, 2007 David Psenicka, All Rights Reserved</para>
       <para>See file "COPYING" for terms of use and distribution.</para>
     </legalnotice>
   </bookinfo>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Structure INSTR</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch04.html" title="Chapter&#160;4.&#160;Objects" /><link rel="prev" href="ch04s08.html" title="Class MARK" /><link rel="next" href="ch04s10.html" title="Structure PERC" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Structure INSTR</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04s08.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;4.&#160;Objects</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch04s10.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id327244"></a>Structure INSTR</h2></div></div></div><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Structure INSTR</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch04.html" title="Chapter&#160;4.&#160;Objects" /><link rel="prev" href="ch04s08.html" title="Class MARK" /><link rel="next" href="ch04s10.html" title="Structure PERC" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Structure INSTR</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04s08.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;4.&#160;Objects</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch04s10.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id327233"></a>Structure INSTR</h2></div></div></div><p>
       An <code class="classname"><a href="ch04s09.html#struct.instr">INSTR</a></code> structure contain instrument-specific data that's used to inform <span class="application">FOMUS</span>
       on various aspects of notation.
       Instruments are specified in the <em class="structfield"><code><a href="ch04s02.html#part.instr">INSTR</a></code></em>
@@ -78,7 +78,7 @@
 	      followed by one of the two symbols <code class="literal">:UP</code> or <code class="literal">:DN</code>
 	      and ended by an integer specifying the number of ledger lines.
 	      An example illustrates this data structure.
-       	    </p><div class="example"><a id="id327866"></a><p class="title"><b>Example&#160;4.10.&#160;INSTR-CLEFLEGLS Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
+       	    </p><div class="example"><a id="id327855"></a><p class="title"><b>Example&#160;4.10.&#160;INSTR-CLEFLEGLS Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 '(2 (:bass :up 3) (:tenor :down 3))
                 </pre></div></div><p><br class="example-break" />	      
@@ -101,7 +101,7 @@
 	      Lists contain a symbol lookup value followed by keyword-argument pairs signifying values to replace in the predefined percussion table--it will
 	      usually be necessary to use a list instead of a symbol since the <em class="structfield"><code><a href="ch04s10.html#perc.note">NOTE</a></code></em> and
 	      <em class="structfield"><code><a href="ch04s10.html#perc.voice">VOICE</a></code></em> slots are empty in <span class="application">FOMUS</span>'s table.
-       	    </p><div class="example"><a id="id328032"></a><p class="title"><b>Example&#160;4.11.&#160;INSTR-PERCS Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
+       	    </p><div class="example"><a id="id328022"></a><p class="title"><b>Example&#160;4.11.&#160;INSTR-PERCS Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 (list '(:low-tom :note 0 :voice 1) '(:high-tom :note 4 :voice 1)
       (make-perc :anvil :note -3 :voice 2 :midinote-ex 79))
