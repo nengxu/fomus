@@ -1039,7 +1039,8 @@
   (initfun nil :type symbol)
   (entryfun nil :type symbol)
   (desc "" :type string)
-  #|(recompile-if-needed t :type boolean)|#) ;; will always try to recompile on every call now (checks file dates)--where does this actually get set anyways?
+  ;; should fomus take care of compiling/loading this module?
+  (compile-p t :type boolean))
 
 (defparameter *fomus-modules* (make-hash-table :test 'eq))
 (defparameter +module-types+ '(:accidentals :voices :staves/clefs :splitrules :quantize :backend))
@@ -1124,9 +1125,11 @@ Directories are created as needed."
 (defun load-fomus-module (keyname)
   (flet ((module-provided-p (module)
 	   (find (module-pack module) *modules* :test #'string=)))
-    (let* ((module (or (gethash keyname *fomus-modules*) (error "Module ~S is not registered or does not exist" keyname)))
+    (let* ((module (or (gethash keyname *fomus-modules*)
+		       (error "Module ~S is not registered or does not exist" keyname)))
 	   (fasl-path (module-outname (module-file module) (eq (module-type module) :backend))))
-      (when (or (compile-module-if-needed (module-file module) fasl-path keyname) ; will always recompile/reload if file changed
+      (when (or (and (module-compile-p module) ; default is T
+		     (compile-module-if-needed (module-file module) fasl-path keyname)) 
 		(not (module-provided-p module)))
 	(when (and (numberp *verbose*) (>= *verbose* 2)) (format t "~&;; Loading module ~S..." keyname))
 	(load fasl-path :verbose nil :print nil)
