@@ -15,7 +15,8 @@
 
 (eval-when (:load-toplevel :execute)
   (defparameter *lilypond-exe*
-    (or #+darwin (find-exe "lilypond.sh" "LilyPond.app")
+    (or #+darwin (find-exe "lilypond.sh" "LilyPond.app/Contents/Resources")
+	#+darwin (find-exe "lilypond.sh" "LilyPond.app")
 	#+(or mswindows win32) (find-exe "lilypond.exe" "LilyPond")
 	#-(or mswindows win32) (find-exe "lilypond" "LilyPond") 
 	#+darwin "lilypond.sh"
