@@ -50,10 +50,11 @@
 		 (let ((du (- o2 o1)))
 		   (when (and pts (>= du lm))
 		     (sel (cons (cons pts (list o1 o2))
-				(unless (or (unit-nodiv-p rl) (sig-nodiv-p rl) (every (lambda (x) (declare (type (rational 0) x)) (or (<= x o1) (>= x o2))) pts))
+				(unless (or (unit-nodiv-p rl) (sig-nodiv-p rl) (every (lambda (x) (declare (type (real 0) x)) (or (<= x o1) (>= x o2))) pts)) ; (or (<= x o1) (>= x o2))
 				  (loop for (s . r) in (split-rules-bylevel
 							rl (and (or (null *min-tuplet-dur*) (>= du *min-tuplet-dur*))
 								(or (null *max-tuplet-dur*) (<= du *max-tuplet-dur*))))
+					unless (some (lambda (x) (declare (type baserule x)) (or (unit-nodiv-p x) (sig-nodiv-p x))) r)
 					collect (flet ((of (o) (declare (type (rational 0) o)) (+ o1 (* o du))))
 						  (adj
 						   (loop for (o1 o2) of-type ((rational 0 1) (or (rational 0 1) null)) on (cons 0 (append (force-list s) '(1)))
