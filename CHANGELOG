@@ -1,3 +1,6 @@
+v0.2.20
+	Fixed small quantizing bug created in 0.2.12 (FOMUS occasionally couldn't find tuplets)
+
 v0.2.19
 	Fixed inability to find LilyPond 2.10 executable
 

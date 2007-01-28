@@ -4,14 +4,14 @@
       Any of the following may be reproduced by saving the example to a file and using the so-called text file or command line interface
       to process it (see <a href="ch03s04.html" title="Text File Interface">Text File Interface</a> and <a href="ch03s06.html" title="Command Line Interface">Command Line Interface</a>
       for more information).  When an output isn't specified in the file, this must be given in the Lisp function call or at the command line.  Some examples are:
-    </p><div class="example"><a id="id360623"></a><p class="title"><b>Example&#160;9.17.&#160;Text Input Commands (From Lisp)</b></p><div class="example-contents"><pre class="programlisting">
+    </p><div class="example"><a id="id360626"></a><p class="title"><b>Example&#160;9.17.&#160;Text Input Commands (From Lisp)</b></p><div class="example-contents"><pre class="programlisting">
 
 (fomus "/directory/file.fms") ; use values in file
 
 (fomus "/directory/file.fms" :output :musicxml) ; output to MusicXML format
 
 (fomus "/directory/file.fms" :output '(:lilypond :view t)) ; output to LilyPond and open for viewing
-	</pre></div></div><br class="example-break" /><div class="example"><a id="id360636"></a><p class="title"><b>Example&#160;9.18.&#160;Text Input Commands (Command Line)</b></p><div class="example-contents"><pre class="programlisting">
+	</pre></div></div><br class="example-break" /><div class="example"><a id="id360638"></a><p class="title"><b>Example&#160;9.18.&#160;Text Input Commands (Command Line)</b></p><div class="example-contents"><pre class="programlisting">
 
 # print help message
 fomus -h
@@ -24,7 +24,7 @@ fomus -x /directory/file.fms
 
 # output to LilyPond and open for viewing
 fomus -lw /directory/file.fms
-	</pre></div></div><br class="example-break" /><div class="example"><a id="id360652"></a><p class="title"><b>Example&#160;9.19.&#160;Simple Text Input Example</b></p><div class="example-contents"><pre class="programlisting">
+	</pre></div></div><br class="example-break" /><div class="example"><a id="id360654"></a><p class="title"><b>Example&#160;9.19.&#160;Simple Text Input Example</b></p><div class="example-contents"><pre class="programlisting">
 
 INIT :output :lilypond
 INIT :filename "/mydir/output"
@@ -52,7 +52,7 @@ NOTE 1 :voice 1 :off 17/2 :dur 1/2 :note 72
 NOTE 1 :voice 1 :off 9 :dur 1/2 :note 62
 NOTE 1 :voice 1 :off 19/2 :dur 1/2 :note 54
 NOTE 1 :voice 1 :off 10 :dur 1 :note 68
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_txt_simp_ex.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360706"></a><p class="title"><b>Example&#160;9.20.&#160;Staccato and Accent Marks</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_txt_simp_ex.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360708"></a><p class="title"><b>Example&#160;9.20.&#160;Staccato and Accent Marks</b></p><div class="example-contents"><pre class="programlisting">
 
 INIT :output (:lilypond :view t)
 INIT :filename "/tmp/output"
@@ -82,7 +82,7 @@ NOTE 1 :voice 1 :off 8.5 :dur 0.5 :note 59 :marks (:accent)
 NOTE 1 :voice 1 :off 9 :dur 0.5 :note 54 :marks (:staccato)
 NOTE 1 :voice 1 :off 9.5 :dur 0.5 :note 68
 NOTE 1 :voice 1 :off 10 :dur 1 :note 48 :marks (:staccato)
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_txt_accents.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360759"></a><p class="title"><b>Example&#160;9.21.&#160;Percussion</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_txt_accents.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360761"></a><p class="title"><b>Example&#160;9.21.&#160;Percussion</b></p><div class="example-contents"><pre class="programlisting">
 
 PART prc :name "Percussion" :instr (:percussion :percs ((MAKE-PERC :sym :woodblock :staff 1 :voice 1 :note e4 :autodur t :midinote-im nil :midinote-ex nil) \
                                                         (MAKE-PERC :sym :snaredrum :staff 1 :voice 1 :note a3 :autodur t :midinote-im nil :midinote-ex nil)))
@@ -108,7 +108,7 @@ NOTE prc :voice 1 :off 17/2 :dur 1/2 :note :snaredrum
 NOTE prc :voice 1 :off 9 :dur 1/2 :note :woodblock
 NOTE prc :voice 1 :off 19/2 :dur 1/2 :note :woodblock
 NOTE prc :voice 1 :off 10 :dur 1/2 :note :snaredrum
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_txt_perc.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360816"></a><p class="title"><b>Example&#160;9.22.&#160;Articulations</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_txt_perc.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360818"></a><p class="title"><b>Example&#160;9.22.&#160;Articulations</b></p><div class="example-contents"><pre class="programlisting">
 
 ;; Example by Rob Canning
 
@@ -132,7 +132,7 @@ part 1 :name "Piano" :instr :piano
 (note 1 :off 3.75 :dur 0.25 :note 51 :marks (:ignore))
 (note 1 :off 4 :dur 0.25 :note 79 :marks (:staccato))
 (note 1 :off 4.25 :dur 8 :note 40 :marks (:startslur- (:textnote "id=479")))
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_canning.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360867"></a><p class="title"><b>Example&#160;9.23.&#160;More Percussion</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_canning.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360869"></a><p class="title"><b>Example&#160;9.23.&#160;More Percussion</b></p><div class="example-contents"><pre class="programlisting">
 
 PART p1 :name "Perc" \
         :instr (:percussion :percs ((:snare-drum :note a3) \
@@ -160,7 +160,7 @@ NOTE p1 :voice 1 :off 12.5 :dur 1/2 :note :low-wood-block
 NOTE p1 :voice 1 :off 13 :dur 1/2 :note :low-wood-block
 NOTE p1 :voice 1 :off 13.5 :dur 1/2 :note :low-wood-block
 NOTE p1 :voice 1 :off 14 :dur 1/2 :note :low-wood-block
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_percfile.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360925"></a><p class="title"><b>Example&#160;9.24.&#160;Overtone Series (using Quartertones)</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_percfile.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360927"></a><p class="title"><b>Example&#160;9.24.&#160;Overtone Series (using Quartertones)</b></p><div class="example-contents"><pre class="programlisting">
 
 INIT :output '(:lilypond :view t)
 INIT :filename "overser"
@@ -189,7 +189,7 @@ NOTE h :voice 1 :off 16 :dur 1 :note 92.04956
 NOTE h :voice 1 :off 17 :dur 1 :note 93.03909
 NOTE h :voice 1 :off 18 :dur 1 :note 93.97514
 NOTE h :voice 1 :off 19 :dur 1 :note 94.86313
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_overser.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360976"></a><p class="title"><b>Example&#160;9.25.&#160;Marks 1</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_overser.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id360978"></a><p class="title"><b>Example&#160;9.25.&#160;Marks 1</b></p><div class="example-contents"><pre class="programlisting">
 
 INIT :output '(:lilypond :view t)
 INIT :filename "marks1"
@@ -217,7 +217,7 @@ NOTE h :voice 1 :off 16 :dur 1 :note 66
 NOTE h :voice 1 :off 17 :dur 1 :note 67 :marks (:MORDENT)
 NOTE h :voice 1 :off 18 :dur 1 :note 68 :marks ((:TRILL 70))
 NOTE h :voice 1 :off 19 :dur 1 :note 69 :marks (:FERMATA)
-	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_marksfile1.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id361031"></a><p class="title"><b>Example&#160;9.26.&#160;Marks 2</b></p><div class="example-contents"><pre class="programlisting">
+	</pre><div class="blockquote"><blockquote class="blockquote"><div class="mediaobject"><img src="ex_marksfile1.jpg" /><div class="caption">Output</div></div></blockquote></div></div></div><br class="example-break" /><div class="example"><a id="id361033"></a><p class="title"><b>Example&#160;9.26.&#160;Marks 2</b></p><div class="example-contents"><pre class="programlisting">
 
 INIT :output '(:lilypond :view t)
 INIT :filename "marks2"

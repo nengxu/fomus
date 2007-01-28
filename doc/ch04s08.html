@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Class MARK</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch04.html" title="Chapter&#160;4.&#160;Objects" /><link rel="prev" href="ch04s07.html" title="Class REST" /><link rel="next" href="ch04s09.html" title="Structure INSTR" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Class MARK</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04s07.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;4.&#160;Objects</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch04s09.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id326425"></a>Class MARK</h2></div></div></div><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Class MARK</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch04.html" title="Chapter&#160;4.&#160;Objects" /><link rel="prev" href="ch04s07.html" title="Class REST" /><link rel="next" href="ch04s09.html" title="Structure INSTR" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Class MARK</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04s07.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;4.&#160;Objects</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch04s09.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id326427"></a>Class MARK</h2></div></div></div><p>
       The <code class="classname"><a href="ch04s08.html#class.mark">MARK</a></code> objects allow the user to specify marks outside of a
       <code class="classname"><a href="ch04s06.html#class.note">NOTE</a></code>
       or <code class="classname"><a href="ch04s07.html#class.rest">REST</a></code> class.
@@ -60,7 +60,7 @@
 	      <span class="application">FOMUS</span> chooses the option from the list that places the mark the closest to the
 	      specified offset.
 	      Following is an example of how to specify staves:
-       	    </p><div class="example"><a id="id326870"></a><p class="title"><b>Example&#160;4.7.&#160;EVENT-VOICE Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
+       	    </p><div class="example"><a id="id326872"></a><p class="title"><b>Example&#160;4.7.&#160;EVENT-VOICE Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 '(:staff 1 -2)
                 </pre></div></div><p><br class="example-break" /> 
@@ -93,7 +93,7 @@
 	      Marks are specified as either symbols or lists of symbols and numbers.
 	      If it is a list, then the first element is the mark symbol followed by one or more arguments.
 	      Following is an example of what may appear in the <em class="structfield"><code><a href="ch04s08.html#mark.marks">MARKS</a></code></em> slot:
-       	    </p><div class="example"><a id="id327053"></a><p class="title"><b>Example&#160;4.8.&#160;EVENT-MARKS Slot Setting 1</b></p><div class="example-contents"><pre class="programlisting">
+       	    </p><div class="example"><a id="id327055"></a><p class="title"><b>Example&#160;4.8.&#160;EVENT-MARKS Slot Setting 1</b></p><div class="example-contents"><pre class="programlisting">
 
 '(:accent :startslur- (:startslur- 2 :dotted) (:texttempo "accelerando"))
                 </pre></div></div><p><br class="example-break" />	      
@@ -115,7 +115,7 @@
 	      slot in this class.
 	      The rest of the list after the second element is the mark symbol and the arguments that apply to that symbol.
 	      Following is an example:
-       	    </p><div class="example"><a id="id327160"></a><p class="title"><b>Example&#160;4.9.&#160;EVENT-MARKS Slot Setting 2</b></p><div class="example-contents"><pre class="programlisting">
+       	    </p><div class="example"><a id="id327162"></a><p class="title"><b>Example&#160;4.9.&#160;EVENT-MARKS Slot Setting 2</b></p><div class="example-contents"><pre class="programlisting">
 
 '(:accent (:startslur- 2) (:mark (-101) :endslur- 2))
                 </pre></div></div><p><br class="example-break" />	      
