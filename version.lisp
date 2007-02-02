@@ -12,7 +12,7 @@
 (declaim (type string +title+)
 	 (type cons +version+ +banner+))
 (defparameter +title+ "FOMUS")
-(defparameter +version+ '(0 2 20))
+(defparameter +version+ '(0 2 21))
 (defparameter +banner+
   `("Lisp music notation formatter"
     "Copyright (c) 2005, 2006, 2007 David Psenicka, All Rights Reserved"
