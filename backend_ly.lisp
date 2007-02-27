@@ -224,6 +224,11 @@
 (defparameter *lilypond-filehead* nil)
 (defparameter *lilypond-scorehead* nil)
 
+(defun lilypond-string-escape (string)
+  (if (position #\# string)
+      (concatenate 'string "\"" string "\"")
+      string))
+
 (defun save-lilypond (parts header filename options process view)
   (when (>= *verbose* 1) (out ";; Saving LilyPond file ~S...~%" filename))
   (with-open-file (f filename :direction :output :if-exists :supersede)
@@ -491,7 +496,7 @@
 						 nconc (loop for (xxx di str) in (getmarks e x)
 							     collect (conc-strings
 								      (ecase di (:up "^") (:down "_"))
-								      (format nil m str)))))
+								      (format nil m (lilypond-string-escape str))))))
 					  (let ((m (getmark e '(:starttext- 1))))
 					    (if m "\\startTextSpan" ""))
 					  (let ((m (getmark e '(:endtext- 1))))
