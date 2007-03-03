@@ -1,6 +1,6 @@
 <chapter id="examples">
   <title id="examples.title">Examples</title>
-  <section>
+  <section id="section.examples1">
   <para>
      These examples (will eventually) show most of <application>FOMUS</application>'s functionality and hopefully eliminate the need to spend
      countless hours figuring out settings, how to create objects, etc..  Examples using different interfaces 
@@ -8,10 +8,10 @@
      The images were all generated using <application>LilyPond</application> 2.8.
   </para>
   </section>
-  <section>
+  <section id="section.examples2">
     <title>Lisp Examples</title>
-      <example>
-        <title id="example.simp">Simple Example</title>
+      <example id="example.simp">
+        <title>Simple Example</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -35,8 +35,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.accents">Staccato and Accent Marks</title>
+      <example id="example.accents">
+        <title>Staccato and Accent Marks</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -64,8 +64,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.qtones">Quartertones</title>
+      <example id="example.qtones">
+        <title>Quartertones</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -90,8 +90,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.poly.slurs">Polyphony with Slurs</title>
+      <example id="example.poly.slurs">
+        <title>Polyphony with Slurs</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -120,8 +120,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.pno.chords">Piano Chords</title>
+      <example id="example.pno.chords">
+        <title>Piano Chords</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -149,8 +149,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.chords2">Quantizing/Chords</title>
+      <example id="example.chords2">
+        <title>Quantizing/Chords</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -173,8 +173,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.mark.objs">Mark Objects</title>
+      <example id="example.mark.objs">
+        <title>Mark Objects</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -204,8 +204,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.perc1">Percussion 1</title>
+      <example id="example.perc1">
+        <title>Percussion 1</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -228,8 +228,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.perc2">Percussion 2</title>
+      <example id="example.perc2">
+        <title>Percussion 2</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -252,8 +252,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.perc.autodurs">Percussion with Automatic Durations</title>
+      <example id="example.perc.autodurs">
+        <title>Percussion with Automatic Durations</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -273,8 +273,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.orch.sco">Semi-Orchestra Score</title>
+      <example id="example.orch.sco">
+        <title>Semi-Orchestra Score</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -328,8 +328,8 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtmarks2">Key Signatures</title>
+      <example id="example.txtmarks2">
+        <title>Key Signatures</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -358,10 +358,10 @@
 	</blockquote>
       </example>
   </section>
-  <section>
+  <section id="section.examples3">
     <title>Common Music Examples</title>
-      <example>
-        <title id="example.cm.poly1">2 Part Polyphony</title>
+      <example id="example.cm.poly1">
+        <title>2 Part Polyphony</title>
 	<programlisting>
 <![CDATA[
 (defparameter *part* (new fms:part :instr :piano :partid 'pno))
@@ -386,8 +386,8 @@
 	</mediaobject>
 	</blockquote>
       </example>      
-      <example>
-        <title id="example.cm.poly2">2 Part Polyphony (FOMUS Chooses the Voice)</title>
+      <example id="example.cm.poly2">
+        <title>2 Part Polyphony (FOMUS Chooses the Voice)</title>
 	<programlisting>
 <![CDATA[
 (defparameter *part* (new fms:part :instr '(:piano :simultlim 1) :partid 'pno))
@@ -411,8 +411,8 @@
 	</mediaobject>
 	</blockquote>
       </example>      
-      <example>
-        <title id="example.cm.poly3pt">3 Part Polyphony</title>
+      <example id="example.cm.poly3pt">
+        <title>3 Part Polyphony</title>
 	<programlisting>
 <![CDATA[
 (defparameter *part* (new fms:part :instr '(:piano :simultlim 1) :partid 'pno))
@@ -437,8 +437,8 @@
 	</mediaobject>
 	</blockquote>
       </example>      
-      <example>
-        <title id="example.cm.poly6pt">6 Part Polyphony</title>
+      <example id="example.cm.poly6pt">
+        <title>6 Part Polyphony</title>
 	<programlisting>
 <![CDATA[
 (defparameter *parts*
@@ -483,7 +483,7 @@
       to process it (see <link linkend="interface.text" endterm="interface.text.title"/> and <link linkend="interface.cmd" endterm="interface.cmd.title"/>
       for more information).  When an output isn't specified in the file, this must be given in the Lisp function call or at the command line.  Some examples are:
     </para>
-      <example>
+      <example id="example.text.lisp">
         <title>Text Input Commands (From Lisp)</title>
 	<programlisting>
 <![CDATA[
@@ -494,7 +494,7 @@
 (fomus "/directory/file.fms" :output '(:lilypond :view t)) ; output to LilyPond and open for viewing]]>
 	</programlisting>
       </example>
-      <example>
+      <example id="example.text.cmd">
         <title>Text Input Commands (Command Line)</title>
 	<programlisting>
 <![CDATA[
@@ -511,8 +511,8 @@ fomus -x /directory/file.fms
 fomus -lw /directory/file.fms]]>
 	</programlisting>
       </example>
-      <example>
-        <title id="example.txtsimp">Simple Text Input Example</title>
+      <example id="example.txtsimp">
+        <title>Simple Text Input Example</title>
 	<programlisting>
 <![CDATA[
 INIT :output :lilypond
@@ -549,8 +549,8 @@ NOTE 1 :voice 1 :off 10 :dur 1 :note 68]]>
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtaccents">Staccato and Accent Marks</title>
+      <example id="example.txtaccents">
+        <title>Staccato and Accent Marks</title>
 	<programlisting>
 <![CDATA[
 INIT :output (:lilypond :view t)
@@ -589,8 +589,8 @@ NOTE 1 :voice 1 :off 10 :dur 1 :note 48 :marks (:staccato)]]>
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtperc">Percussion</title>
+      <example id="example.txtperc">
+        <title>Percussion</title>
 	<programlisting>
 <![CDATA[
 PART prc :name "Percussion" :instr (:percussion :percs ((MAKE-PERC :sym :woodblock :staff 1 :voice 1 :note e4 :autodur t :midinote-im nil :midinote-ex nil) \
@@ -625,8 +625,8 @@ NOTE prc :voice 1 :off 10 :dur 1/2 :note :snaredrum]]>
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.canning">Articulations</title>
+      <example id="example.canning">
+        <title>Articulations</title>
 	<programlisting>
 <![CDATA[
 ;; Example by Rob Canning
@@ -659,8 +659,8 @@ part 1 :name "Piano" :instr :piano
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtmoreperc">More Percussion</title>
+      <example id="example.txtmoreperc">
+        <title>More Percussion</title>
 	<programlisting>
 <![CDATA[
 PART p1 :name "Perc" \
@@ -697,8 +697,8 @@ NOTE p1 :voice 1 :off 14 :dur 1/2 :note :low-wood-block]]>
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtoverser">Overtone Series (using Quartertones)</title>
+      <example id="example.txtoverser">
+        <title>Overtone Series (using Quartertones)</title>
 	<programlisting>
 <![CDATA[
 INIT :output '(:lilypond :view t)
@@ -736,8 +736,8 @@ NOTE h :voice 1 :off 19 :dur 1 :note 94.86313]]>
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtmarks1">Marks 1</title>
+      <example id="example.txtmarks1">
+        <title>Marks 1</title>
 	<programlisting>
 <![CDATA[
 INIT :output '(:lilypond :view t)
@@ -774,8 +774,8 @@ NOTE h :voice 1 :off 19 :dur 1 :note 69 :marks (:FERMATA)]]>
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
-        <title id="example.txtmarks2">Marks 2</title>
+      <example id="example.txtmarks2">
+        <title>Marks 2</title>
 	<programlisting>
 <![CDATA[
 INIT :output '(:lilypond :view t)

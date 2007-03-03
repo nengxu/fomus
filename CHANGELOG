@@ -1,3 +1,11 @@
+v0.2.22
+	Auto set timesig COMP slot to t for appropriate time signatures (6/8, etc.)
+	Fix for textnotes in LilyPond (Kilian)
+	Changed maximum tuplet size to more reasonable number
+
+v0.2.21
+	Fixed bug where key signature algorithm was choking on rests
+
 v0.2.20
 	Fixed small quantizing bug created in 0.2.12 (FOMUS occasionally couldn't find tuplets)
 
@@ -96,59 +104,3 @@ v0.2.1
 
 v0.2.0
 	Version bump
-
-v0.1.69
-	Fixed placement issues w/ ornaments and accidentals (LilyPond and MusicXML)
-
-v0.1.68
-	Fixed Beaming 6 eighths in some measures (5/4 meters)
-	TIE mark to force tied notes ((:TIE :BEFORE) and (:TIE :AFTER), default is :AFTER)
-	LilyPond slurs over slurred appoggiaturas/acciaccaturas (FOMUS removes the gracenote slur to prevent it from breaking the other slurs if present)
-	Initial support for key signatures
-
-v0.1.67
-	Tremolo marks can receive optional :NOTATED symbol (meaning the given number is a notated duration like 1/8 or 1/16 and not in beats)
-	LILYPOND-VERSION setting (can also pass :VERSION to LilyPond backend)--ex. :lilypond-version "2.8"
-	Little bug in MIDI backend when there are no MIDI events to save/playback
-
-v0.1.66
-	Fixed cautionary accidentals bug
-	Fixed MusicXML nested tuplets (although Finale/Sibelius ignores <tuplets> tags on import)
-	More tuplets possible (ie. nontuplets and others that otherwise might be subdivided into nested tuplets are considered)
-	Better nested tuplet decisions involving regular groups of nested triplets, nested quintuplets, etc.
-	Got rid of CAUT-ACC-AFTER-ONE-MEAS setting
-	Level numbers in spanner marks can either be actual levels or IDs (a few more things to be added)
-
-v0.1.65
-	Fixed: problem with some nested tuplets
-	Fixed: tuplets being split unnecessarily into smaller tuplets (happens w/ septuplets + larger tuplets)
-	Improved some beaming problems involving tuplets
-	Got rid of stupid "simple tuplets" idea (implemented a better algorithm for determining whether to use larger or smaller tuplets)
-	Got rid of USE-DEFAULT-MEAS-DIVS and USE-DEFAULT-TUPLET-DIVS settings (there's no real reason to turn these off)
-	Added DEFAULT-TUPLETS and TUPLET-MOD settings to let user control how tuplets are notated (the "power of two" one isn't necessarily always used)
-	Added LILYPOND-EXE, LILYPOND-OPTS, LILYPOND-OUT-EXT, LILYPOND-VIEW-EXE, LILYPOND-VIEW-OPTS, CMN-VIEW-EXE and CMN-VIEW-OPTS settings (easier to set these in .fomus init file)
-	Fixed error with user :8UP and :8DOWN marks
-	Fixed error using numbers with :SLUR- marks
-	Fixed problems with double slurs (found problem with slurred grace notes underneath other slurs in LilyPond--not fixed yet)
-	Fixed error when user specifies no subdivisions in a measure (ex. '(2) in the DIV timesig slot when the meter is 2/4)
-	Inprovements in clef changes/distributing across staves (more testing/tweaking needed)
-	Much needed test suite underway
-
-v0.1.64
-	Improvements in voice distributing (+ speed)
-
-v0.1.63
-	:DISTR property (ability to expand a part into multiple parts)
-	Speed improvements (maybe 50%)
-	Improvements in voice distributing
-	Slight improvements in note spelling
-	Doc. update
-
-v0.1.62
-	Fixed bugs preventing FOMUS from working in LispWorks (a few more fixes might be needed)
-
-v0.1.61
-	Fixed bug involving notes being out of range (array out of bounds error) when using LilyPond backend
-
-v0.1.60
-	Fixed bug involving invisible rests in complex 3/4 part polyphony

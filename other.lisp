@@ -183,8 +183,9 @@
 	      when (and #|(notep ev)|# (< (event-off ev) oo)) do (setf oo (event-off ev)))
 	(print-dot)))
 
+;; shift offsets/durations according to *input-beat-value* and *input-offset*
 (defun fixinputbeat (parts tims mks)
-  (declare (type list parts))
+  (declare (type list parts tims mks))
   (when (or *input-beat-value* *input-offset*)
     (let ((bv (or *input-beat-value* 1))
 	  (io (or *input-offset* 0)))
@@ -194,3 +195,4 @@
 		  (unless (event-grace e) (setf (event-dur* e) (/ (event-dur* e) bv)))))
       (loop for ti of-type timesig in tims do (setf (event-off ti) (+ (/ (event-off ti) bv) io)))
       (loop for m of-type mark in mks do (setf (event-off m) (+ (/ (event-off m) bv) io))))))
+

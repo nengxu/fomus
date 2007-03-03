@@ -870,6 +870,9 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; TIMESIG FUNCTIONS
 
+(declaim (type boolean *auto-timesig-comp*))
+(defparameter *auto-timesig-comp* t)
+
 (defun timesig-check (ts)
   (declare (type timesig-repl ts))
   (flet ((er () (error "Invalid beat ~S in BEAT slot of TIMESIG at offset ~S" (timesig-beat ts) (timesig-foff ts))))
@@ -884,6 +887,11 @@
 (defgeneric make-timesigex* (ts))
 (defmethod make-timesigex* ((ts timesig))
   (let ((nt (copy-timesig ts
+			  :comp (if (eq (timesig-comp ts) 'default)
+				    (when *auto-timesig-comp*
+				      (let ((x (/ (car (timesig-time ts)) 3)))
+					(when (and (integerp x) (> x 1)) t)))
+				    (timesig-comp ts))
 			  :partids (force-list (timesig-partids ts))
 			  :off (roundto (timesig-off ts) (/ (beat-division ts)))
 			  :div (force-list2all (timesig-div ts))
@@ -895,6 +903,11 @@
     nt))
 (defmethod make-timesigex* ((ts timesig-repl))
   (let ((nt (copy-timesig-repl ts
+			       :comp (if (eq (timesig-comp ts) 'default)
+					 (when *auto-timesig-comp*
+					   (let ((x (/ (car (timesig-time ts)) 3)))
+					     (when (and (integerp x) (> x 1)) t)))
+					 (timesig-comp ts))
 			       :div (force-list2all (timesig-div ts))
 			       :time (cons (first (timesig-time ts)) (second (timesig-time ts)))
 			       :props (copy-tree (timesig-props ts)))))

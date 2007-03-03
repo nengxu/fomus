@@ -1,6 +1,6 @@
 <chapter id="marks">
   <title id="marks.title">Marks</title>
-  <section>
+  <section id="section.marks1">
     <para>
       Marks are symbols or lists of symbols with arguments that appear in the <structfield><link linkend="mark.marks">MARKS</link></structfield> slots of
       <classname><link linkend="class.note">NOTE</link></classname>,
@@ -48,9 +48,9 @@
       staff, depending on the type of mark.
     </para>
   </section>
-  <section>
+  <section id="section.marks2">
     <title>FOMUS Marks</title>
-    <section>
+    <section id="section.marks3">
       <para>
         Formats for marks and their arguments are shown in a pseudo lambda-list style format with <literal>&amp;optional</literal> symbols to designate optional arguments.
 	Some arguments are shown as a choice between several options or symbols, each separated by a pipe character.
@@ -110,7 +110,7 @@
 	Not all symbols are supported in all of the backends.
       </para> 
     </section>
-    <section>
+    <section id="section.marks4">
       <title>Articulations</title>
       <para>
         These marks add articulation symbols to notes. Multiple levels of slurs may be specified (<application>FOMUS</application> 
@@ -133,7 +133,7 @@
         <member><function><anchor id="mark.graceslur-"/>:STARTGRACESLUR-</function> / <function>:GRACESLUR-</function> / <function>:ENDGRACESLUR-</function></member>
       </simplelist>
     </section>  
-    <section>
+    <section id="section.marks5">
       <title>Dynamics</title>
       <para>
 	These add common dynamic markings. The <function><link linkend="mark.wedge.gt">:WEDGE&gt;</link></function> and 
@@ -171,7 +171,7 @@
         <member><function><anchor id="mark.wedge.lt"/>:STARTWEDGE&lt;</function> / <function>:WEDGE&lt;</function> / <function>:ENDWEDGE&lt;</function></member>
       </simplelist>
     </section>  
-    <section>
+    <section id="section.marks6">
       <title>Tempo/Duration</title>
       <para>
         These are notation symbols that affect duration. Three different types of fermatas may be specified (the default is <literal>:SHORT</literal> if none is specified).
@@ -187,7 +187,7 @@
 	<member><function>(<anchor id="mark.autodur"/>:AUTODUR)</function></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.marks7">
       <title>Ornamentations</title>
       <para>
         These marks add common ornamentation markings. 
@@ -219,7 +219,7 @@
 	<member><function>(<anchor id="mark.prall"/>:PRALL &amp;optional &amp;optional <userinput><link linkend="markarg.note">note</link></userinput>)</function></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.marks8">
       <title>Effects</title>
       <para>
 	These marks are for special instrument-specific effects or instructions.
@@ -252,7 +252,7 @@
 	<member><function>(<anchor id="mark.righttoe"/>:RIGHTTOE &amp;optional <userinput><link linkend="markarg.art.order">art-order</link></userinput>)</function></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.marks9">
       <title>Text</title>
       <para>
         Different kinds of text may be attached to events.
@@ -278,7 +278,7 @@
 	  <literal>:UP</literal>|<literal>:DOWN</literal>)</function></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.marks10">
       <title>Notation</title>
       <para>
         Most of these behave as user overrides to <application>FOMUS</application>'s automatic algorithms.
@@ -307,7 +307,7 @@
         <member><function>(<anchor id="mark.tie"/>:TIE &amp;optional <literal>:BEFORE</literal>|<literal>:AFTER</literal>)</function></member>
       </simplelist>
     </section>  
-    <section>
+    <section id="section.marks11">
       <title>Other</title>
       <para>
       	  The <function><link linkend="mark.ignore">:IGNORE</link></function> has no effect.  It is intended to be useful for automatically generating
@@ -318,7 +318,7 @@
       </simplelist>
     </section>  
   </section>
-  <section>
+  <section id="section.marks12">
     <title>TIMESIG Properties</title>
     <para>
       These are marks that are specified in <classname><link linkend="class.timesig">TIMESIG</link></classname> objects

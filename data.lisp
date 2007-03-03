@@ -40,7 +40,7 @@
 
 ;; nested tuplets indicated by a list
 (declaim (type (or null (integer 2) list) *max-tuplet*))
-(defparameter *max-tuplet* 7)
+(defparameter *max-tuplet* 13)
 
 (declaim (type (or (integer 1) list) *beat-division*))
 (defparameter *beat-division* 16) ; 64th notes--basic number of divisions-per-beat, if list, second value is compound meter
@@ -580,6 +580,7 @@
     (:default-grace-dur (rational (0))) (:default-grace-num integer) (:effective-grace-dur-mul (rational (0)))
     
     (:min-auto-timesig-dur (rational (0))) (:default-timesig (type* +timesig-repl-type+) "TIMESIG object")
+    (:auto-timesig-comp boolean)
 
     (:quartertones boolean)
     (:auto-accidentals boolean) (:auto-cautionary-accs boolean) (:auto-staff/clef-changes boolean)

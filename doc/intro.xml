@@ -1,6 +1,6 @@
 <chapter id="intro">
   <title id="intro.title">Introduction</title>
-  <section>
+  <section id="section.install5">
   <para>
     <application>FOMUS</application> (FOrmat MUSic) is a music notation tool for computer music composers.
     It is written in the Lisp programming language, and has been tested in the following interpreters:

@@ -20,7 +20,7 @@
 (defclass timesig-repl (fomusobj-base)
   ((time :type cons :accessor timesig-time :initform '(4 4) :initarg :time)
    (div :type list :accessor timesig-div :initform nil :initarg :div) ; list of divisions to force, ex: '((3 3 2) (3 2 3)) or '((3/2 1) (1 3/2))
-   (comp :type boolean :accessor timesig-comp :initform nil :initarg :comp) ; t or nil
+   (comp :type (or boolean symbol) :accessor timesig-comp :initform 'default :initarg :comp) ; t or nil
    (beat :type (or (rational 0) null) :accessor timesig-beat :initform nil :initarg :beat) ; what actually gets the beat (ex: 1/4 = quarter note, 1/4 + 1/8 = dotted quarter), compound is deterined from signature
    (props :type list :accessor timesig-props :initform nil :initarg :props))) 
 (defclass timesig (timesig-repl event-base)
@@ -497,7 +497,7 @@
     (time (check* (list* (integer 1) (integer 1)) "Found ~S, expected list ((INTEGER 1) (INTEGER 1)) in TIME slot" t))
     (beat (check* (or null (rational (0))) "Found ~S, expected (RATIONAL (0)) in BEAT slot" t))
     (div (check* (or* null (list-of* (rational (0))) (list-of-unique* (list-of* (rational (0))))) "Found ~S, expected list of (RATIONAL (0)) or ((RATIONAL (0)) ...) in DIV slot" t))
-    (comp (check* boolean) "Found ~S, expected BOOLEAN in COMP slot" t)
+    (comp (check* (or boolean (member default))) "Found ~S, expected BOOLEAN in COMP slot" t)
     (props (or* null (with-error* ("~~A in PROPS slot") (type* +timesig-props+))))))
 
 (defparameter +timesig-type+

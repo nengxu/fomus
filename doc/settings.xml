@@ -1,6 +1,6 @@
 <chapter id="settings">
   <title id="settings.title">Settings</title>
-  <section>
+  <section id="section.settings1">
   <para>
     Settings are arguments or parameters used to pass data to <application>FOMUS</application> for processing.
     There are a lot of them, but only a few of them are really necessary for most users.
@@ -22,7 +22,7 @@
     See <link linkend="init" endterm="init.title"/> for an explanation of how to modify default values for any of these settings.
   </para>
   </section>
-  <section>
+  <section id="section.settings2">
     <title>Most Useful <application>FOMUS</application> Settings</title>
     <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.verbose">:VERBOSE</link></varname></member>
@@ -45,9 +45,9 @@
         <member><varname><link linkend="setting.default.grace.dur">:DEFAULT-GRACE-DUR</link></varname></member>
     </simplelist>
   </section>
-  <section>
+  <section id="section.settings3">
     <title>Complete <application>FOMUS</application> Settings</title>
-    <section>
+    <section id="section.settings4">
       <title>Program Settings</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.verbose">:VERBOSE</link></varname></member>
@@ -59,7 +59,7 @@
 	<member><varname><link linkend="setting.quality">:QUALITY</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings5">
       <title>Executables</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.lilypond.exe">:LILYPOND-EXE</link></varname></member>
@@ -81,7 +81,7 @@
         <member><varname><link linkend="setting.cmn.view.opts">:CMN-VIEW-OPTS</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings6">
       <title>Global</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.title">:TITLE</link></varname></member>
@@ -91,7 +91,7 @@
         <member><varname><link linkend="setting.tuplet.style">:TUPLET-STYLE</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings7">
       <title>Objects</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.global">:GLOBAL</link></varname></member>
@@ -99,7 +99,7 @@
         <member><varname><link linkend="setting.events">:EVENTS</link></varname></member>
       </simplelist>
     </section>
-      <section>
+      <section id="section.settings8">
         <title>Parts</title>
         <simplelist type="vert" columns="3">
           <member><varname><link linkend="setting.check.ranges">:CHECK-RANGES</link></varname></member>
@@ -112,15 +112,16 @@
           <member><varname><link linkend="setting.ensemble.type">:ENSEMBLE-TYPE</link></varname></member>
         </simplelist>
       </section>
-      <section>
+      <section id="section.settings9">
         <title>Time Signatures</title>
         <simplelist type="vert" columns="3">
           <member><varname><link linkend="setting.default.timesig">:DEFAULT-TIMESIG</link></varname></member>
 	  <member><varname><link linkend="setting.default.beat">:DEFAULT-BEAT</link></varname></member>
           <member><varname><link linkend="setting.min.auto.timesig.dur">:MIN-AUTO-TIMESIG-DUR</link></varname></member>
+          <member><varname><link linkend="setting.auto.timesig.comp">:AUTO-TIMESIG-COMP</link></varname></member>
         </simplelist>
       </section> 
-    <section>
+    <section id="section.settings10">
       <title>Plugins</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.auto.accs.module">:AUTO-ACCS-MODULE</link></varname></member>
@@ -135,7 +136,7 @@
 	<member><varname><link linkend="setting.tuplet.function">:TUPLET-FUNCTION</link></varname></member> 
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings11">
       <title>Plugins On/Off</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.auto.accidentals">:AUTO-ACCIDENTALS</link></varname></member>
@@ -154,7 +155,7 @@
         <member><varname><link linkend="setting.auto.dyn.nodup">:AUTO-DYN-NODUP</link></varname></member>	
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings12">
       <title>Quantizing</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.input.beat.value">:INPUT-BEAT-VALUE</link></varname></member>
@@ -165,7 +166,7 @@
         <member><varname><link linkend="setting.max.tuplet">:MAX-TUPLET</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings13">
       <title>Staves</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.grandstaff.hide.rests">:GRANDSTAFF-HIDE-RESTS</link></varname></member>
@@ -173,13 +174,13 @@
         <member><varname><link linkend="setting.min.multivoice.chords.dur">:MIN-MULTIVOICE-CHORDS-DUR</link></varname></member>
       </simplelist>
     </section>
-      <section>
+      <section id="section.settings14">
         <title>Ottavas</title>
         <simplelist type="vert" columns="3">
           <member><varname><link linkend="setting.max.ottava.rest.dist">:MAX-OTTAVA-REST-DIST</link></varname></member>
         </simplelist>
       </section> 
-    <section>
+    <section id="section.settings15">
       <title>Accidentals</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.quartertones">:QUARTERTONES</link></varname></member>
@@ -187,7 +188,7 @@
         <member><varname><link linkend="setting.use.double.accs">:USE-DOUBLE-ACCS</link></varname></member>
       </simplelist>
     </section>
-      <section>
+      <section id="section.settings16">
         <title>Cautionary Accidentals</title>
         <simplelist type="vert" columns="3">
           <member><varname><link linkend="setting.acc.caut.acc.dist">:ACC-CAUT-ACC-DIST</link></varname></member>
@@ -196,7 +197,7 @@
           <member><varname><link linkend="setting.caut.acc.ottavas">:CAUT-ACC-OTTAVAS</link></varname></member>
         </simplelist>
       </section>
-    <section>
+    <section id="section.settings17">
       <title>Grace Notes</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.default.grace.dur">:DEFAULT-GRACE-DUR</link></varname></member>
@@ -204,7 +205,7 @@
         <member><varname><link linkend="setting.effective.grace.dur.mul">:EFFECTIVE-GRACE-DUR-MUL</link></varname></member>
       </simplelist>
     </section>
-      <section>
+      <section id="section.settings18">
         <title>Measure/Tuplet Divisions</title>
         <simplelist type="vert" columns="3">
           <member><varname><link linkend="setting.default.tuplets">:DEFAULT-TUPLETS</link></varname></member>
@@ -212,7 +213,7 @@
           <member><varname><link linkend="setting.default.tuplet.divs">:DEFAULT-TUPLET-DIVS</link></varname></member>
         </simplelist>
       </section>
-    <section>
+    <section id="section.settings19">
       <title>Note Splitting/Tying</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.dotted.note.level">:DOTTED-NOTE-LEVEL</link></varname></member>
@@ -223,7 +224,7 @@
         <member><varname><link linkend="setting.min.split.all.parts.dur">:MIN-SPLIT-ALL-PARTS-DUR</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.settings20">
       <title>Beams</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.long.eighth.beams">:LONG-EIGHTH-BEAMS</link></varname></member>
@@ -232,7 +233,7 @@
       </simplelist>
     </section>
   </section>
-  <section>
+  <section id="section.settings21">
     <title>Alphabetical Listing of Settings</title>
     <variablelist>
       <varlistentry>
@@ -410,6 +411,17 @@
 	    <function><link linkend="mark.pizz">:PIZZ</link></function> and <function><link linkend="mark.arco">:ARCO</link></function> marks.
 	    This makes it easier to notate pizz. and arco changes by simply attaching <function><link linkend="mark.pizz">:PIZZ</link></function>
 	    marks where they belong.
+  	  </para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term><varname><anchor id="setting.auto.timesig.comp"/>:AUTO-TIMESIG-COMP</varname></term>
+        <listitem>
+          <para>
+  	    If set to <literal>T</literal>, <application>FOMUS</application> automatically interprets time signatures such as
+	    6/8, 9/4, etc. as compound meters.  If set to <literal>NIL</literal>, the user must indicate that a meter is
+	    compound by setting the <structfield><link linkend="timesig.comp">COMP</link></structfield> slot in the
+	    appropriate <structfield><link linkend="class.timesig">TIMESIG</link></structfield> object.
   	  </para>
         </listitem>
       </varlistentry>
@@ -657,7 +669,7 @@
   	  Entries in this list replace entries in <application>FOMUS</application>'s own default table if they exist.
   	  Each member of this list is itself a list, containing an integer or ratio lookup value as the first element followed by one or more lists of integers/ratios
   	  that each add up to the first number.
-    	  <example>
+    	  <example id="example.default.meas.divs.setting">
               <title>DEFAULT-MEAS-DIVS Setting</title>
               <programlisting>
 <![CDATA[
@@ -698,7 +710,7 @@
   	  Entries in this replace entries in <application>FOMUS</application>'s own default table if they exist.
   	  Each member of this list is itself a list, containing an integer lookup value as the first element followed by one or more lists of integers
   	  that each add up to the first number.
-    	  <example>
+    	  <example id="example.default.tuplet.divs.setting">
               <title>DEFAULT-TUPLET-DIVS Setting</title>
               <programlisting>
 <![CDATA[
@@ -731,7 +743,7 @@
 	    appropriate for the context it is in (a power of 2 of the actual number of durational units).  
 	    Thus, several entries for septuplets might exist: <literal>'(7 4)</literal> for the majority of cases and <literal>'(7 5)</literal> for 
 	    cases where, for example, 7 eighth notes might span an entire 5/8 measure or a section of a larger tuplet.
-    	  <example>
+    	  <example id="example.default.tuplets.setting">
               <title>DEFAULT-TUPLETS Setting</title>
               <programlisting>
 <![CDATA[
@@ -795,14 +807,14 @@
   	</para>
   	<para>
   	  A look at the following examples might make this clearer:
-    	  <example>
+    	  <example id="example.ensemble.type.setting1">
               <title>ENSEMBLE-TYPE Setting 1</title>
               <programlisting>
 <![CDATA[
 :ensemble-type :orchestra]]>
               </programlisting>
   	  </example>
-    	  <example>
+    	  <example id="example.ensemble.type.setting2">
               <title>ENSEMBLE-TYPE Setting 2</title>
               <programlisting>
 <![CDATA[
@@ -852,7 +864,7 @@
   	  This string represents the path and filename to which <application>FOMUS</application> adds an appropriate extension when it saves
   	  output in various formats.
   	  This setting in combination with the <varname><link linkend="setting.output">OUTPUT</link></varname> setting determines the actual output filenames.
-    	  <example>
+    	  <example id="example.filename.setting">
               <title>FILENAME Setting</title>
               <programlisting>
 <![CDATA[
@@ -937,7 +949,7 @@
   	</para>
   	<para>
   	  A look at the following example might make this clearer:
-    	  <example>
+    	  <example id="example.instr.groups.setting">
               <title>INSTR-GROUPS Setting</title>
               <programlisting>
 <![CDATA[
@@ -975,7 +987,7 @@
 	  existing default values (see the <structfield><link linkend="part.instr">INSTR</link></structfield> slot in the
 	  <classname><link linkend="class.part">PART</link></classname> object
 	  and <link linkend="example.part.instr.slot.setting" endterm="example.part.instr.slot.setting"/> for an example of this).
-    	  <example>
+    	  <example id="example.instrument.setting">
               <title>INSTRUMENT Setting</title>
               <programlisting>
 <![CDATA[
@@ -1251,21 +1263,21 @@
 	  <literal>:MUSICXML-SIBELIUS</literal>, <literal>:MUSICXML-FINALE</literal>, <literal>:CMN</literal>, <literal>:LILYPOND</literal> and <literal>:MIDI</literal>.
   	  More information on these is given in <link linkend="outputs" endterm="outputs.title"/>.
   	  The following are examples of valid output specifications:
-  	  <example>
+  	  <example id="example.output.setting1">
               <title>OUTPUT Setting 1</title>
               <programlisting>
 <![CDATA[
 :output '(:data (:lilypond :view t))]]>
               </programlisting>
   	  </example>
-  	  <example>
+  	  <example id="example.output.setting2">
               <title>OUTPUT Setting 2</title>
               <programlisting>
 <![CDATA[
 :output '(:lilypond :filename "myfile.ly" :view nil)]]>
               </programlisting>
   	  </example>
-  	  <example>
+  	  <example id="example.output.setting3">
               <title>OUTPUT Setting 3</title>
               <programlisting>
 <![CDATA[
@@ -1292,7 +1304,7 @@
 	  If a list is specified, it contains a symbol specifying a default percussion instrument followed by keyword/argument pairs indicating slot values that replace 
 	  existing default values (see the <structfield><link linkend="instr.percs">PERCS</link></structfield> slot in the
 	  <classname><link linkend="struct.instr">INSTR</link></classname> object for an example of this).          
-    	  <example>
+    	  <example id="example.percussion.setting">
               <title>PERCUSSION Setting</title>
               <programlisting>
 <![CDATA[

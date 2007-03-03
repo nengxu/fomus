@@ -82,3 +82,7 @@
 (defmacro mloop (&body forms) `(loop ,@forms))
 #+clisp
 (defmacro mloop (&body forms) `(or (loop ,@forms) 0))
+
+;; PREVENT SILLY CM LOADING ERROR
+
+(intern "KEYSIG")

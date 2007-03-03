@@ -1,6 +1,6 @@
 <chapter id="usage">
   <title id="usage.title">Usage</title>
-  <section>
+  <section id="section.usage1">
   <para>
     Using <application>FOMUS</application> requires defining at least one part, filling these parts with events, then calling
     <application>FOMUS</application>'s main function to process everything and output a score file for importing.
@@ -8,7 +8,7 @@
     The following sections explain these different approaches: 
   </para>
   </section>
-  <section>
+  <section id="section.usage2">
     <title>Interface 1</title>
     <para>
       The first approach involves creating all the necessary objects and assembling lists, then calling <application>FOMUS</application>'s
@@ -26,8 +26,8 @@
       <classname><link linkend="class.rest">REST</link></classname> and other objects that directly affect what appears on the score.
       See the individual documentation for these for an explanation of how to use them.
       A few examples are given below (illustrations are "raw" output processed with <application>LilyPond</application> version 2.4.2):
-      <example>
-        <title id="example.fomus.usage1">FOMUS Usage 1</title>
+      <example id="example.fomus.usage1">
+        <title>FOMUS Usage 1</title>
 	<programlisting>
 <![CDATA[
 (fomus
@@ -54,7 +54,7 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
+      <example id="example.fomus.usage2">
         <title>FOMUS Usage 2</title>
 	<programlisting>
 <![CDATA[
@@ -86,7 +86,7 @@
 	</mediaobject>
 	</blockquote>
       </example>
-      <example>
+      <example id="example.fomus.usage3">
         <title>FOMUS Usage 3</title>
 	<programlisting>
 <![CDATA[
@@ -130,7 +130,7 @@
     <para>
       All of these settings are also present as special variables (see chapter <link linkend="settings" endterm="settings.title"/>).
       The following example accomplishes exactly the same thing as example <link linkend="example.fomus.usage1" endterm="example.fomus.usage1"/> above:
-      <example>
+      <example id="example.fomus.usage4">
         <title>FOMUS Usage 4</title>
 	<programlisting>
 <![CDATA[
@@ -218,14 +218,14 @@
     </para>
     <para>
       Following are the interface 2 equivalents to some of the examples above:
-      <example>
+      <example id="example.fomus.usage5">
         <title>FOMUS Usage 5</title>
 	<programlisting>
 <![CDATA[
 (To be completed.)]]>
 	</programlisting>
       </example>
-      <example>
+      <example id="example.fomus.usage6">
         <title>FOMUS Usage 6</title>
 	<programlisting>
 <![CDATA[
@@ -238,7 +238,7 @@
   <title id="interface.text.title">Text File Interface</title>
   <para>You may also create a text file where each line of the file executes one of the commands listed in 
     <link linkend="interface2" endterm="interface2.title"/>.  A simple example file is given below:
-      <example>
+      <example id="example.text.input.file">
         <title>FOMUS Text Input File</title>
 	<programlisting>
 <![CDATA[
@@ -287,14 +287,14 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)]]>
       <para>
       To process this file, use the <function>FOMUS</function> command as follows:
       <para><function>(<anchor id="function.fomus2"/>FOMUS <userinput>filename</userinput> &amp;key <userinput>value</userinput> ...)</function></para>
-      <example>
+      <example id="example.fomus.usage7">
         <title>FOMUS Usage 7</title>
 	<programlisting>
 <![CDATA[
 (fomus "/directory/file.fms")]]>
 	</programlisting>
       </example>
-      <example>
+      <example id="example.fomus.usage8">
         <title>FOMUS Usage 8</title>
 	<programlisting>
 <![CDATA[
@@ -312,7 +312,7 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)]]>
       objects (and <classname><link linkend="class.keysig">KEYSIG</link></classname> objects when implemented), 
       and a list of keyword/argument pairs representing the keywords and values found in the <literal>INIT</literal> lines.
       The following example show how you can edit and resave data using these files:
-      <example>
+      <example id="example.fomus.usage9">
         <title>FOMUS Usage 9</title>
 	<programlisting>
 <![CDATA[
@@ -326,7 +326,7 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)]]>
       </example>
     </para>
   </section>
-  <section>
+  <section id="section.usage3">
     <title>Common Music Interface</title>
     <para>
       <application>FOMUS</application> may be executed as a backend to <application>Common Music</application> using
@@ -338,14 +338,14 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)]]>
       <application><ulink url="http://commonmusic.sf.net/doc/dict/fomus-file-cls.html">here</ulink></application> in the
       <application>Common Music</application> online documentation.  Several examples are given below:
     </para>
-      <example>
+      <example id="example.fomus.usage10">
         <title>FOMUS Usage 10</title>
 	<programlisting>
 <![CDATA[
 (To be completed.)]]>
 	</programlisting>
       </example>
-      <example>
+      <example id="example.fomus.usage11">
         <title>FOMUS Usage 11</title>
 	<programlisting>
 <![CDATA[
@@ -361,7 +361,7 @@ note 1 :off 20 :dur 2 :notes (c4 e4 g4 c5)]]>
       in the format described above in <link linkend="interface.text" endterm="interface.text.title"/>. This is intended for users who
       don't want to use or learn Lisp and can generate the data some other way.
     </para>
-      <example>
+      <example id="example.fomus.usage12">
         <title>FOMUS Usage 12</title>
 	<programlisting>
 <![CDATA[
@@ -394,21 +394,21 @@ fomus my_data_file.fms]]>
     <para>
       There are several ways to tell <application>FOMUS</application> to merge chunks.  Some examples are given here in both
       Lisp and command-line syntax:
-      <example>
+      <example id="example.fomus.usage13">
         <title>FOMUS Usage 13</title>
 	<programlisting>
 <![CDATA[
 (fomus (list (fomus ...arguments_for_chunk1...) (fomus ...arguments_for_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)]]>
 	</programlisting>
       </example>
-      <example>
+      <example id="example.fomus.usage14">
         <title>FOMUS Usage 14</title>
 	<programlisting>
 <![CDATA[
 (fomus (list (fomus ...arguments_for_chunk1...) "path_to/myfomusfile_chunk2.fms") :filename "path_to/myoutputfile" :output :cmn)]]>
 	</programlisting>
       </example>
-      <example>
+      <example id="example.fomus.usage15">
         <title>FOMUS Usage 15</title>
 	<programlisting>
 <![CDATA[
@@ -419,15 +419,15 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
       command or read in from an input file.  The chunks are then combined together and output as one file.
     </para>
   </section>
-  <section>
+  <section id="section.usage4">
     <title>Other Interface Functions</title>
-    <section>
+    <section id="section.usage5">
       <para><function>(<anchor id="function.list.fomus.settings"/>LIST-FOMUS-SETTINGS)</function></para>
       <para>
         Lists all <application>FOMUS</application> settings, their expected types and their default values. 
       </para>
     </section>
-    <section>
+    <section id="section.usage6">
       <para><function>(<anchor id="function.list.fomus.modules"/>LIST-FOMUS-MODULES &amp;rest <userinput>type</userinput>)</function></para>
       <para>
         Lists all working <application>FOMUS</application> modules and additional backends that can be selected as replacements or additions
@@ -443,33 +443,33 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
         An API documentation for writing modules will be available sometime in the future.  
       </para>
     </section>
-    <section>
+    <section id="section.usage7">
       <para><function>(<anchor id="function.list.fomus.instruments"/>LIST-FOMUS-INSTRUMENTS)</function></para>
       <para>
         Lists all <application>FOMUS</application> instruments, merging/replacing <application>FOMUS</application>'s own default instruments
 	with the user-specified contents of the <varname><link linkend="setting.instruments">INSTRUMENTS</link></varname> setting.
       </para>
     </section>
-    <section>
+    <section id="section.usage8">
       <para><function>(<anchor id="function.get.instr.syms"/>GET-INSTR-SYMS)</function></para>
       <para>
         Returns a list of available <application>FOMUS</application> instrument ID symbols.
       </para>
     </section>
-    <section>
+    <section id="section.usage9">
       <para><function>(<anchor id="function.list.fomus.percussion"/>LIST-FOMUS-PERCUSSION)</function></para>
       <para>
         Lists all <application>FOMUS</application> percussion instruments (the contents of the <varname><link linkend="setting.percussion">PERCUSSION</link></varname>
 	setting).
       </para>
     </section>
-    <section>
+    <section id="section.usage10">
       <para><function>(<anchor id="function.get.perc.syms"/>GET-PERC-SYMS)</function></para>
       <para>
         Returns a list of available <application>FOMUS</application> percussion ID symbols.
       </para>
     </section>
-    <section>
+    <section id="section.usage11">
       <para><function>(<anchor id="function.list.fomus.instrgroups"/>LIST-FOMUS-INSTRGROUPS &amp;key :FORMAT <userinput>format</userinput>)</function></para>
       <para>
         Lists <application>FOMUS</application> instrument ordering/grouping data, merging/replacing <application>FOMUS</application>'s own defaults
@@ -481,13 +481,13 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
 	(see the <varname><link linkend="setting.instr.groups">INSTR-GROUPS</link></varname> setting for details).
       </para>
     </section>
-    <section>
+    <section id="section.usage12">
       <para><function>(<anchor id="function.list.fomus.clefs"/>LIST-FOMUS-CLEFS)</function></para>
       <para>
         Prints a list of <application>FOMUS</application> clef symbols.
       </para>
     </section>
-    <section>
+    <section id="section.usage13">
       <para><function>(<anchor id="function.list.fomus.meas.divs"/>LIST-FOMUS-MEAS-DIVS)</function></para>
       <para>
         Lists all default measure divisions , merging/replacing <application>FOMUS</application>'s own defaults
@@ -495,7 +495,7 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
 	(See <varname><link linkend="setting.default.meas.divs">DEFAULT-MEAS-DIVS</link></varname> for more information.)
       </para>
     </section>
-    <section>
+    <section id="section.usage14">
       <para><function>(<anchor id="function.list.fomus.tuplet.divs"/>LIST-FOMUS-TUPLET-DIVS)</function></para>
       <para>
         Lists all default tuplet divisions , merging/replacing <application>FOMUS</application>'s own defaults
@@ -503,13 +503,13 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
 	(See <varname><link linkend="setting.default.tuplet.divs">DEFAULT-TUPLET-DIVS</link></varname> for more information.)
       </para>
     </section>
-    <section>
+    <section id="section.usage15">
       <para><function>(<anchor id="function.load.init.file"/>LOAD-INIT-FILE)</function></para>
       <para>
         Reloads the <filename>.fomus</filename> initialization file in the user's home directory.
       </para>
     </section>
-    <section>
+    <section id="section.usage16">
       <para><function>(<anchor id="function.get.midi.instr"/>GET-MIDI-INSTR <userinput>program-change</userinput> &amp;key 
         :DEFAULT <userinput>default-instr</userinput>)</function></para>
       <para>
@@ -521,7 +521,7 @@ fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/
 	setting or (if set) the <literal>DEFAULT</literal> argument is returned.
       </para>
     </section>
-    <section>
+    <section id="section.usage17">
       <para><function>(<anchor id="function.addmark"/>ADDMARK <userinput>event</userinput> <userinput>mark</userinput>)</function></para>
       <para><function>(<anchor id="function.getmark"/>GETMARK <userinput>event</userinput> <userinput>markid</userinput>)</function></para>
       <para><function>(<anchor id="function.getmarks"/>GETMARKS <userinput>event</userinput> <userinput>markid</userinput>)</function></para>

@@ -1089,3 +1089,244 @@
     collect (make-note :off off
 		       :dur (if (< off 10) 1/2 1)
 		       :note (+ 70 (/ (random 4) 2)))))))
+
+;; FROM WEB PAGE
+
+;; Example 9.1. Simple Example
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25)))))))
+	
+;; Example 9.2. Staccato and Accent Marks
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25))
+		       :marks (case (random 3)
+				(0 nil)
+				(1 '(:staccato))
+				(2 '(:accent))))))))
+	
+;; Example 9.3. Quartertones
+
+(fomus
+ :output '(:lilypond :view t)
+ :quartertones t
+ :parts
+ (list
+  (make-part
+   :name "Flute"
+   :instr :flute
+   :events
+   (loop
+    for off from 0 to 10 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 70 (/ (random 4) 2)))))))
+	
+;; Example 9.4. Polyphony with Slurs
+
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop for v from 1 to 2
+	 nconc (loop
+		for off from 0 to 10 by 1/2
+		collect (make-note :off off
+				   :dur (if (< off 10) 1/2 1)
+				   :note (+ 60 (random 25))
+				   :voice v
+				   :marks (when (= (random 3) 0)
+					    '(:startslur-))))))))
+
+;; Example 9.5. Piano Chords
+
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :ensemble-type :orchestra
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop repeat 3
+	 nconc (loop
+		for off from 0 to 10 by 1/2
+		collect (make-note :off off
+				   :dur (if (< off 10) 1/2 1)
+				   :note (+ 48 (random 25))
+				   :voice '(1 2)))))))
+
+;; Example 9.6. Quantizing/Chords
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr :piano
+   :events
+   (loop repeat 10
+	 for off = (random 30.0)
+	 and dur = (1+ (random 3.0))
+	 collect (make-note :off off :dur dur :note (+ 60 (random 25)))))))
+	
+;; Example 9.7. Mark Objects
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :partid :flute
+	  :name "Flute"
+	  :instr :flute
+	  :events (loop for o from 0 to 20 by 1/2
+			collect (make-note :off o :dur 1/2 :note 72)))
+	 (make-part
+	  :partid :tuba
+	  :name "Tuba"
+	  :instr :tuba
+	  :events (loop for o from 0 to 20 by 1/2
+			collect (make-note :off o :dur 1/2 :note 48))))
+ :events (loop repeat 10
+	       collect (make-mark :partid (case (random 2) (0 :flute) (1 :tuba))
+				  :off (random 20.0)
+				  :marks '(:accent))))
+
+;; Example 9.8. Percussion 1
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :name "Percussion"
+	  :instr (list :percussion :percs (list (make-perc :woodblock :note 'e4)
+						(make-perc :snaredrum :note 'a3)))
+	  :events (loop for o from 0 to 20 by 1/2 collect
+			(make-note :off o :dur 1/2
+				   :note (case (random 2)
+					   (0 :woodblock)
+					   (1 :snaredrum)))))))
+
+;; Example 9.9. Percussion 2
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :name "Percussion"
+	  :instr (list :percussion :percs (list (make-perc :woodblock :voice 1 :note 'e4)
+						(make-perc :snaredrum :voice 2 :note 'a3)))
+	  :events (loop for o from 0 to 20 by 1/2 collect
+			(make-note :off o :dur 1/2
+				   :note (case (random 2)
+					   (0 :woodblock)
+					   (1 :snaredrum)))))))
+
+;; Example 9.10. Percussion with Automatic Durations
+
+(fomus
+ :output '(:lilypond :view t)
+ :parts (list
+	 (make-part
+	  :name "Snare Drum"
+	  :instr '(:percussion :percs ((:snare-drum :note a3)))
+	  :events (loop for o from 0 to 40 by 1/2 when (= (random 2) 0) collect
+			(make-note :off o
+				   :note :snare-drum)))))
+	
+;; Example 9.11. Semi-Orchestra Score
+
+(fomus
+ :output '(:lilypond :view t)
+ :ensemble-type :orchestra
+ :global (list (make-timesig :off 0 :time '(3 4)))
+ :parts (list
+	 (make-part
+	  :name "Flute 1"
+	  :instr :flute
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :partid 'fl2
+	  :name "Flute 2"
+	  :instr :flute
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :partid 'cl1
+	  :name "Clarinet 1"
+	  :instr :bf-clarinet
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Clarinet 2"
+	  :instr :bf-clarinet
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Violin 1"
+	  :instr :violin
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Violin 2"
+	  :instr :violin
+	  :events (list (make-note :off 0 :dur 1 :note 60)))
+	 (make-part
+	  :name "Cello 1"
+	  :instr :cello
+	  :events (list (make-note :off 0 :dur 1 :note 48)))
+	 (make-part
+	  :name "Cello 2"
+	  :instr :cello
+	  :events (list (make-note :off 0 :dur 1 :note 48)))
+	 (make-part
+	  :name "Tuba"
+	  :instr :tuba
+	  :events (list (make-note :off 0 :dur 1 :note 36)))))
+	
+;; Example 9.12. Key Signatures
+
+(fomus
+ :output '(:lilypond :view t)
+ :verbose 1
+ :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
+ :auto-cautionary-accs t
+ :parts
+ (list
+  (make-part
+   :name "Piano"
+   :instr '(:piano :simultlim 1)
+   :events
+   (loop
+    for off from 0 to 8 by 1/2
+    collect (make-note :off off
+		       :dur (if (< off 10) 1/2 1)
+		       :note (+ 48 (random 25)))))))
+	

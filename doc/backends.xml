@@ -1,6 +1,6 @@
 <chapter id="outputs">
   <title id="outputs.title">Outputs</title>
-  <section>
+  <section id="section.outputs1">
     <para>
       This chapter explains options specific to each of the possible output formats.
       One or more outputs or backends may be selected with the <varname><link linkend="setting.output">OUTPUT</link></varname> setting.
@@ -16,7 +16,7 @@
       Each output adds its own extension (for example, a LilyPond file gets a <filename>.ly</filename> extension added).
     </para> 
   </section>
-  <section>
+  <section id="section.outputs2">
     <title>Data</title>  
     <para>
       This produces a file with extension <filename>.fms</filename> containing a dump of the data that is
@@ -28,7 +28,7 @@
       function with the name of the file. See <link linkend="interface.text" endterm="interface.text.title"/> for a description of this file format.
     </para>
   </section>
-  <section>
+  <section id="section.outputs3">
     <title>LilyPond</title>
     <para>
       <application>FOMUS</application> currently creates notation files for <application>LilyPond</application> versions 2.4 and 2.6.
@@ -50,7 +50,7 @@
       and <varname><link linkend="musicxml.multinote.tremolo.kludge">:XML-MULTINOTE-TREMOLO-KLUDGE</link></varname> options)
       in rare cases where they can't be indicated properly.
     </para>
-    <section>
+    <section id="section.outputs4">
       <title>LilyPond Options</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="lily.filename">:FILENAME</link></varname></member>
@@ -73,7 +73,7 @@
         <member><varname><link linkend="lily.textacc.markup">:TEXTACC-MARKUP</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.outputs5">
       <title>Alphabetical Listing of Options</title>    
       <variablelist>
         <varlistentry>
@@ -273,7 +273,7 @@
       </variablelist>
     </section> 
   </section>
-  <section>
+  <section id="section.outputs6">
     <title id="musicxml">MusicXML</title>  
     <para>
     <application>FOMUS</application> outputs <application>MusicXML</application> version 1.1 format files when the <literal>:MUSICXML</literal>
@@ -301,7 +301,7 @@
     Most of these are easily fixed with the exception of the improper rhythm/tuplet problems.
     Until there are better solutions for these problems, there are some options for getting around some of them:
     </para>
-    <section>
+    <section id="section.outputs7">
       <title>MusicXML Options</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="musicxml.filename">:FILENAME</link></varname></member>
@@ -311,7 +311,7 @@
 	<member><varname><link linkend="musicxml.partgroups.kludge">:XML-PARTGROUPS-KLUDGE</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.outputs8">
       <title>Alphabetical Listing of Options</title>    
       <variablelist>
         <varlistentry>
@@ -368,21 +368,21 @@
       </variablelist>
     </section>
   </section>
-  <section>
+  <section id="section.outputs9">
     <title>MusicXML for Sibelius</title>  
     <para>
       This is equivalent to the <link linkend="musicxml">MusicXML</link> output with "kludge" options set appropriately for Sibelius version 4.
       Use the <literal>:MUSICXML-SIBELIUS</literal> keyword in the <varname><link linkend="setting.output">OUTPUT</link></varname> setting for this.
     </para>
     </section>
-  <section>
+  <section id="section.outputs10">
     <title>MusicXML for Finale</title>  
     <para>
       This is equivalent to the <link linkend="musicxml">MusicXML</link> output with "kludge" options set appropriately for Finale.
       Use the <literal>:MUSICXML-FINALE</literal> keyword in the <varname><link linkend="setting.output">OUTPUT</link></varname> setting for this.
     </para>
     </section>
-  <section>
+  <section id="section.outputs11">
     <title>Common Music Notation</title>  
     <para>
       This backend produces files in Lisp syntax suitable for loading and processing with <application>Common Music Notation</application>.
@@ -392,7 +392,7 @@
       viewing application (a PostScript viewing application in <application>Gnome</application> or <application>KDE</application>
       or the <application>Preview</application> application in OS X) has been found or is specified by the user.
     </para>
-    <section>
+    <section id="section.outputs12">
       <title>CMN Options</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="cmn.filename">:FILENAME</link></varname></member>
@@ -404,7 +404,7 @@
         <member><varname><link linkend="cmn.view.opts">:VIEW-OPTS</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.outputs13">
       <title>Alphabetical Listing of Options</title>    
         <variablelist>
         <varlistentry>
@@ -480,7 +480,7 @@
 	</variablelist> 
     </section>
   </section>
-  <section>
+  <section id="section.outputs14">
     <title>MIDI</title>  
     <para>
       This requires <application>Common Music</application> to output MIDI data.  
@@ -503,7 +503,7 @@
       arguments to its <function>EVENTS</function> or <function>RTS</function> function, whichever is used.
       <application>FOMUS</application> uses floating point velocity (or amplitude) values (0.0 to 1.0).
     </para>
-    <section>
+    <section id="section.outputs15">
       <title>MIDI Options</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="midi.filename">:FILENAME</link></varname></member>
@@ -534,7 +534,7 @@
         <member><varname><link linkend="midi.midi.filename">:MIDI-FILENAME</link></varname></member>
       </simplelist>
     </section>
-    <section>
+    <section id="section.outputs16">
       <title>Alphabetical Listing of Options</title>    
       <variablelist>
         <varlistentry>
@@ -867,7 +867,7 @@
       </variablelist>
     </section>
   </section>
-  <section>
+  <section id="section.outputs17">
     <title>CHUNK</title>
     <para>
       (See <link linkend="interface.chunks" endterm="interface.chunks.title"/>.)

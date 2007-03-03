@@ -1,6 +1,6 @@
 <chapter id="objects">
   <title id="objects.title">Objects</title>
-  <section>
+  <section id="section.objects1">
     <para>
       This chapter describes several important classes and structures that provide the main way of specifying all of the
       part, instrument, and notational information that is passed to <application>FOMUS</application> for processing.
@@ -20,7 +20,7 @@
       It is reflected somewhat in the prefixes that appear in the accessor function names.
     </para>
   </section>
-  <section>
+  <section id="section.objects2">
     <title id="class.part">Class PART</title>
     <para>
       A <classname><link linkend="class.part">PART</link></classname> object represents a written part in the score.
@@ -121,8 +121,8 @@
 	      and the rest of the list to be keyword/argument pairs specifying slots that are to be modified in the original instrument
 	      (as if included in a call to <function><link linkend="function.copy.instr">COPY-INSTR</link></function>.
 	    </para>
-       	    <example>
-                <title id="example.part.instr.slot.setting">PART-INSTR Slot Setting</title>
+       	    <example id="example.part.instr.slot.setting">
+                <title>PART-INSTR Slot Setting</title>
                 <programlisting>
 <![CDATA[
 '(:piano :staves 3 :simultlim 6)]]>
@@ -170,7 +170,7 @@
       </variablelist>
     </para>
   </section>
-  <section>
+  <section id="section.objects3">
     <title id="class.timesig">Class TIMESIG</title>
     <para>
       A <classname><link linkend="class.timesig">TIMESIG</link></classname> object indicates a time signature change in the score.
@@ -281,7 +281,9 @@
 	  <listitem>
 	    <para>
 	      If this slot is set to <literal>T</literal>, indicates that the measure is a compound meter.
-	      The denominator of the time signature then determines the beat value.
+	      <application>FOMUS</application> then derives the beat value from the denominator of the time signature.
+	      Setting this to <literal>T</literal> or <literal>NIL</literal> always overrides whatever default action is
+	      specified in the <varname><link linkend="setting.auto.timesig.comp">AUTO-TIMESIG-COMP</link></varname> setting.
 	    </para>
 	  </listitem>
 	</varlistentry>
@@ -317,7 +319,7 @@
 	      A value usually only needs to be specified here if the user wants to force <application>FOMUS</application>
 	      to divide measures in a specific way rather than choosing between several choices.
 	      The following example shows what might be specified for a 7/8 meter:
-       	    <example>
+       	    <example id="example.timesig.div.slot.setting">
                 <title>TIMESIG-DIV Slot Setting</title>
                 <programlisting>
 <![CDATA[
@@ -371,7 +373,7 @@
       </variablelist>
     </para>
   </section>
-  <section>
+  <section id="section.objects4">
     <title id="class.timesig.repl">Class TIMESIG-REPL</title>
     <para>
       A <classname><link linkend="class.timesig.repl">TIMESIG-REPL</link></classname> object is a "replacement"
@@ -411,13 +413,13 @@
     </para>
     <para>Predicate Function: <function>(TIMESIGP <userinput>obj</userinput>)</function></para>
   </section>
-  <section>
+  <section id="section.objects5">
     <title id="class.keysig">Class KEYSIG</title>
     <para>
       (This class is not implemented yet.)
     </para>
   </section>
-  <section>
+  <section id="section.objects6">
     <title id="class.note">Class NOTE</title>
     <para>
       The <classname><link linkend="class.note">NOTE</link></classname> object will usually be the only object required to describe
@@ -556,14 +558,14 @@
 	      a <literal>+</literal> or <literal>S</literal> for sharp or a <literal>-</literal> or <literal>F</literal> for flat, and an
 	      integer designating the register (<literal>4</literal> is the octave above middle C).
 	      A few examples are given here:
-       	    <example>
+       	    <example id="event.note.slot.setting1">
                 <title>EVENT-NOTE Slot Setting 1</title>
                 <programlisting>
 <![CDATA[
 'c+4]]>
                 </programlisting>
   	    </example>	      
-       	    <example>
+       	    <example id="event.note.slot.setting2">
                 <title>EVENT-NOTE Slot Setting 2</title>
                 <programlisting>
 <![CDATA[
@@ -591,14 +593,14 @@
 	      alteration and the second element specifying the quartertone alteration (one of the numbers
 	      <literal>-1/2</literal>, <literal>0</literal> or <literal>1/2</literal>).
 	      A few examples are given here:
-       	    <example>
+       	    <example id="event.note.slot.setting3">
                 <title>EVENT-NOTE Slot Setting 3</title>
                 <programlisting>
 <![CDATA[
 '(f4 + --)]]>
                 </programlisting>
   	    </example>	      
-       	    <example>
+       	    <example id="event.note.slot.setting4">
                 <title>EVENT-NOTE Slot Setting 4</title>
                 <programlisting>
 <![CDATA[
@@ -631,7 +633,7 @@
       </variablelist>
     </para>
   </section>
-  <section>
+  <section id="section.objects7">
     <title id="class.rest">Class REST</title>
     <para>
       The <classname><link linkend="class.rest">REST</link></classname> objects should rarely be used.
@@ -731,7 +733,7 @@
       </variablelist>
     </para>
   </section>
-  <section>
+  <section id="section.objects8">
     <title id="class.mark">Class MARK</title>
     <para>
       The <classname><link linkend="class.mark">MARK</link></classname> objects allow the user to specify marks outside of a
@@ -815,7 +817,7 @@
 	      <application>FOMUS</application> chooses the option from the list that places the mark the closest to the
 	      specified offset.
 	      Following is an example of how to specify staves:
-       	    <example>
+       	    <example id="event.voice.slot.setting">
                 <title>EVENT-VOICE Slot Setting</title>
                 <programlisting>
 <![CDATA[
@@ -864,7 +866,7 @@
 	      Marks are specified as either symbols or lists of symbols and numbers.
 	      If it is a list, then the first element is the mark symbol followed by one or more arguments.
 	      Following is an example of what may appear in the <structfield><link linkend="mark.marks">MARKS</link></structfield> slot:
-       	    <example>
+       	    <example id="event.marks.slot.setting1">
                 <title>EVENT-MARKS Slot Setting 1</title>
                 <programlisting>
 <![CDATA[
@@ -890,7 +892,7 @@
 	      slot in this class.
 	      The rest of the list after the second element is the mark symbol and the arguments that apply to that symbol.
 	      Following is an example:
-       	    <example>
+       	    <example id="event.marks.slot.setting2">
                 <title>EVENT-MARKS Slot Setting 2</title>
                 <programlisting>
 <![CDATA[
@@ -911,7 +913,7 @@
       </variablelist>
     </para>
   </section>
-  <section>
+  <section id="section.objects9">
     <title id="struct.instr">Structure INSTR</title>
     <para>
       An <classname><link linkend="struct.instr">INSTR</link></classname> structure contain instrument-specific data that's used to inform <application>FOMUS</application>
@@ -1041,7 +1043,7 @@
 	      followed by one of the two symbols <literal>:UP</literal> or <literal>:DN</literal>
 	      and ended by an integer specifying the number of ledger lines.
 	      An example illustrates this data structure.
-       	    <example>
+       	    <example id="example.instr-cleflegls.slot.setting">
                 <title>INSTR-CLEFLEGLS Slot Setting</title>
                 <programlisting>
 <![CDATA[
@@ -1085,7 +1087,7 @@
 	      Lists contain a symbol lookup value followed by keyword-argument pairs signifying values to replace in the predefined percussion table--it will
 	      usually be necessary to use a list instead of a symbol since the <structfield><link linkend="perc.note">NOTE</link></structfield> and
 	      <structfield><link linkend="perc.voice">VOICE</link></structfield> slots are empty in <application>FOMUS</application>'s table.
-       	    <example>
+       	    <example id="instr.percs.slot.setting">
                 <title>INSTR-PERCS Slot Setting</title>
                 <programlisting>
 <![CDATA[
@@ -1126,7 +1128,7 @@
       </variablelist>
     </para>
   </section>
-  <section>
+  <section id="section.objects10">
     <title id="struct.perc">Structure PERC</title>
     <para>
     </para>

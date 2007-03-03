@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ANSI_X3.4-1968" standalone="no"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Class TIMESIG</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch04.html" title="Chapter&#160;4.&#160;Objects" /><link rel="prev" href="ch04s02.html" title="Class PART" /><link rel="next" href="ch04s04.html" title="Class TIMESIG-REPL" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Class TIMESIG</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04s02.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;4.&#160;Objects</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch04s04.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="id323841"></a>Class TIMESIG</h2></div></div></div><p>
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=ANSI_X3.4-1968" /><title>Class TIMESIG</title><link rel="stylesheet" href="fomus.css" type="text/css" /><meta name="generator" content="DocBook XSL Stylesheets V1.70.1" /><link rel="start" href="index.html" title="FOMUS Documentation" /><link rel="up" href="ch04.html" title="Chapter&#160;4.&#160;Objects" /><link rel="prev" href="ch04s02.html" title="Class PART" /><link rel="next" href="ch04s04.html" title="Class TIMESIG-REPL" /></head><body><div class="navheader"><table width="100%" summary="Navigation header"><tr><th colspan="3" align="center">Class TIMESIG</th></tr><tr><td width="20%" align="left"><a accesskey="p" href="ch04s02.html">Prev</a>&#160;</td><th width="60%" align="center">Chapter&#160;4.&#160;Objects</th><td width="20%" align="right">&#160;<a accesskey="n" href="ch04s04.html">Next</a></td></tr></table><hr /></div><div class="section" lang="en" xml:lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a id="section.objects3"></a>Class TIMESIG</h2></div></div></div><p>
       A <code class="classname"><a href="ch04s03.html#class.timesig">TIMESIG</a></code> object indicates a time signature change in the score.
       They may also be used to indicate special barlines and a few other changes.
       <span class="application">FOMUS</span> uses <code class="classname"><a href="ch04s03.html#class.timesig">TIMESIG</a></code> objects to determine where to place measures and
@@ -75,7 +75,9 @@
 	      This is a required list of two integers, specifying the numerator and denominator of the printed time signature.
 	    </p></dd><dt><span class="term"><code class="function"><a id="timesig.comp"></a>TIMESIG-COMP</code></span></dt><dd><p>
 	      If this slot is set to <code class="literal">T</code>, indicates that the measure is a compound meter.
-	      The denominator of the time signature then determines the beat value.
+	      <span class="application">FOMUS</span> then derives the beat value from the denominator of the time signature.
+	      Setting this to <code class="literal">T</code> or <code class="literal">NIL</code> always overrides whatever default action is
+	      specified in the <code class="varname"><a href="ch05s04.html#setting.auto.timesig.comp">AUTO-TIMESIG-COMP</a></code> setting.
 	    </p></dd><dt><span class="term"><code class="function"><a id="timesig.beat"></a>TIMESIG-BEAT</code></span></dt><dd><p>
 	      The <em class="structfield"><code><a href="ch04s03.html#timesig.beat">BEAT</a></code></em> slot value determines how events are mapped from beat units to notational durations.
 	      It is a ratio that specifies what notational duration is equivalent to 1 beat.
@@ -99,7 +101,7 @@
 	      A value usually only needs to be specified here if the user wants to force <span class="application">FOMUS</span>
 	      to divide measures in a specific way rather than choosing between several choices.
 	      The following example shows what might be specified for a 7/8 meter:
-       	    </p><div class="example"><a id="id324508"></a><p class="title"><b>Example&#160;4.2.&#160;TIMESIG-DIV Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
+       	    </p><div class="example"><a id="example.timesig.div.slot.setting"></a><p class="title"><b>Example&#160;4.2.&#160;TIMESIG-DIV Slot Setting</b></p><div class="example-contents"><pre class="programlisting">
 
 '((4 3) (3 4))
                 </pre></div></div><p><br class="example-break" />
