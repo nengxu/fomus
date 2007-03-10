@@ -282,8 +282,8 @@
 		  (let ((ns (instr-staves (part-instr p))))
 		    (push lily-partname nms)
 		    (format f "~A = {~%" lily-partname)
-		    (when (part-name p) (format f "  \\set Staff.instrument = ~S~%" (part-name p)))
-		    (when (part-abbrev p) (format f "  \\set Staff.instr = ~S~%" (part-abbrev p)))
+		    (when (part-name p) (format f (if (> ve 209) "  \\set Staff.instrumentName = ~S~%" "  \\set Staff.instrument = ~S~%") (part-name p)))
+		    (when (part-abbrev p) (format f (if (> ve 209) "  \\set Staff.shortInstrumentName = ~S~%" "  \\set Staff.instr = ~S~%") (part-abbrev p)))
 		    (when (or (null *timesig-style*) (eq *timesig-style* :fraction))
 		      (if (> ns 1)
 			  (loop for s from 1 to ns do

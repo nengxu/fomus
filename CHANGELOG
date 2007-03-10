@@ -1,4 +1,6 @@
 v0.2.22
+	Fixed instrument names and abbreviations in LilyPond 2.10
+	Remove newlines from notetexts, etc..
 	Auto set timesig COMP slot to t for appropriate time signatures (6/8, etc.)
 	Fix for textnotes in LilyPond (Kilian)
 	Changed maximum tuplet size to more reasonable number

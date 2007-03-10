@@ -258,7 +258,7 @@
 		      (if (rule-comp rule) (no 2/3) (or (no 1) (no 2/3) (no 4/7) #|(and (no 4/7) (not (event-noddot ev)))|#))))))) ;; lilypond fix
 	  (unit-nodiv ; tlt/trt: nil = ties not allowed, t = tie is possible 
 	   (etypecase ev
-	     (rest	      #|nil|# (and (rule-rst rule) (no 1))) ; 
+	     (rest #|nil|# (and (rule-rst rule) (no 1))) ; 
 	     (note (let ((aa (or (ti (event-tielt ev)) (ti (event-tiert ev)))))
 		     (and ; these are special, so duration is assumed to be valid
 		      (or (rule-tlt rule) aa)
@@ -300,8 +300,9 @@
 	 and ((l . (o1 . o2)) . (m . f)) of-type (((integer 0) . ((rational 0) . (rational 0))) . ((rational (0)) . (rational (0))))
 	 in (sort ntu (lambda (x y) (declare (type (cons (cons (integer 0) (cons (rational 0) (rational 0)))) x y))
 			      (if (= (caar x) (caar y)) (< (cadar x) (cadar y)) (> (caar x) (caar y)))))
-	 #+debug do #+debug (or (<= c 1) (error "Error in SPLIT-SCORE"))
-	 if (or (/= l0 l) (/= o02 o1) (>= c 1)) do (when va (decf su (* (1- (/ f)) c +tuplet-score+))) (setf c m f0 0) else do (incf c m) ; new group, reset everything
+	 if (or (/= l0 l) (/= o02 o1) (>= c 1))
+	 do (when va (decf su (* (1- (/ f)) c +tuplet-score+))) (setf c m f0 0)
+	 else do (incf c m) ; new group, reset everything
 	 if (= f0 0) do (setf f0 f va t) else when (/= f0 f) do (setf va nil)
 	 finally (when va (decf su (* (1- (/ f)) c +tuplet-score+))))
    (return (list su ; number of notes/tuplets (can only increase with splitting)

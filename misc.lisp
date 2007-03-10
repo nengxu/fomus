@@ -632,13 +632,13 @@
 ;; MORE GENERAL
 
 ;; removes newlines and double spaces from a string
-(defun remove-newlines (str)
+(defun remove-newlines (str &optional (and2xs t))
   (declare (type string str))
   (loop with c = 0
 	for p = #\space then x
 	for x0 across str
 	for x = (if (char= x0 #\newline) #\space x0)
-	unless (and (char= p #\space) (char= x #\space))
+	unless (and and2xs (char= p #\space) (char= x #\space))
 	collect x into r and do (incf c)
 	finally (return (make-array c :element-type 'character :initial-contents r))))
 
