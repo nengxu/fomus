@@ -296,18 +296,63 @@
    collect (event-endoff e) into fs
    finally
    (loop with c = 0 and va and f0 = 0 ; look for contiguous nested tuplets of same duration, give them a boost
-	 for l0 = 0 then l and o02 = -1 then o2
+	 for l0 = 0 then l and o02 = -1 then o2	; l = level, o1/o2 = off/endoff, m = fraction of entire tuplet, f = fraction of tuplet at that level
 	 and ((l . (o1 . o2)) . (m . f)) of-type (((integer 0) . ((rational 0) . (rational 0))) . ((rational (0)) . (rational (0))))
 	 in (sort ntu (lambda (x y) (declare (type (cons (cons (integer 0) (cons (rational 0) (rational 0)))) x y))
 			      (if (= (caar x) (caar y)) (< (cadar x) (cadar y)) (> (caar x) (caar y)))))
 	 if (or (/= l0 l) (/= o02 o1) (>= c 1))
 	 do (when va (decf su (* (1- (/ f)) c +tuplet-score+))) (setf c m f0 0)
-	 else do (incf c m) ; new group, reset everything
+	 else do (incf c m)		; new group, reset everything
 	 if (= f0 0) do (setf f0 f va t) else when (/= f0 f) do (setf va nil)
 	 finally (when va (decf su (* (1- (/ f)) c +tuplet-score+))))
    (return (list su ; number of notes/tuplets (can only increase with splitting)
 		 #-clisp (/ ad id) #+clisp (/ (or ad 0) id) ; difference in durations--might not always increase, but still functions well as a heuristic
 		 ce (ave-list (delete-duplicates fs)))))) ; average offset location
+;; (defun split-score (events)
+;;   (declare (type list events))
+;;   (loop
+;;    with ntu and ntg
+;;    for (e en) of-type ((or noteex restex) (or noteex restex null)) on (sort (copy-list events) #'< :key #'event-off) ; no overlapping offsets should exist here
+;;    for d = (event-dur* e)
+;;    sum +event-score+ into su
+;;    when (event-tupfrac e)
+;;    sum (loop with tf = (event-tupfrac e) with le = (length tf)
+;; 	     for i from 1 and x of-type (rational (0)) in tf
+;; 	     for m = x then (* m x)
+;; 	     sum m into s
+;; 	     do (if (> i 1)
+;; 		    (push (cons (cons (- le i) (cons (event-off e) (event-endoff e))) (cons m x)) ntu)
+;; 		    (push (cons (cons (event-off e) (event-endoff e)) (cons m x)) ntg))
+;; 	     finally (return (* s le +tuplet-score+))) into su
+;;    and when (< (* (numerator (first (event-tupdurmult e))) (first (event-tupfrac e))) 1)
+;;    sum (* (first (event-tupfrac e)) +smalltupnote-score+) into su
+;;    maximize d into ad
+;;    minimize d into id
+;;    when en sum (diff d (event-dur* en)) into ce
+;;    collect (event-off e) into fs
+;;    collect (event-endoff e) into fs
+;;    finally
+;;    (loop with c = 0 and va and f0 = 0 ; look for contiguous nested tuplets of same duration, give them a boost
+;; 	 for l0 = 0 then l and o02 = -1 then o2	; l = level, o1/o2 = off/endoff, m = fraction of entire tuplet, f = fraction of tuplet at that level
+;; 	 and ((l . (o1 . o2)) . (m . f)) of-type (((integer 0) . ((rational 0) . (rational 0))) . ((rational (0)) . (rational (0))))
+;; 	 in (sort ntu (lambda (x y) (declare (type (cons (cons (integer 0) (cons (rational 0) (rational 0)))) x y))
+;; 			      (if (= (caar x) (caar y)) (< (cadar x) (cadar y)) (> (caar x) (caar y)))))
+;; 	 if (or (/= l0 l) (/= o02 o1) (>= c 1))
+;; 	 do (when va (decf su (* (1- (/ f)) c +tuplet-score+))) (setf c m f0 0)	; new group, reset everything
+;; 	 else do (incf c m)	
+;; 	 if (= f0 0) do (setf f0 f va t) else when (/= f0 f) do (setf va nil)
+;; 	 finally (when va (decf su (* (1- (/ f)) c +tuplet-score+))))
+;;    (loop with c = 0 and va and f0 = 0 ; look for contiguous nested tuplets of same duration, give them a boost
+;; 	 for o02 = -1 then o2 ; o1/o2 = off/endoff, m = fraction of entire tuplet, f = fraction of tuplet at that level
+;; 	 and ((o1 . o2) . (m . f)) of-type (((rational 0) . (rational 0)) . ((rational (0)) . (rational (0))))
+;; 	 in (sort ntg (lambda (x y) (declare (type (cons (cons (rational 0) (rational 0))) x y)) (< (caar x) (caar y))))
+;; 	 if (>= c 1) do (when va (decf su (* (1- (/ f)) c +tuplet-score+)))
+;; 	 if (or (/= o02 o1) (>= c 1)) (setf c m f0 0) else do (incf c m)
+;; 	 if (= f0 0) do (setf f0 f va t) else when (/= f0 f) do (setf va nil)
+;; 	 finally (when va (decf su (* (1- (/ f)) c +tuplet-score+))))
+;;    (return (list su ; number of notes/tuplets (can only increase with splitting)
+;; 		 #-clisp (/ ad id) #+clisp (/ (or ad 0) id) ; difference in durations--might not always increase, but still functions well as a heuristic
+;; 		 ce (ave-list (delete-duplicates fs)))))) ; average offset location
 
 ;; = and < function for score tuplet
 (defun splsc< (x y)

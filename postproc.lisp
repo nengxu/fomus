@@ -479,19 +479,19 @@
 							      (list (or (find :up tx) (find :down tx) (or (lookup (first tx) +marks-defaultdir+)
 													  (if (>= (event-staff e) (instr-staves (part-instr p)))
 													      :up :down)))
-								    (remove-newlines (find-if #'stringp tx)))))
+								    (let ((x (find-if #'stringp tx))) (when x (remove-newlines x))))))
 						       mks))
 						((< d u)
 						 (push (cons (first tx)
 							     (nconc
 							      (let ((x (find-if #'numberp tx))) (when x (list x)))
-							      (list :down (remove-newlines (find-if #'stringp tx)))))
+							      (list :down (let ((x (find-if #'stringp tx))) (when x (remove-newlines x))))))
 						       mks))
 						((> d u)
 						 (push (cons (first tx)
 							     (nconc
 							      (let ((x (find-if #'numberp tx))) (when x (list x)))
-							      (list :up (remove-newlines (find-if #'stringp tx)))))
+							      (list :up (let ((x (find-if #'stringp tx))) (when x (remove-newlines x))))))
 						       mks))))
 				    finally (mapc (lambda (m) (declare (type cons m)) (addmark e m)) mks)))))
 	(print-dot)))
@@ -544,7 +544,7 @@
 			   (setf (nth (position (second i) (event-notes* e2)) (event-tielt e2)) t)
 			   (setf (event-tielt e2) t))))
 	(print-dot)))
-		       
+
 ;; do lots of nice things for the backend functions
 (defun postproc (pts)
   (postproc-tremolos pts)

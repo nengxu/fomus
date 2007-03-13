@@ -250,7 +250,7 @@ shift \$((\$OPTIND - 1))
 if [[ \$# -ne 1 ]]; then usage; exit 2; fi
 fls="\"\$1\""
 while [[ -n "\$2" ]]; do fls="\$fls \"\$2\""; shift; done
-$LISPEXE $COREARG "$LIBDIR/fomus.img" $EXTRAARG $EVALARG "(fm::fomus-exe \"\$HOME/.fomus\" \"\$o\" \"\$n\" \"\$q\" \"\$v\" \$fls)"
+$LISPEXE $COREARG "$LIBDIR/fomus.img" $EXTRAARG $EVALARG "(fm::fomus-exe \"\$HOME/.fomus\" \"\$o\" \"\$n\" \"\$q\" \"\$v\" \$fls)" 2>/dev/null
 EOF
 ) > /tmp/fomus/fomus.sh
 
