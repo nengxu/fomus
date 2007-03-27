@@ -122,7 +122,7 @@
 					:note (+ basenote (random 25))))))))
 
 (fomus
- :backend '((:data) (:lilypond :view nil) #|(:midi :tempo 120 :delay 1)|# #|(:cmn :view t)|#)
+ :backend '((:data) (:lilypond :view t) #|(:midi :tempo 120 :delay 1)|# #|(:cmn :view t)|#)
  :ensemble-type :orchestra
  :beat-division 8
  :quartertones t
@@ -264,7 +264,7 @@
 ;; Quantizing
 
 (fomus
- :backend '((:data) (:cmn :view t))
+ :backend '((:data) (:lilypond :view t) (:musicxml-finale))
  :ensemble-type :orchestra
  :beat-division 2
  :parts
@@ -275,7 +275,7 @@
    :events
    (loop
     for off = 0 then (+ off dur)
-    and dur = (+ 0.5 (random 0.5))
+    and dur = (+ 1.0 (random 0.5))
     until (> off 15)
     collect (make-note :off off
 		       :dur dur

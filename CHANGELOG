@@ -1,3 +1,7 @@
+v0.2.23
+	Fixed XML adding redundant clef at beginning of output
+	Fixed measure rests bug in XML output (caused SBCL to hang)
+
 v0.2.22
 	Fixed instrument names and abbreviations in LilyPond 2.10
 	Remove newlines from notetexts, etc..

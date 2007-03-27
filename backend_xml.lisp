@@ -212,7 +212,8 @@
 				       do (prenconc (sort (mapcar #'rest (getmarks e :starttup)) #'> :key #'first) tv)
 				       nconc (when (and fi (not mfi))
 					       (loop for c in (getmarks e :clef) 
-						     for (s l o) = (lookup (second c) +xml-clefs+) collect
+						     for (s l o) = (lookup (second c) +xml-clefs+)
+						     unless (fourth c) collect
 						     `("attributes" nil
 						       ("clef" ,(when (> ns 1) `("number" ,(event-staff e)))
 							("sign" nil ,s)
