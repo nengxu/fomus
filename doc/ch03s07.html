@@ -5,29 +5,29 @@
       command.  This allows sections or parts ("chunks") to be produced separately and put together later into a complete score.  This allows the user
       to use different arguments and settings values with different sections of the score.  
     </p><p>
-      This feature is unstable at the moment.
+      This feature is "experimental" at the moment (it will be fully functional soon).
       <span class="application">FOMUS</span> outputs a chunk object automatically on each successful run of the <code class="function">FOMUS</code> command.  
       If no outputs are specified, then <code class="literal">:CHUNK</code> or <code class="literal">:NONE</code> must be given as a backend.
       A chunk is actually all of the measures in the processed output that contain anything other than a measure rest (ie. all of the measures that
-      contain notation).  A chunk can then be either a part, several parts in a range of measures, every odd measure, etc..
-      Chunks can only be merged together if there are no notational overlaps.  (At the moment, chunks can't be "relocated" or given an offset--this 
+      contain notation).  So it can include either a part, several parts in a range of measures, every other measure over a certain range, etc..
+      Chunks can only be merged together if there are no notational overlaps.  (At the moment, they can't be "relocated" or given an offset--this 
       will be added soon.)  <span class="application">FOMUS</span> considers parts with matching 
-      <em class="structfield"><code><a href="ch04s06.html#note.partid">PARTID</a></code></em> values to be the same and will match them accordingly.  Chunks may contain
-      parts that aren't in other chunks--<span class="application">FOMUS</span> matches and adds parts into one score and reorders them again after merging.
+      <em class="structfield"><code><a href="ch04s06.html#note.partid">PARTID</a></code></em> values to be the same and will match them accordingly.  New (or non-matching) parts
+      may also be merged tegether into one score--<span class="application">FOMUS</span> matches, adds, and reorders all of them automatically.
     </p><p>
       There are several ways to tell <span class="application">FOMUS</span> to merge chunks.  Some examples are given here in both
       Lisp and command-line syntax:
       </p><div class="example"><a id="example.fomus.usage13"></a><p class="title"><b>Example&#160;3.14.&#160;FOMUS Usage 13</b></p><div class="example-contents"><pre class="programlisting">
 
-(fomus (list (fomus ...arguments_for_chunk1...) (fomus ...arguments_for_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)
+(fomus (list (fomus ...fomus_args_chunk1...) (fomus ...fomus_args_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)
 	</pre></div></div><p><br class="example-break" />
       </p><div class="example"><a id="example.fomus.usage14"></a><p class="title"><b>Example&#160;3.15.&#160;FOMUS Usage 14</b></p><div class="example-contents"><pre class="programlisting">
 
-(fomus (list (fomus ...arguments_for_chunk1...) "path_to/myfomusfile_chunk2.fms") :filename "path_to/myoutputfile" :output :cmn)
+(fomus (list "path_to/myfomuschunk1.fms" (fomus ...fomus_args_chunk2...) "path_to/myfomuschunk3.fms") :filename "path_to/myoutputfile" :output :cmn)
 	</pre></div></div><p><br class="example-break" />
-      </p><div class="example"><a id="example.fomus.usage15"></a><p class="title"><b>Example&#160;3.16.&#160;FOMUS Usage 15</b></p><div class="example-contents"><pre class="programlisting">
+      </p><div class="example"><a id="example.fomus.usage15"></a><p class="title"><b>Example&#160;3.16.&#160;FOMUS Usage 15 (Command Line)</b></p><div class="example-contents"><pre class="programlisting">
 
-fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/myfomusfile_chunk3.fms
+fomus -lw path_to/myfomuschunk1.fms path_to/myfomuschunk2.fms path_to/myfomuschunk3.fms
 	</pre></div></div><p><br class="example-break" />
       In each case, two or three chunks are either created from another <code class="function"><a href="ch03s02.html#function.fomus">FOMUS</a></code>
       command or read in from an input file.  The chunks are then combined together and output as one file.

@@ -381,15 +381,15 @@ fomus my_data_file.fms]]>
       to use different arguments and settings values with different sections of the score.  
     </para>
     <para>
-      This feature is unstable at the moment.
+      This feature is "experimental" at the moment (it will be fully functional soon).
       <application>FOMUS</application> outputs a chunk object automatically on each successful run of the <function>FOMUS</function> command.  
       If no outputs are specified, then <literal>:CHUNK</literal> or <literal>:NONE</literal> must be given as a backend.
       A chunk is actually all of the measures in the processed output that contain anything other than a measure rest (ie. all of the measures that
-      contain notation).  A chunk can then be either a part, several parts in a range of measures, every odd measure, etc..
-      Chunks can only be merged together if there are no notational overlaps.  (At the moment, chunks can't be "relocated" or given an offset--this 
+      contain notation).  So it can include either a part, several parts in a range of measures, every other measure over a certain range, etc..
+      Chunks can only be merged together if there are no notational overlaps.  (At the moment, they can't be "relocated" or given an offset--this 
       will be added soon.)  <application>FOMUS</application> considers parts with matching 
-      <structfield><link linkend="note.partid">PARTID</link></structfield> values to be the same and will match them accordingly.  Chunks may contain
-      parts that aren't in other chunks--<application>FOMUS</application> matches and adds parts into one score and reorders them again after merging.
+      <structfield><link linkend="note.partid">PARTID</link></structfield> values to be the same and will match them accordingly.  New (or non-matching) parts
+      may also be merged tegether into one score--<application>FOMUS</application> matches, adds, and reorders all of them automatically.
     </para>
     <para>
       There are several ways to tell <application>FOMUS</application> to merge chunks.  Some examples are given here in both
@@ -398,21 +398,21 @@ fomus my_data_file.fms]]>
         <title>FOMUS Usage 13</title>
 	<programlisting>
 <![CDATA[
-(fomus (list (fomus ...arguments_for_chunk1...) (fomus ...arguments_for_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)]]>
+(fomus (list (fomus ...fomus_args_chunk1...) (fomus ...fomus_args_chunk2...)) :filename "path_to/myoutputfile" :output :musicxml-finale)]]>
 	</programlisting>
       </example>
       <example id="example.fomus.usage14">
         <title>FOMUS Usage 14</title>
 	<programlisting>
 <![CDATA[
-(fomus (list (fomus ...arguments_for_chunk1...) "path_to/myfomusfile_chunk2.fms") :filename "path_to/myoutputfile" :output :cmn)]]>
+(fomus (list "path_to/myfomuschunk1.fms" (fomus ...fomus_args_chunk2...) "path_to/myfomuschunk3.fms") :filename "path_to/myoutputfile" :output :cmn)]]>
 	</programlisting>
       </example>
       <example id="example.fomus.usage15">
-        <title>FOMUS Usage 15</title>
+        <title>FOMUS Usage 15 (Command Line)</title>
 	<programlisting>
 <![CDATA[
-fomus -lw path_to/myfomusfile_chunk1.fms path_to/myfomusfile_chunk2.fms path_to/myfomusfile_chunk3.fms]]>
+fomus -lw path_to/myfomuschunk1.fms path_to/myfomuschunk2.fms path_to/myfomuschunk3.fms]]>
 	</programlisting>
       </example>
       In each case, two or three chunks are either created from another <function><link linkend="function.fomus">FOMUS</link></function>

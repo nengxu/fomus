@@ -25,7 +25,8 @@
 	       (:dur (loop-return-firstmin (diff d tup) for d = (loop for x1 = div then x2 for x2 = (/ x1 2) while (integerp x2) finally (return x1)) then (* d 2)))
 	       (:pow2 (loop
 		       for d0 = nil then d
-		       and d = (loop for x1 = div then x2 for x2 = (/ x1 2) while (integerp x2) finally (return x1)) then (* d 2)
+		       and d = (loop for x1 = div then x2 for x2 = (/ x1 2) while (> x2 1) finally (return x1)) then (* d 2)
+		       do (print d)
 		       when (> d tup) do (return (or d0 d))))
 	       (otherwise (error "Unknown tuplet function ~S" *tuplet-function*))))))
 

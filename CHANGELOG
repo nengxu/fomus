@@ -1,3 +1,6 @@
+v0.2.24
+	Fixed tuplet note values when they span an irregular number of beats (6:5, 8:7, etc.)
+
 v0.2.23
 	Fixed XML adding redundant clef at beginning of output
 	Fixed measure rests bug in XML output (caused SBCL to hang)

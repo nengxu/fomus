@@ -60,7 +60,7 @@
       </simplelist>
     </section>
     <section id="section.settings5">
-      <title>Executables</title>
+      <title>Backend Options</title>
       <simplelist type="vert" columns="3">
         <member><varname><link linkend="setting.lilypond.exe">:LILYPOND-EXE</link></varname></member>
         <member><varname><link linkend="setting.lilypond.opts">:LILYPOND-OPTS</link></varname></member>
