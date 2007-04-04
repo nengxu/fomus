@@ -300,8 +300,7 @@
 	      If the slot contains the default value of <literal>NIL</literal>, the beat value is either the
 	      value of <varname><link linkend="setting.default.beat">DEFAULT-BEAT</link></varname> or it is calculated from the
 	      denominator (a non-compound 4/8 or 7/8 time signature would have a beat value of 1/8).
-	      Different beat values have an effect on how measures are divided and laid out, so they should be
-	      chosen to influence these things.
+	      The beat value of a measure effects how notes are are divided and laid out.
 	    </para>
 	  </listitem>
 	</varlistentry> 
