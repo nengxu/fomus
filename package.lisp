@@ -84,5 +84,6 @@
 (defmacro mloop (&body forms) `(or (loop ,@forms) 0))
 
 ;; PREVENT SILLY CM LOADING ERROR
-
 (intern "KEYSIG")
+;; PREVENT WEIRD OPENMCL LOADING ERROR
+#+openmcl (eval-when (:load-toplevel :execute) (let ((s (find-symbol "INSTR" :common-lisp-user))) (when s (shadow s :common-lisp-user))))

@@ -96,6 +96,7 @@
 
 (defparameter *lilypond-version* nil)
 (defparameter *lilyvers* t)
+(defparameter +lilypond-defaultver+ '("2.10" . 210))
 (defun lilypond-version (options usrv)
   (let ((v (or usrv *lilypond-version*)))
     (if v
@@ -103,11 +104,11 @@
 		    (+ (* 100 (parse-integer v :junk-allowed t))
 		       (parse-integer v :start (1+ (position #\. v)) :junk-allowed t)))))
 	  (if (and (>= ve 204) (<= ve 209)) ve
-	      (progn (format t ";; WARNING: Unknown LilyPond version--assuming version 2.8~%") 208)))
+	      (progn (format t ";; WARNING: Unknown LilyPond version--assuming version ~A~%" (car +lilypond-defaultver+)) (cdr +lilypond-defaultver+))))
 	(if (truep *lilyvers*)
 	    (setf *lilyvers*
 		  (destructuring-bind (&key exe &allow-other-keys) options
-		    (flet ((er () (format t ";; WARNING: Can't determine LilyPond version--assuming version 2.8~%") 208))
+		    (flet ((er () (format t ";; WARNING: Can't determine LilyPond version--assuming version ~A~%" (car +lilypond-defaultver+)) (cdr +lilypond-defaultver+)))
 		      (let ((os #+(or cmu sbcl openmcl lispworks) (make-string-output-stream)
 				#+allegro (nth-value 1 (run-allegro-cmd (vector (or exe *lilypond-exe*) (or exe *lilypond-exe*) "-v")))
 				#+clisp (ignore-errors
@@ -289,7 +290,9 @@
 			  (loop for s from 1 to ns do
 				(format f "  \\change Staff = ~A \\override Staff.TimeSignature #'style = #'()~%" (code-char (+ 64 s))))
 			  (format f "  \\override Staff.TimeSignature #'style = #'()~%")))
-		    (when (eq *tuplet-style* :ratio) (format f "  \\set tupletNumberFormatFunction = #fraction-tuplet-formatter~%"))
+		    (if (>= ve 209)
+			(when (eq *tuplet-style* :ratio) (format f "  \\override TupletNumber #'text = #tuplet-number::calc-fraction-text~%"))
+			(when (eq *tuplet-style* :ratio) (format f "  \\set tupletNumberFormatFunction = #fraction-tuplet-formatter~%")))
 		    (format f "  \\autoBeamOff~%")
 		    (if *acc-throughout-meas*
 			(format f "  #(set-accidental-style 'default)~%")
