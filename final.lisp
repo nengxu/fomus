@@ -14,6 +14,8 @@
 
 ;; initfile
 (defun load-initfile (&optional (filename +initfilename+) (info t))
+  "FOMUS init function:
+Reloads the \"~/.fomus\" initialization file"
   (with-open-file (f filename :direction :input :if-does-not-exist nil)
     (when f
       (when info (out ";; Loading initialization file ~S...~%" filename))

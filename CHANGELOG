@@ -1,3 +1,7 @@
+v0.2.26
+	Some documentation for the Lisp DOCUMENTATION function
+	:STAFF, :STARTSTAFF-, :STAFF-, :ENDSTAFF- marks to override staff choices (not done yet)
+
 v0.2.25
 	Fixed weird OpenMCL compiling error (caused by SLIME?)
 	Lilypond 2.10 tuplet style fix (Anders)

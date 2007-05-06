@@ -19,7 +19,8 @@
     for off from 0 to 8 by 1/2
     collect (make-note :off off
 		       :dur (if (< off 10) 1/2 1)
-		       :note (+ 48 (random 25)))))))
+		       :note (+ 48 (random 25))
+		       :marks '((:staff 1)))))))
 
 (fomus
  (list (fomus

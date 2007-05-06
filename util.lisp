@@ -945,6 +945,8 @@
 ;; USER UTILITIES
 
 (defun list-fomus-settings ()
+  "Info function:
+Lists all of FOMUS's current default settings and values"
   (let* ((tc (+ 2 (max (1+ (mloop for x in +settings+ maximize (length (symbol-name (first x))))) 4)))
 	 (tl (+ tc 1 (max (mloop for (xxx t1 t2) in +settings+ maximize (length (or t2 (princ-to-string t1)))) 4))))
     (format t "; NAME~VTTYPE~VTDEFAULT VALUE~%~%" tc tl)
@@ -952,6 +954,8 @@
 	  (format t "; ~A~VT~A~VT~A~%" sy tc (or t2 t1) tl (remove-newlines (prin1-to-string (symbol-value (find-symbol (conc-strings "*" (symbol-name sy) "*") :fomus))))))))
     
 (defun list-fomus-instruments ()
+  "Info function:
+Lists all of FOMUS's instruments and their definitions"
   (set-instruments
     (loop with li = (remove-duplicates (append *instruments* +instruments+) :key #'instr-sym :from-end t)
 	  with c = (+ (mloop for e in li maximize (length (symbol-name (instr-sym e)))) 3)
@@ -963,10 +967,14 @@
 			    collect (format nil (if sn "~A: ~S   " "~A: ~S") (string-downcase s) (slot-value e (intern (symbol-name s) :fomus)))))))))
 
 (defun get-instr-syms ()
+  "Utility function:
+Returns symbol IDs for all of FOMUS's instruments"
   (set-instruments
    (mapcar #'instr-sym (remove-duplicates (append *instruments* +instruments+) :key #'instr-sym :from-end t))))
 
 (defun list-fomus-percussion ()
+  "Info function:
+Lists all of FOMUS's percussion instruments and their definitions"
   (set-instruments
     (loop with li = (remove-duplicates (append *percussion* +percussion+) :key #'perc-sym :from-end t)
 	  with c = (+ (mloop for e in li maximize (length (symbol-name (perc-sym e)))) 3)
@@ -978,13 +986,19 @@
 			    collect (format nil (if sn "~A: ~S   " "~A: ~S") (string-downcase s) (slot-value e (intern (symbol-name s) :fomus)))))))))
 
 (defun get-perc-syms ()
+  "Utility function:
+Returns symbol IDs for all of FOMUS's percussion instruments"
   (set-instruments
    (mapcar #'perc-sym (remove-duplicates (append *percussion* +percussion+) :key #'perc-sym :from-end t))))
 
 (defun list-fomus-clefs ()
+  "Info function:
+Lists all of FOMUS's clefs"
   (loop for e in +clefs+ do (format t "; ~A~%" (symbol-name (car e)))))
 
 (defun list-fomus-instrgroups (&key (format t))
+  "Info function:
+Lists all of FOMUS's instrument groups and their arrangements"
   (let ((ss (remove-duplicates (append *instr-groups* +instr-groups+) :key #'first :from-end t)))
     (if format
 	(labels ((aux (li ta)
@@ -1002,14 +1016,22 @@
 	(loop for e in ss do (format t "~S~%" e)))))
 
 (defun list-fomus-meas-divs ()
+  "Info function:
+Lists all of the points at which FOMUS tries to divide measures (splitting and
+tying notes inside them)"
   (loop for (s . r) in (sort (copy-list (remove-duplicates (append *default-meas-divs* +default-meas-divs+) :key #'first :from-end t)) #'< :key #'first)
 	do (format t "; ~A~5T~{ ~A~}~%" s r)))
 
 (defun list-fomus-tuplet-divs ()
+  "Info function:
+Lists all of the points at which FOMUS tries to divide tuplets (splitting and
+tying notes inside them)"
   (loop for (s . r) in (sort (copy-list (remove-duplicates (append *default-tuplet-divs* +default-tuplet-divs+) :key #'first :from-end t)) #'< :key #'first)
 	do (format t "; ~A~5T~{ ~A~}~%" s r)))
 
 (defun get-midi-instr (prog &key (default *default-instr*))
+  "Utility function:
+Returns an INSTR object given a MIDI program change number"
   (set-instruments
     (or (find prog *instruments* :key #'instr-midiprgch-im :test (lambda (x p) (find x (force-list p))))
 	(find prog +instruments+ :key #'instr-midiprgch-im :test (lambda (x p) (find x (force-list p))))

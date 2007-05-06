@@ -151,7 +151,7 @@
           <term><function><anchor id="part.props"/>PART-PROPS</function></term>
 	  <listitem>
 	    <para>
-	      Part properties are specified in the same way <structfield><link linkend="note.marks">MARKS</link></structfield> are specified.
+	      Part properties are specified in the same way that <structfield><link linkend="note.marks">MARKS</link></structfield> are specified.
 	      They are settings that affect only the part they are included in.
 	      See <link linkend="marks.partprops" endterm="marks.partprops.title"/> for a list of these.
 	    </para>
@@ -495,10 +495,7 @@
 	      If a list of choices is given, <application>FOMUS</application>'s voice distribution algorithm will try to make
 	      an intelligent decision based on voice leading, pitch, balance and other factors.
 	      Note that <classname><link linkend="class.rest">REST</link></classname> and <classname><link linkend="class.mark">MARK</link></classname>
-	      objects are treated slightly differently.
-	      Settings with the <varname>VOICE-</varname> prefix can be adjusted to influence <application>FOMUS</application>'s
-	      voicing decisions.
-	      See <link linkend="settings" endterm="settings.title"/> for more information.
+	      objects use this value slightly differently.
 	    </para>
 	  </listitem>
 	</varlistentry>

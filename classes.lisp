@@ -151,24 +151,72 @@
 	  (instr-cleflegls ob) (instr-8uplegls ob) (instr-8dnlegls ob) (deuglify (instr-percs ob)) (instr-midiprgch-im ob) (instr-midiprgch-ex ob)))
 
 (declaim (inline make-timesig make-timesig-repl make-part make-mark make-note make-rest make-meas))
-(defun make-timesig (&rest args) (apply #'make-instance 'timesig args))
-(defun make-timesig-repl (&rest args) (apply #'make-instance 'timesig-repl args))
-(defun make-part (&rest args) (apply #'make-instance 'part args))
-(defun make-mark (&rest args) (apply #'make-instance 'mark args))
-(defun make-note (&rest args) (apply #'make-instance 'note args))
-(defun make-rest (&rest args) (apply #'make-instance 'rest args))
-(defun make-meas (&rest args) (apply #'make-instance 'meas args))
+(defun make-timesig (&rest args)
+  "Interface function:
+Creates a TIMESIG object"
+  (apply #'make-instance 'timesig args))
+(defun make-timesig-repl (&rest args)
+  "Interface function:
+Creates a TIMESIG-REPL object (a TIMESIG object without an offset)"
+  (apply #'make-instance 'timesig-repl args))
+(defun make-part (&rest args)
+  "Interface function:
+Creates a PART object"
+    (apply #'make-instance 'part args))
+(defun make-mark (&rest args)
+  "Interface function:
+Creates a MARK object"
+  (apply #'make-instance 'mark args))
+(defun make-note (&rest args)
+  "Interface function:
+Creates a NOTE object"
+  (apply #'make-instance 'note args))
+(defun make-rest (&rest args)
+  "Interface function:
+Creates a REST object"
+  (apply #'make-instance 'rest args))
+(defun make-meas (&rest args)
+  "Interface function (advanced/internal usage):
+Creates a MEAS object"
+  (apply #'make-instance 'meas args))
 
 (declaim (inline notep restp timesigp partp markp durp eventp fomusobjp measp))
-(defun notep (ev) (typep ev 'note))
-(defun restp (ev) (typep ev 'rest))
-(defun timesigp (ev) (typep ev 'timesig-repl))
-(defun partp (ev) (typep ev 'part))
-(defun markp (ev) (typep ev 'mark))
-(defun durp (ev) (typep ev 'dur-base))
-(defun eventp (ev) (typep ev 'event-base)) ; events are objects with an offset
-(defun fomusobjp (ev) (typep ev 'fomusobj-base))
-(defun measp (ev) (typep ev 'meas))
+(defun notep (ev)
+  "Utility function:
+Returns T if argument is a NOTE object"
+  (typep ev 'note))
+(defun restp (ev)
+  "Utility function:
+Returns T if argument is a REST object"
+  (typep ev 'rest))
+(defun timesigp (ev)
+  "Utility function:
+Returns T if argument is a TIMESIG object"
+  (typep ev 'timesig-repl))
+(defun partp (ev)
+  "Utility function:
+Returns T if argument is a PART object"
+  (typep ev 'part))
+(defun markp (ev)
+  "Utility function:
+Returns T if argument is a MARK object"
+  (typep ev 'mark))
+(defun durp (ev)
+  "Utility function:
+Returns T if argument is an object containing a duration"
+  (typep ev 'dur-base))
+(defun eventp (ev)
+  "Utility function:
+Returns T if argument is a NOTE, REST or MARK object"
+  (typep ev 'event-base)) ; events are objects with an offset
+(defun fomusobjp (ev)
+  "Utility function:
+Returns T if argument is any kind of FOMUS object"
+  (typep ev 'fomusobj-base))
+(defun measp (ev)
+  "Utility function:
+Returns T if argument is a MEAS object"
+  (typep ev 'meas))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; SPECIAL ACCESSORS
@@ -380,22 +428,30 @@
 (defgeneric copy-timesig (ts &key &allow-other-keys))
 (defmethod copy-timesig ((ts timesig-repl) &key off (id (obj-id ts)) (time (timesig-time ts)) (div (timesig-div ts)) (comp (timesig-comp ts))
 			 (props (timesig-props ts)) (beat (timesig-beat ts)) partids repl)
+  "Utility function:
+Copies a TIMESIG object"
   (declare (type (rational 0) off) (type cons time) (type list div) (type boolean comp) (type (or (rational 0) null) beat) (type list props)
 	   (type (or symbol real list) partids) (type (or timesig-repl list) repl))
   (make-timesig :off off :id id :time time :div div :comp comp :beat beat :props props :partids partids :repl repl))
 (defmethod copy-timesig ((ts timesig) &key (off (timesig-off ts)) (id (obj-id ts)) (time (timesig-time ts)) (div (timesig-div ts)) (comp (timesig-comp ts))
 			 (props (timesig-props ts)) (beat (timesig-beat ts)) (partids (timesig-partids ts)) (repl (timesig-repl ts)))
+  "Utility function:
+Copies a TIMESIG object"
   (declare (type (rational 0) off) (type cons time) (type list div) (type boolean comp) (type (or (rational 0) null) beat) (type list props)
 	   (type (or symbol real list) partids) (type (or timesig-repl list) repl))
   (make-timesig :off off :id id :time time :div div :comp comp :beat beat :props props :partids partids :repl repl)) 
 (defgeneric copy-timesig-repl (ts &key &allow-other-keys))
 (defmethod copy-timesig-repl ((ts timesig-repl) &key (id (obj-id ts)) (time (timesig-time ts)) (div (timesig-div ts)) (comp (timesig-comp ts))
 			      (props (timesig-props ts)) (beat (timesig-beat ts)))
+  "Utility function:
+Copies a TIMESIG-REPL object"
   (declare (type cons time) (type list div) (type boolean comp) (type (or (rational 0) null) beat) (type list props))
   (make-timesig-repl :id id :time time :div div :comp comp :beat beat :props props))
 (defgeneric copy-event (ev &key &allow-other-keys))
 (defmethod copy-event ((ev note) &key (off (event-off ev)) (id (obj-id ev)) (partid (event-partid ev)) (dur (event-dur ev)) (marks (event-marks ev)) (voice (event-voice ev))
 		       (note (event-note ev)))
+  "Utility function:
+Copies a NOTE, REST or MARK object"
   (declare (type (or (real 0)) off) (type (or symbol real null) partid) (type (or real symbol cons) dur) (type list marks) (type (or (integer 1) cons) voice)
 	   (type (or real symbol cons) note))
   (make-noteex ev
@@ -404,12 +460,16 @@
    :note note))
 (defmethod copy-event ((ev rest) &key (off (event-off ev)) (id (obj-id ev)) (partid (event-partid ev)) (dur (event-dur ev)) (marks (event-marks ev))
 		       (voice (event-voice ev)))
+  "Utility function:
+Copies a NOTE, REST or MARK object"
   (declare (type (or (real 0)) off) (type (or symbol real null) partid) (type (or real symbol cons) dur) (type list marks) (type (or (integer 1) cons) voice))
   (make-restex ev
    :id id :partid partid :off off
    :dur dur :marks marks :voice voice))
 (defmethod copy-event ((ev mark) &key (off (event-off ev)) (id (obj-id ev)) (partid (event-partid ev)) (marks (event-marks ev))
 		       (voice (event-voice ev)))
+  "Utility function:
+Copies a NOTE, REST or MARK object"
   (declare (type (or (real 0) cons) off) (type (or symbol real null) partid) (type list marks) (type (or (integer 1) cons) voice))
   (make-restex ev
    :id id :partid partid :off off
@@ -417,6 +477,8 @@
 (defmethod copy-event ((ev noteex) &key (off (event-off ev)) (id (obj-id ev)) (partid (event-partid ev)) (dur (event-dur ev)) (marks (event-marks ev)) (voice (event-voice ev))
 		       (note (event-note ev)) (tup (event-tup ev)) (tielt (event-tielt ev)) (tiert (event-tiert ev))
 		       (beamlt (event-beamlt ev)) (beamrt (event-beamrt ev)))
+  "Utility function:
+Copies a NOTE, REST or MARK object"
   (declare (type (or (real 0)) off) (type (or symbol real null) partid) (type (or real symbol cons) dur) (type list marks) (type (or (integer 1) cons) voice)
 	   (type (or real symbol cons) note) (type (or boolean list) tielt tiert) (type (or (integer 0) symbol list) beamlt) (type (or (integer 0) symbol) beamrt))
   (make-noteex ev
@@ -427,6 +489,8 @@
    :tielt tielt :tiert tiert :beamlt beamlt :beamrt beamrt))
 (defmethod copy-event ((ev restex) &key (off (event-off ev)) (id (obj-id ev)) (partid (event-partid ev)) (dur (event-dur ev)) (marks (event-marks ev))
 		       (voice (event-voice ev)) (tup (event-tup ev)) (inv (event-inv ev)))
+  "Utility function:
+Copies a NOTE, REST or MARK object"
   (declare (type (or (real 0)) off) (type (or symbol real null) partid) (type (or real symbol cons) dur) (type list marks) (type (or (integer 1) cons) voice)
 	   (type (or boolean list) inv))
   (make-restex ev
@@ -437,18 +501,24 @@
 (defgeneric copy-part (pa &key &allow-other-keys))
 (defmethod copy-part ((pa part) &key (id (obj-id pa)) (name (part-name pa)) (abbrev (part-abbrev pa)) (events (part-events pa)) (opts (part-opts pa))
 		      (instr (part-instr pa)) (partid (part-partid pa)) (props (part-props pa)))
+  "Utility function:
+Copies a PART object"
   (declare (type (or string null) name) (type (or string null) abbrev) (type list opts) (type list events) (type (or symbol (integer 0 127) instr cons) instr)
 	   (type (or symbol real) partid) (type list props))
   (make-part
    :id id :name name :abbrev abbrev :events events :opts opts :instr instr :partid partid :props props))
 (defmethod copy-part ((pa partex) &key (id (obj-id pa)) (name (part-name pa)) (abbrev (part-abbrev pa)) (events (part-events pa)) (opts (part-opts pa))
 		      (instr (part-instr pa)) (partid (part-partid pa)) (props (part-props pa)) (userord (part-userord pa)))
+  "Utility function:
+Copies a PART object"
   (declare (type (or string null) name) (type (or string null) abbrev) (type list opts) (type list events) (type (or symbol (integer 0 127) instr cons) instr)
 	   (type (or symbol real) partid) (type list props) (type (or integer null) userord))
   (make-partex pa
    :id id :name name :abbrev abbrev :events events :opts opts :instr instr :partid partid :props props :userord userord))
 (defun copy-meas (me &key (id (obj-id me)) (timesig (meas-timesig me)) (off (meas-off me)) (endoff (meas-endoff me)) (events (meas-events me))
 		  (props (meas-props me)) (div (meas-div me)))
+  "Utility function (advanced/internal usage):
+Copies a MEAS object"
   (declare (type meas me) (type timesig-repl timesig) (type (rational 0) off) (type (rational 0) endoff) (type list events props div))
   (make-meas :id id :timesig timesig :off off :endoff endoff :events events :props props :div div))
 

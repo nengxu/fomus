@@ -32,6 +32,8 @@
 	#+(or cmu sbcl) (muffwarn (fm)) #-(or cmu sbcl) (fm))))
 
 (defun fomus (&rest args)
+  "Interface function/main entry point:
+Runs FOMUS's algorithms on input data or file"
   (typecase (first args)
     ((or string pathname) (fomus-text (first args) (rest args) #'fomus-textexec))
     (list (apply #'run-fomus :chunks
@@ -53,28 +55,41 @@
 (defparameter *fomus-events* nil)
 
 (defun fomus-init (&rest args)
+  "Interface function:
+Erases stored data and initializes FOMUS for FOMUS-EXEC, FOMUS-NEWTIMESIG,
+FOMUS-NEWPART, FOMUS-NEWNOTE, FOMUS-NEWREST and FOMUS-NEWMARK functions"
   (progn (setf *fomus-args* args *fomus-global* nil *fomus-parts* nil *fomus-events* nil) t))
 
 (defun fomus-newtimesig (&rest args)
+  "Interface function:
+Creates and stores a TIMESIG object"
   (let ((ts (apply #'make-instance 'timesig args)))
     (push ts *fomus-global*)
     t))
 (defun fomus-newpart (partid &rest args)
+  "Interface function:
+Creates and stores a PART object"
   (declare (type (or symbol real) partid))
   (let ((pa (apply #'make-instance 'part :partid partid args)))
     (push pa *fomus-parts*)
     t))
 (defun fomus-newnote (partid &rest args)
+  "Interface function:
+Creates and stores a NOTE object"
   (declare (type (or symbol real) partid))
   (let ((no (apply #'make-instance 'note :partid partid args)))
     (push no *fomus-events*)
     t))
 (defun fomus-newrest (partid &rest args)
+  "Interface function:
+Creates and stores a REST object"
   (declare (type (or symbol real) partid))
   (let ((re (apply #'make-instance 'rest :partid partid args)))
     (push re *fomus-events*)
     t))
 (defun fomus-newmark (partid &rest args)
+  "Interface function:
+Creates and stores a MARK object"
   (declare (type (or symbol real) partid))
   (let ((re (apply #'make-instance 'mark :partid partid args)))
     (push re *fomus-events*)
@@ -82,11 +97,16 @@
 
 ;;(declaim (inline fomus-part))
 (defun fomus-part (sym)
+  "Utility function:
+Returns a PART object given an ID value"
   (declare (type (or symbol real) sym))
   (find sym *fomus-parts* :key #'part-partid))
 
 ;; should this function save additional objects for future calls?
-(defun fomus-exec (&rest args) 
+(defun fomus-exec (&rest args)
+  "Interface function/main entry point:
+Runs FOMUS's algorithms on data specified previously with FOMUS-INIT,
+FOMUS-NEWTIMESIG, FOMUS-NEWPART, FOMUS-NEWNOTE, FOMUS-NEWREST and FOMUS-NEWMARK"
   (unwind-protect
        (apply #'run-fomus
 	      :global (append *global* *fomus-global*)
@@ -158,5 +178,6 @@
 		     (error "Entry ~D, ~S: ~A" li (remove-newlines lin) err))))))))
 
 (defun fomus-file (filename &optional args)
+  "Utility/file IO function:
+Loads a \".fms\" file and returns (values parts events global args)"
   (fomus-text filename args #'fomus-textret))
-

@@ -131,7 +131,10 @@
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (declaim (inline is-clef))
-  (defun is-clef (sym) (declare (type symbol sym)) (find sym +clefs+ :key #'car)))
+  (defun is-clef (sym)
+    "Utility function:
+Returns the symbol if it refers to one of FOMUS's clefs (and NIL if it doesn't)"
+    (declare (type symbol sym)) (find sym +clefs+ :key #'car)))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; INSTRUMENTS
@@ -415,6 +418,9 @@
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (declaim (inline is-instr))
   (defun is-instr (sym)
+    "Utility function:
+Returns an INSTR object given an ID symbol (or NIL if there is no such
+instrument)"
     (declare (type symbol sym))
     (or (find sym *instruments* :key #'perc-sym) (find sym +instruments+ :key #'perc-sym))))
 
@@ -663,7 +669,7 @@
 				  :startwedge> :startwedge< :wedge< :wedge> :endwedge< :endwedge>
 				  :startwedge>* :startwedge<* :wedge<* :wedge>* :endwedge<* :endwedge>*
 				  :startgraceslur- :graceslur- :endgraceslur-
-				  :clef- :endclef-
+				  :clef- :endclef- :staff :endstaff-
 				  :cautacc :autodur :forceacc
 				  :rfz :sfz :spp :sp :sff :sf :fp :ffffff :fffff :ffff :fff :ff :f :mf :mp :p :pp :ppp :pppp :ppppp :pppppp
 				  :rfz* :sfz* :spp* :sp* :sff* :sf* :fp* :ffffff* :fffff* :ffff* :fff* :ff* :f* :mf* :mp* :p* :pp* :ppp* :pppp* :ppppp* :pppppp*))))
@@ -694,6 +700,8 @@
       (or* x (list* x) (list* x (type* +notesym-type+))))
     (let* ((x (unique* sy :clef (member :clef :startclef-))))
       (list* x (satisfies is-clef)))
+    (let* ((x (unique* sy :staff (member :staff :startstaff-))))
+      (cons* x (list-of* (integer 1))))
     (let* ((x (unique* sy (member :notehead))))
       (list* x (member :harmonic :diamond :x :xcircle :triangle :slash)))	
     (let* ((x (unique* sy (member :size))))
@@ -755,7 +763,7 @@
 
 ;; include :staff but not :clef
 (defparameter +marks-rests+
-  '(:fermata :notehead :textnote :texttempo :textdyn :text :text- :endtext- :starttext- :size))
+  '(:fermata :notehead :textnote :texttempo :textdyn :text :text- :endtext- :starttext- :size :staff :staff- :startstaff- :endstaff-))
 
 (defparameter +marks-first-rest+
   '(:textnote :texttempo :textdyn :text :text- :starttext-))
@@ -796,7 +804,7 @@
     :trill :prall :mordent  
     :pizz :arco :open :stopped (:breath :before) (:tie :before)
     :arpeggio (:glissando :before) (:portamento :before) ; special ones
-    :cautacc :8up :8down :clef :longtrill :startlongtrill-))
+    :cautacc :8up :8down :clef :staff :longtrill :startlongtrill-))
 (defparameter +marks-last-tie+
   '(:endslur- :end8up- :end8down- :endtext- :endwedge< :endwedge> :endwedge<* :endwedge>*
     :fermata :staccatissimo :staccato (:breath :after) (:tie :after) :endlongtrill-

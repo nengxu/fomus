@@ -230,13 +230,13 @@
    (get-usermarks (part-events p) :staff :startstaff- :staff- :endstaff-
 		  (lambda (e s)
 		    (declare (type (or noteex restex) e) (type list s))
-		    (when (> ns 1) (setf (event-staff* e) (first s)))) (part-name p))
+		    (when (> ns 1) (setf (event-staff* e) (1- (first s))))) (part-name p))
    (loop for e of-type (or noteex restex) in (part-events p) do (rmmark e :clef))
    else do
    (get-usermarks (part-events p) :staff :startstaff- :staff- :endstaff-
 		  (lambda (e s)
 		    (declare (type (or noteex restex) e) (type list s))
-		    (if (notep e) (setf (event-userstaff e) (force-list (first s))) (addmark e (list :userstaff (first s)))))
+		    (if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))) (addmark e (list :userstaff (1- (first s))))))
 		  (part-name p))
    (multiple-value-bind (no re) (split-list (part-events p) #'notep)
      (get-usermarks no :clef :startclef- :clef- :endclef-
