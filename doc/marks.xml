@@ -89,6 +89,10 @@
 	      slot in the <classname><link linkend="class.note">NOTE</link></classname> class).</listitem>
 	  </varlistentry> 
 	  <varlistentry>
+	    <term><userinput><anchor id="markarg.staff"/>staffnum(s)</userinput></term>
+	    <listitem>One or more valid staff numbers (numbering starts at 1, indicating the topmost staff).</listitem>
+	  </varlistentry> 
+	  <varlistentry>
 	    <term><userinput><anchor id="markarg.string"/>string</userinput></term>
 	    <listitem>A text string.</listitem>
 	  </varlistentry> 
@@ -287,6 +291,8 @@
 	<function><link linkend="mark.notehead">:NOTEHEAD</link></function> indicates a different notehead.
 	The <function><link linkend="mark.clef">:CLEF</link></function> and <function><link linkend="mark.clef-">:CLEF-</link></function> spanner
 	marks indicate clef changes and regions where a certain clef is required.  A clef spanner must occur in a single voice.
+	The <function><link linkend="mark.staff">:STAFF</link></function> and <function><link linkend="mark.staff-">:STAFF-</link></function> spanner
+	marks indicate staff choice overrides for instruments with more than one staff (ie. a grandstaff).
 	All marks containing <function>8UP</function> and <function>8DOWN</function> are overrides for ottava brackets and must be specified
 	for notes that appear in a single staff rather than a voice.  The <function><link linkend="mark.tie">:TIE</link></function> mark
 	ties a note to the following or previous note depending on whether <literal>:BEFORE</literal> or <literal>:AFTER</literal> (default) is supplied
@@ -297,9 +303,13 @@
 	<member><function><anchor id="mark.forceacc"/>:FORCEACC</function></member>
 	<member><function>(<anchor id="mark.notehead"/>:NOTEHEAD 
 	<literal>:HARMONIC</literal>|<literal>:DIAMOND</literal>|<literal>:X</literal>|<literal>:XCIRCLE</literal>|<literal>:TRIANGLE</literal>|<literal>:SLASH</literal>)</function></member>
+
 	<member><function>(<anchor id="mark.clef"/>:CLEF <userinput><link linkend="markarg.clef">clef</link></userinput>)</function></member>
         <member><function>(<anchor id="mark.clef-"/>:STARTCLEF
 	  <userinput><link linkend="markarg.clef">clef</link></userinput>)</function> / <function>:CLEF-</function> / <function>:ENDCLEF-</function></member>
+	<member><function>(<anchor id="mark.staff"/>:STAFF &amp;rest <userinput><link linkend="markarg.staff">staffnum(s)</link></userinput>)</function></member>
+        <member><function>(<anchor id="mark.staff-"/>:STARTSTAFF &amp;rest
+	  <userinput><link linkend="markarg.staff">staffnum(s)</link></userinput>)</function> / <function>:STAFF-</function> / <function>:ENDSTAFF-</function></member>
         <member><function><anchor id="mark.8up"/>:8UP</function></member>
         <member><function><anchor id="mark.8up-"/>:START8UP-</function> / <function>:8UP-</function> / <function>:END8UP-</function></member>
         <member><function><anchor id="mark.8down"/>:8DOWN</function></member>

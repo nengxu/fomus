@@ -20,7 +20,7 @@
     collect (make-note :off off
 		       :dur (if (< off 10) 1/2 1)
 		       :note (+ 48 (random 25))
-		       :marks '((:staff 1)))))))
+		       :marks '((:staff 2)))))))
 
 (fomus
  (list (fomus
@@ -1036,8 +1036,9 @@
 ;; Compound meter
 
 (fomus
- :backend '((:data) (:lilypond :view t) (:midi :tempo 120 :delay 1))
+ :backend '((:raw) (:lilypond :view t) #|(:midi :tempo 120 :delay 1)|#)
  :ensemble-type :orchestra
+ :verbose 2
  :parts
  (list
   (make-part

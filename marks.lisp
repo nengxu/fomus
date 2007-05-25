@@ -111,9 +111,10 @@
 				do (loop for m of-type cons in (getmarks e endsym) do
 					 (let* ((n (second m))
 						(z (gethash n x)))
-					   (push m (cdr z)) 
-					   (push (cons n (cons (cons (car z) (event-off e)) (cdr z))) xx) ; add (level . ((off . endoff) . list-of-start/cont-marks)) to xx
-					   (remhash n x)))
+					   (when z ; added "when z" 5/24/07
+					     (push m (cdr z)) 
+					     (push (cons n (cons (cons (car z) (event-off e)) (cdr z))) xx) ; add (level . ((off . endoff) . list-of-start/cont-marks)) to xx
+					     (remhash n x))))
 				unless (or (truep replsym) (keywordp replsym)) do ; if there isn't a replsym, do start/cont marks last
 				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (gethash (second m) x))))
 				(loop for m of-type cons in (getmarks e startsym) do (setf (gethash (second m) x) (cons (event-off e) (list m))))

@@ -1,5 +1,5 @@
 v0.2.26
-	Improved spanners
+	Improvements to spanners
 	Some documentation that can be called up by the Lisp DOCUMENTATION function
 	:STAFF, :STARTSTAFF-, :STAFF-, :ENDSTAFF- marks to override staff choices
 

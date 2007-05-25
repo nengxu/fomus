@@ -95,7 +95,8 @@
 		      finally (return (values al es rs (sort (delete-duplicates v) #'<) #-clisp gd #+clisp (or gd 0))))
 		   (loop 
 		    with nco = (if (or (null (clefnode-o no)) (> o (clefnode-o no))) (1+ (clefnode-co no)) (clefnode-co no)) 
-		    for vas of-type cons in (cm vs (loop for e of-type (integer 1) in al when (< e nst) collect e)) ; iterate over all possible arrangements, vas is a possible combination of (cons staff voice)
+		    for vas of-type cons in (cm vs (loop for e of-type (integer 0) in al if (< e nst) collect e else do
+							 (error "Invalid staff number ~S in :STAFF mark at offset ~S, part ~S" (1+ e) (coerce o 'float) name))) ; iterate over all possible arrangements, vas is a possible combination of (cons staff voice)
 		    collect (loop
 			     with sc = (clefnode-sc no) ; score
 			     and ics = (copy-seq (clefnode-ics no)) ; initial clefs
