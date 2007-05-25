@@ -95,7 +95,7 @@
 		      finally (return (values al es rs (sort (delete-duplicates v) #'<) #-clisp gd #+clisp (or gd 0))))
 		   (loop 
 		    with nco = (if (or (null (clefnode-o no)) (> o (clefnode-o no))) (1+ (clefnode-co no)) (clefnode-co no)) 
-		    for vas of-type cons in (cm vs al) ; iterate over all possible arrangements, vas is a possible combination of (cons staff voice)
+		    for vas of-type cons in (cm vs (loop for e of-type (integer 1) in al when (< e nst) collect e)) ; iterate over all possible arrangements, vas is a possible combination of (cons staff voice)
 		    collect (loop
 			     with sc = (clefnode-sc no) ; score
 			     and ics = (copy-seq (clefnode-ics no)) ; initial clefs
@@ -232,11 +232,13 @@
 		    (declare (type (or noteex restex) e) (type list s))
 		    (when (> ns 1) (setf (event-staff* e) (1- (first s))))) (part-name p))
    (loop for e of-type (or noteex restex) in (part-events p) do (rmmark e :clef))
-   else do
+   else do ; not percussion...
    (get-usermarks (part-events p) :staff :startstaff- :staff- :endstaff-
 		  (lambda (e s)
 		    (declare (type (or noteex restex) e) (type list s))
-		    (if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))) (addmark e (list :userstaff (1- (first s))))))
+		    (if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))))
+		    (addmark e (cons :staff s))
+		    #|(if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))) (addmark e (print (cons :staff s))))|#)
 		  (part-name p))
    (multiple-value-bind (no re) (split-list (part-events p) #'notep)
      (get-usermarks no :clef :startclef- :clef- :endclef-
@@ -255,9 +257,9 @@
     do (loop
 	with s of-type (or list (integer 1))
 	for e of-type (or noteex restex) in (sort g #'sort-offdur)
-	if (and (restp e) (null (getmark e :userstaff))) do (if (listp s) (push e s) (setf (event-staff* e) s))
+	if (and (restp e) (null (getmark e :staff))) do (if (listp s) (push e s) (setf (event-staff* e) s))
 	else do
-	(let ((v (if (restp e) (second (popmark e :userstaff)) (event-staff e))))
+	(let ((v (if (restp e) (second (popmark e :staff)) (event-staff e))))
 	  (when v
 	    (when (listp s) 
 	      (mapc (lambda (x) (declare (type restex x)) (setf (event-staff* x) v)) s))

@@ -4,16 +4,16 @@
 (in-package :fomus)
 
 (fomus
- :output '(:lilypond :view t)
- :filename "test.xxx"
+ :output '((:lilypond :view t) :data)
+ :filename "/tmp/test.xxx"
  :verbose 1
  :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
  :auto-cautionary-accs t
  :parts
  (list
   (make-part
-   :name "Piano"
-   :instr '(:piano :simultlim 1)
+   :name "Harpsichord"
+   :instr '(:harpsichord :simultlim 1 :clefs (:treble :bass))
    :events
    (loop
     for off from 0 to 8 by 1/2
