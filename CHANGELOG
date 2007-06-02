@@ -1,3 +1,7 @@
+v0.2.27
+	Chunks examples
+	Work on chunks
+
 v0.2.26
 	Improvements to spanners
 	Some documentation that can be called up by the Lisp DOCUMENTATION function

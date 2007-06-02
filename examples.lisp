@@ -3,6 +3,45 @@
 
 (in-package :fomus)
 
+;; test the chunks
+
+(let ((c1 (fomus
+	   :output :chunk
+	   :global (list (make-timesig :off 0 :time '(5 8)))
+	   :auto-cautionary-accs t
+	   :parts
+	   (list
+	    (make-part
+	     :partid 'hp		; identical ids are matched
+	     :name "Harpsichord"
+	     :instr :harpsichord
+	     :events
+	     (loop
+	      for off from 0 to 8 by 1/2
+	      collect (make-note :off off
+				 :dur (if (< off 8) 1/2 1)
+				 :note (+ 48 (random 25))))))))
+      (c2 (fomus
+	   :output :chunk
+	   :global (list (make-timesig :off 0 :time '(5 8)))
+	   :auto-cautionary-accs t
+	   :parts
+	   (list
+	    (make-part
+	     :partid 'hp
+	     :name "Harpsichord"
+	     :instr :harpsichord
+	     :events
+	     (loop
+	      for off from 10 to 16 by 1/2
+	      collect (make-note :off off
+				 :dur (if (< off 16) 1/2 1)
+				 :note (+ 48 (random 25)))))))))
+  (fomus (list c1 c2)
+	 :output '(:lilypond :view t)))
+
+;; stuff
+
 (fomus
  :output '((:lilypond :view t) :data)
  :filename "/tmp/test.xxx"

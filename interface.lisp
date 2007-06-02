@@ -36,14 +36,13 @@
 Runs FOMUS's algorithms on input data or file"
   (typecase (first args)
     ((or string pathname) (fomus-text (first args) (rest args) #'fomus-textexec))
-    (list (apply #'run-fomus :chunks
-		 (mapcar (lambda (x)
+    (list (let ((z (mapcar (lambda (x)
 			   (typecase x
 			     (fomuschunk x)
 			     ((or string pathname) (fomus-text x (rest args) #'fomus-textexec))
 			     (otherwise (error "Expected LIST of STRING or FOMUSCHUNK"))))
-			 (first args))
-		 (rest args)))
+			 (first args))))
+	    (apply #'run-fomus :chunks z (append (rest args) (loop for e of-type fomuschunk in z append (fomuschunk-settings e))))))
     (t (apply #'run-fomus args))))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

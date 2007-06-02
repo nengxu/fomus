@@ -150,7 +150,6 @@
   
 (defun fomus-merge ()
   (when (>= *verbose* 1) (out "~&; Merging chunks..."))
-  ;; gather settings (1st or last in chunks list?) and bind them (if not specified in this fomus call?)--still postproc operations to do and some backends check them
   (set-fomusproc
     (track-progress +progress-int+
       (let ((pts (loop with al and lo = (mloop for ch of-type fomuschunk in *chunks*
@@ -195,7 +194,7 @@
 			     (push (part-partid p1) al)
 			     (return p1)))))
 	;; prepostproc-parts (prepostproc preparation)
-	(postproc-parts pts)	       ; should also reorder the parts
+	(postproc-parts pts)	  ; this should also reorder the parts
 	;; ...
 	#|pts|#))))
 
