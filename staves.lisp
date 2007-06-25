@@ -85,11 +85,11 @@
 	       (let ((o (event-off (first (clefnode-evs no)))))
 		 (multiple-value-bind (al es rs vs gd) ; es = events at cur. offset, rs = rest of evs, vs = sorted voices, gd = 0 or effgracedur if grace notes
 		     (loop
-		      with g = (event-grace (first (clefnode-evs no))) and al 
+		      with g = (event-grace (first (clefnode-evs no))) and al and pe
 		      for rs on (clefnode-evs no) for e of-type noteex = (first rs)
-		      while (and (= (event-off e) o) (eql (event-grace e) g))
+		      while (and (= (event-off e) o) (eql (event-grace e) g) (or (null pe) (equal (event-userstaff e) (event-userstaff pe))))
 		      collect e into es
-		      do (setf al (event-userstaff e))
+		      do (setf al (event-userstaff e) pe e)
 		      collect (event-voice* e) into v
 		      when g maximize (event-graceeffdur e) into gd
 		      finally (return (values al es rs (sort (delete-duplicates v) #'<) #-clisp gd #+clisp (or gd 0))))
@@ -222,49 +222,50 @@
 
 (defun clefs (parts)
   (loop
-   for p of-type partex in parts
-   for ns = (instr-staves (part-instr p))
-   do (rmprop p :clef) 
-   if (is-percussion p)
-   do
-   (loop for i from 1 to ns do (addprop p (list :clef :percussion i)))
-   (get-usermarks (part-events p) :staff :startstaff- :staff- :endstaff-
-		  (lambda (e s)
-		    (declare (type (or noteex restex) e) (type list s))
-		    (when (> ns 1) (setf (event-staff* e) (1- (first s))))) (part-name p))
-   (loop for e of-type (or noteex restex) in (part-events p) do (rmmark e :clef))
-   else do ; not percussion...
-   (get-usermarks (part-events p) :staff :startstaff- :staff- :endstaff-
-		  (lambda (e s)
-		    (declare (type (or noteex restex) e) (type list s))
-		    (if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))))
-		    (addmark e (cons :staff s))
-		    #|(if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))) (addmark e (print (cons :staff s))))|#)
-		  (part-name p))
-   (multiple-value-bind (no re) (split-list (part-events p) #'notep)
-     (get-usermarks no :clef :startclef- :clef- :endclef-
-		    (lambda (e c)
-		      (declare (type (or noteex restex) e) (type list c))
-		      (setf (event-userclef e) (first c)))
-		    (part-name p))
-     (multiple-value-bind (evs prs)
-	 (if (eq (auto-clefs-fun) :staves/clefs1)
-	     (clefs-bylegscore no (part-instr p) (part-name p))
-	     (call-module (auto-clefs-fun) (list "Unknown staff/clefs assignment module ~S" *auto-staff/clefs-module*) no (part-instr p) (part-name p)))
-       (setf (part-events p) (sort (nconc re evs) #'sort-offdur))
-       (mapc (lambda (x) (declare (type cons x)) (addprop p x)) prs)))
-   (loop ; temporarily assign rests to staves (will become defaults if distr-rests isn't run)
-    for g of-type cons in (split-into-groups (part-events p) #'event-voice*)
-    do (loop
-	with s of-type (or list (integer 1))
-	for e of-type (or noteex restex) in (sort g #'sort-offdur)
-	if (and (restp e) (null (getmark e :staff))) do (if (listp s) (push e s) (setf (event-staff* e) s))
-	else do
-	(let ((v (if (restp e) (second (popmark e :staff)) (event-staff e))))
-	  (when v
-	    (when (listp s) 
-	      (mapc (lambda (x) (declare (type restex x)) (setf (event-staff* x) v)) s))
-	    (setf s v)))))))
+     for p of-type partex in parts
+     for ns = (instr-staves (part-instr p))
+     do (rmprop p :clef) 
+     if (is-percussion p) do
+       (loop for i from 1 to ns do (addprop p (list :clef :percussion i)))
+       (loop for g of-type cons in (split-into-groups (part-events p) #'event-voice*) do
+	    (get-usermarks g :staff :startstaff- :staff- :endstaff-
+			   (lambda (e s)
+			     (declare (type (or noteex restex) e) (type list s))
+			     (when (> ns 1) (setf (event-staff* e) (1- (first s))))) (part-name p)))
+       (loop for e of-type (or noteex restex) in (part-events p) do (rmmark e :clef))
+     else do ; not percussion..., voices aren't separated yet!--separate voices
+       (loop for g of-type cons in (split-into-groups (part-events p) #'event-voice*) do
+	    (get-usermarks g :staff :startstaff- :staff- :endstaff-
+			   (lambda (e s)
+			     (declare (type (or noteex restex) e) (type list s))
+			     (if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))))
+			     (addmark e (cons :staff s))
+			     #|(if (notep e) (setf (event-userstaff e) (mapcar #'1- (force-list s))) (addmark e (print (cons :staff s))))|#)
+			   (part-name p)))
+       (multiple-value-bind (no re) (split-list (part-events p) #'notep)
+	 (get-usermarks no :clef :startclef- :clef- :endclef-
+			(lambda (e c)
+			  (declare (type (or noteex restex) e) (type list c))
+			  (setf (event-userclef e) (first c)))
+			(part-name p))
+	 (multiple-value-bind (evs prs)
+	     (if (eq (auto-clefs-fun) :staves/clefs1)
+		 (clefs-bylegscore no (part-instr p) (part-name p))
+		 (call-module (auto-clefs-fun) (list "Unknown staff/clefs assignment module ~S" *auto-staff/clefs-module*) no (part-instr p) (part-name p)))
+	   (setf (part-events p) (sort (nconc re evs) #'sort-offdur))
+	   (mapc (lambda (x) (declare (type cons x)) (addprop p x)) prs)))
+       (loop ; temporarily assign rests to staves (will become defaults if distr-rests isn't run)
+	  for g of-type cons in (split-into-groups (part-events p) #'event-voice*)
+	  do (loop
+		with s of-type (or list (integer 1))
+		for e of-type (or noteex restex) in (sort g #'sort-offdur)
+		if (and (restp e) (null (getmark e :staff))) do (if (listp s) (push e s) (setf (event-staff* e) s))
+		else do
+		  (let ((v (if (restp e) (second (popmark e :staff)) (event-staff e))))
+		    (when v
+		      (when (listp s) 
+			(mapc (lambda (x) (declare (type restex x)) (setf (event-staff* x) v)) s))
+		      (setf s v)))))))
 
 (defun clefs-generic (parts)
   (loop for p of-type partex in parts

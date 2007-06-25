@@ -1,3 +1,6 @@
+v0.2.28
+	Fixed user-specified staves conflicting with voice assignments (need to test further)
+
 v0.2.27
 	Chunks examples
 	Work on chunks

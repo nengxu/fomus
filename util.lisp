@@ -539,33 +539,38 @@
 
 ;; passes all events between and intersecting with startsyms and endsyms
 ;; events sent to fun aren't in order
-(defun get-usermarks (events sym startsym contsym endsym fun name)
+(defun get-usermarks (events sym startsym contsym endsym fun name) ; extrasort distinguishes between :staff 1, :staff 2, etc.
   (declare (type list events) (type symbol sym startsym contsym endsym) (type (function ((or noteex restex) list) t) fun) (type (or string null) name))
   (loop for ((o1 . me) (o2)) of-type (((rational 0) . list) . (rational 0))
-	on (mapcar #'cdr
-		   (let ((xx (merge-linear
-			      (sort (loop for e of-type (or noteex restex) in (reverse events)
-					  for me = (or (let ((o1 (popmark e endsym)) (o2 (popmark e contsym))) (or o1 o2)) (getmark e sym))
-					  and ms = (let ((o1 (popmark e startsym)) (o2 (popmark e sym))) (or o1 o2))
-					  when me collect (cons :e (list (event-endoff e)))
-					  when ms collect (cons :s (cons (event-off e) (force-list ms))))
-				    (lambda (x y)
-				      (declare (type cons x y))
-				      (let ((xx (second x)) (yy (second y)))
-					(declare (type (rational 0) xx yy))
-					(if (= xx yy)
-					    (and (eq (car x) :e) (eq (car y) :s))
-					    (< xx yy)))))
-			      (lambda (x y)
-				(declare (type cons x y))
-				(when (eq (car x) (car y))
-				  (if (eq (car x) :s) x y))))))
-		     (unless (or (null xx) (eq (car (first xx)) :s)) (error "Missing starting mark ~S in part ~S" startsym name))
-		     xx))
-	by #'cddr
-	do (map nil (lambda (x) (declare (type (or noteex restex) x)) (funcall fun x (rest me)))
-		(remove-if-not (lambda (e) (declare (type (or noteex restex) e)) (and (> (event-endoff e) o1) (or (null o2) (< (event-off e) o2)))) events))))
-			   
+     on (mapcar #'cdr
+		(let ((xx (merge-linear
+			   (loop for e of-type cons in
+				(sort (loop for e of-type (or noteex restex) in (reverse events)
+					 for me = (let ((o1 (popmark e endsym)) (o2 (popmark e contsym))) (or o1 o2))
+					 and ms = (popmark e startsym)
+					 and my = (popmark e sym)
+					 when me collect (cons :e (list (event-endoff e)))
+					 when ms collect (cons :s (cons (event-off e) (force-list ms)))
+					 when my collect (cons :o (cons (event-off e) (cons (event-endoff e) (force-list my)))))
+				      (lambda (x y)
+					(declare (type cons x y))
+					(let ((xx (second x)) (yy (second y)))
+					  (declare (type (rational 0) xx yy))
+					  (if (= xx yy)
+					      (< (ecase (car x) (:e 0) (:o 1) (:s 2)) (ecase (car y) (:e 0) (:o 1) (:s 2)))
+					      (< xx yy)))))
+			      if (eq (car e) :o) collect (cons :s (cons (cadr e) (cdddr e))) and collect (cons :e (cddr e))
+			      else collect e)
+			   (lambda (x y)
+			     (declare (type cons x y))
+			     (when (eq (car x) (car y))
+			       (if (eq (car x) :s) x y))))))
+		  (unless (or (null xx) (eq (car (first xx)) :s)) (error "Missing starting mark ~S in part ~S" startsym name))
+		  xx))
+     by #'cddr
+     do (map nil (lambda (x) (declare (type (or noteex restex) x)) (funcall fun x (rest me)))
+	     (remove-if-not (lambda (e) (declare (type (or noteex restex) e)) (and (> (event-endoff e) o1) (or (null o2) (< (event-off e) o2)))) events))))
+
 ;; clean
 ;; deletes marks at incorrect places in tied notes/chords
 ;; expects measures and chords
