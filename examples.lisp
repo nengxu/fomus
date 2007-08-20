@@ -43,7 +43,7 @@
 ;; stuff
 
 (fomus
- :output '((:lilypond :view t) :data)
+ :output '((:lilypond :view nil))
  :filename "/tmp/test.xxx"
  :verbose 1
  :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
@@ -60,7 +60,7 @@
 		       :dur (if (< off 10) 1/2 1)
 		       :note (+ 48 (random 25))
 		       :marks '((:staff 2)))))))
-
+(streamp)
 (fomus
  (list (fomus
 	:output '(:none) 

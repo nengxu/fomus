@@ -15,18 +15,18 @@
 
 (eval-when (:load-toplevel :execute)
   (defparameter *lilypond-exe*
-    (or #+darwin (find-exe "lilypond" "LilyPond.app/Contents/Resources/bin")
-	#+darwin (find-exe "lilypond.sh" "LilyPond.app")
+    (or #+(or darwin macos) (find-exe "lilypond" "LilyPond.app/Contents/Resources/bin")
+	#+(or darwin macos) (find-exe "lilypond.sh" "LilyPond.app")
 	#+(or mswindows win32) (find-exe "lilypond.exe" "LilyPond")
 	#-(or mswindows win32) (find-exe "lilypond" "LilyPond") 
-	#+darwin "lilypond.sh"
+	#+(or darwin macos) "lilypond.sh"
 	#+(or mswindows win32) "lilypond.exe"
 	#-(or mswindows win32) "lilypond"))
   (defparameter *lilypond-view-exe* #-(or mswindows win32) +ghostview-exe+ #+(or mswindows win32) +acroread-exe+))
 
-(defparameter *lilypond-opts* #-(or darwin mswindows win32) '("--ps") #+(or darwin mswindows win32) '("--pdf"))
-(defparameter *lilypond-out-ext* #-(or darwin mswindows win32) "ps" #+(or darwin mswindows win32) "pdf")
-(defparameter *lilypond-view-opts* #-darwin nil #+darwin '("/Applications/Preview.app"))
+(defparameter *lilypond-opts* #-(or (or darwin macos) mswindows win32) '("--ps") #+(or (or darwin macos) mswindows win32) '("--pdf"))
+(defparameter *lilypond-out-ext* #-(or (or darwin macos) mswindows win32) "ps" #+(or (or darwin macos) mswindows win32) "pdf")
+(defparameter *lilypond-view-opts* #-(or darwin macos) nil #+(or darwin macos) '("/Applications/Preview.app"))
 
 (defun view-lilypond (filename options view)
   (when (>= *verbose* 1) (out (if view ";; Compiling/opening ~S for viewing...~%" ";; Compiling ~S...~%") filename))
@@ -127,7 +127,7 @@
 				       :output-stream os
 				       :wait t))
 			(if os
-			    (let* ((out #+(or cmu sbcl openmcl lispworks) (get-output-stream-string os) #+(or clisp allegro) (read-line os))
+			    (let* ((out #+(or cmu sbcl openmcl lispworks) (get-output-stream-string os) #+(or clisp allegro) (ignore-errors (read-line os)))
 				   (p (search "LilyPond " out)))
 			      (if p (multiple-value-bind (n1 np) (parse-integer out :start (+ p 9) :junk-allowed t)
 				      (+ (* n1 100) (parse-integer out :start (1+ np) :junk-allowed t)))

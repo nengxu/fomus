@@ -11,7 +11,7 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; GLOBAL FOR BACKENDS
 
-#+(or linux darwin unix) (defparameter +tmp-path+ "/tmp/")
+#+(or linux (or darwin macos) unix) (defparameter +tmp-path+ "/tmp/")
 #+(or mswindows win32) (defparameter +tmp-path+ "/")
 
 (declaim (type boolean *acc-throughout-meas*))

@@ -12,7 +12,7 @@
 
 (eval-when (:load-toplevel :execute)
   (defparameter *cmn-view-exe* +ghostview-exe+))
-(defparameter *cmn-view-opts* #-darwin nil #+darwin '("/Applications/Preview.app"))
+(defparameter *cmn-view-opts* #-(or darwin macos) nil #+(or darwin macos) '("/Applications/Preview.app"))
 
 (defparameter +cmn-comment+ ";; -*- lisp -*-~%;; CMN score file~%;; ~A v~A.~A.~A~%~%")
 

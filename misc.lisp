@@ -167,22 +167,22 @@
 (defun find-exe (filename &optional subdir)
   (declare (ignorable subdir))
   (namestring*
-   (or #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/usr/local/bin"))
-       #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/usr/bin"))
-       #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/bin"))
-       #+(or linux darwin unix cygwin) (probe-file* (change-filename filename :dir "/usr/X11R6/bin"))
-       #+darwin (probe-file* (change-filename filename :dir "/sw/bin"))
-       #+darwin (probe-file* (change-filename filename :dir "/Applications"))
-       #+darwin
+   (or #+(or linux (or darwin macos) unix cygwin) (probe-file* (change-filename filename :dir "/usr/local/bin"))
+       #+(or linux (or darwin macos) unix cygwin) (probe-file* (change-filename filename :dir "/usr/bin"))
+       #+(or linux (or darwin macos) unix cygwin) (probe-file* (change-filename filename :dir "/bin"))
+       #+(or linux (or darwin macos) unix cygwin) (probe-file* (change-filename filename :dir "/usr/X11R6/bin"))
+       #+(or darwin macos) (probe-file* (change-filename filename :dir "/sw/bin"))
+       #+(or darwin macos) (probe-file* (change-filename filename :dir "/Applications"))
+       #+(or darwin macos)
        (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
 						   (directory* (format nil "/Applications/~A" subdir) #+openmcl :directories #+openmcl t))))
-       #+darwin
+       #+(or darwin macos)
        (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
 						   (directory* (format nil "/Applications/~A/*" subdir) #+openmcl :directories #+openmcl t))))
-       #+darwin
+       #+(or darwin macos)
        (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
 						   (directory* (format nil "/Applications/~A/*/*" subdir) #+openmcl :directories #+openmcl t))))
-       #+darwin
+       #+(or darwin macos)
        (when subdir (find-if #'probe-file* (mapcar (lambda (x) (change-filename filename :dir (namestring x)))
 						   (directory* (format nil "/Applications/~A/*/*/*" subdir) #+openmcl :directories #+openmcl t))))
        #+(or mswindows win32) (probe-file* (change-filename filename :dir "/Program Files"))

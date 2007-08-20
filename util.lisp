@@ -33,12 +33,12 @@
 ;; set to postscript viewing application
 (eval-when (:load-toplevel :execute)
   (defparameter +ghostview-exe+
-    #+darwin (find-exe "open")
-    #+(and (or linux unix) (not darwin) (not cygwin)) (or (find-exe "ggv") (find-exe "kgv") (find-exe "gv") (find-exe "evince") (find-exe "display") (find-exe "ghostview") "gv")
+    #+(or darwin macos) (find-exe "open")
+    #+(and (or linux unix) (not (or darwin macos)) (not cygwin)) (or (find-exe "ggv") (find-exe "kgv") (find-exe "gv") (find-exe "evince") (find-exe "display") (find-exe "ghostview") "gv")
     #+(or mswindows win32 cygwin) (or (find-exe "gsview32.exe" "Ghostgum") (find-exe "gv.exe") "gsview.exe"))
   (defparameter +acroread-exe+
-    #+darwin (find-exe "open")
-    #+(and (or linux unix) (not darwin) (not cygwin)) (or (find-exe "acroread") (find-exe "gpdf") "acroread")
+    #+(or darwin macos) (find-exe "open")
+    #+(and (or linux unix) (not (or darwin macos)) (not cygwin)) (or (find-exe "acroread") (find-exe "gpdf") "acroread")
     #+(or mswindows win32 cygwin) (or (find-exe "AcroRd32.exe" "Adobe") "AcroRd32.exe")))
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
