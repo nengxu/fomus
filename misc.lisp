@@ -54,7 +54,7 @@
 			     :directory
 			     (if (or (stringp dir) (pathnamep dir))
 				 (pathname-directory (conc-strings dir "/"))
-				 dir)
+			       dir)
 			     :name name :type ext)))
 
 ;; tests for t
@@ -160,7 +160,7 @@
 ;; wrappers for probe-file and directory ignoring errors
 (declaim (inline probe-file* directory*))
 (defun probe-file* (fn) (ignore-errors (probe-file fn)))
-(defun directory* (di &rest re) (ignore-errors (apply #'directory di re)))
+(defun directory* (di &rest re) (ignore-errors (apply #'directory #+clisp (conc-strings di "/") #-clisp di re)))
 
 ;; looks for executable in likely places depending on operating system
 ;; returns a full pathname if found
