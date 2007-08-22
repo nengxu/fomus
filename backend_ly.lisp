@@ -42,12 +42,12 @@
 					   (or exe *lilypond-exe*)
 					   (append (or opts *lilypond-opts*) (list filename))
 					   :wait t))
-	  #+clisp (eql (ignore-errors
+	  #+clisp (eql (let ((x (ignore-errors
 			 (ext:run-program
 			  (or exe *lilypond-exe*)
 			  :arguments (append (or opts *lilypond-opts*) (list filename))
 			  :output nil
-			  :wait t))
+			  :wait t)))) (format t ";;; DEBUG 1: ~A~%" x) x)
 		       0)
 	  #+lispworks (ignore-errors
 			(system:call-system (format nil "~A~{ ~A~}" 
@@ -58,7 +58,7 @@
 								(cons (or exe *lilypond-exe*)
 								      (append (or opts *lilypond-opts*) (list filename)))))) 0)
 	  (progn
-	    (unless (probe-file (change-filename filename :ext (or out-ext *lilypond-out-ext*))) (er "compiling"))
+	    (unless (probe-file (change-filename filename :ext (or out-ext *lilypond-out-ext*))) (progn (format t ";;; DEBUG 2~%") (er "compiling")))
 	    (ignore-errors (delete-file (change-filename filename :ext "log")))
 	    (unless (string= (or out-ext *lilypond-out-ext*) "tex") (ignore-errors (delete-file (change-filename filename :ext "tex"))))
 	    (unless (string= (or out-ext *lilypond-out-ext*) "dvi") (ignore-errors (delete-file (change-filename filename :ext "dvi"))))
@@ -92,7 +92,7 @@
 									  (list (change-filename filename :ext (or out-ext *lilypond-out-ext*))))))) nil nil)
 				     0)
 		      (er "viewing"))))
-	  (er "compiling")))))
+	  (progn (format t ";;; DEBUG 3~%") (er "compiling"))))))
 
 (defparameter *lilypond-version* nil)
 (defparameter *lilyvers* t)
