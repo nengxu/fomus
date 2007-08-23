@@ -42,13 +42,13 @@
 					   (or exe *lilypond-exe*)
 					   (append (or opts *lilypond-opts*) (list filename))
 					   :wait t))
-	  #+clisp (member (ignore-errors
-			    (ext:run-program
-			     (or exe *lilypond-exe*)
-			     :arguments (append (or opts *lilypond-opts*) (list filename))
-			     :output nil
-			     :wait t))
-			  '(0 t))
+	  #+clisp (eql (ignore-errors
+			 (ext:run-program
+			  (or exe *lilypond-exe*)
+			  :arguments (append (or opts *lilypond-opts*) (list filename))
+			  :output nil
+			  :wait t))
+		       0)
 	  #+lispworks (ignore-errors
 			(system:call-system (format nil "~A~{ ~A~}" 
 						    (or exe *lilypond-exe*)
@@ -71,14 +71,14 @@
 						       (append (or view-opts *lilypond-view-opts*)
 							       (list (change-filename filename :ext (or out-ext *lilypond-out-ext*))))
 						       :wait nil))
-		      #+clisp (member (ignore-errors
-					(ext:run-program
-					 (or view-exe *lilypond-view-exe*)
-					 :arguments (append (or view-opts *lilypond-view-opts*)
-							    (list (change-filename filename :ext (or out-ext *lilypond-out-ext*))))
-					 :output nil
-					 :wait nil))
-				      '(0 t))
+		      #+clisp (eql (ignore-errors
+				     (ext:run-program
+				      (or view-exe *lilypond-view-exe*)
+				      :arguments (append (or view-opts *lilypond-view-opts*)
+							 (list (change-filename filename :ext (or out-ext *lilypond-out-ext*))))
+				      :output nil
+				      :wait nil))
+				   0)
 		      #+lispworks (ignore-errors
 				    (system:call-system (format nil "~A~{ ~A~}" 
 								(or view-exe *lilypond-view-exe*)
