@@ -1,3 +1,5 @@
+	Added :NOPOS option to text marks (can specify :UP, :DOWN or :NOPOS now)
+
 v0.2.28
 	CLISP/filename annoyances fixed
 	CLISP/LilyPond fix

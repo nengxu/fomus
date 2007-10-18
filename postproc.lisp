@@ -476,9 +476,10 @@
 						 (push (cons (first tx)
 							     (nconc
 							      (let ((x (find-if #'numberp tx))) (when x (list x)))
-							      (list (or (find :up tx) (find :down tx) (or (lookup (first tx) +marks-defaultdir+)
-													  (if (>= (event-staff e) (instr-staves (part-instr p)))
-													      :up :down)))
+							      (list (or (find :up tx) (find :down tx) (find :nopos tx)
+									(or (lookup (first tx) +marks-defaultdir+)
+									    (if (>= (event-staff e) (instr-staves (part-instr p)))
+										:up :down)))
 								    (let ((x (find-if #'stringp tx))) (when x (remove-newlines x))))))
 						       mks))
 						((< d u)

@@ -344,7 +344,8 @@
 					  (cond ((or (getmark e :start8up-) (getmark e :8up)) "\\octUp ")
 						((or (getmark e :start8down-) (getmark e :8down)) "\\octDown "))
 					  (let ((m (getmark e '(:starttext- 1)))) ; can't have more than one at once
-					    (if m (format nil "\\textSpan #~A #\"~A \" " (ecase (third m) (:up 1) (:down -1)) (fourth m)) ""))
+					    (if m (format nil "\\textSpan #~A #\"~A \" " (ecase (third m) (:up 1) (:down -1) (:nopos 0)) ;; test this nopos!?
+							  (fourth m)) ""))
 					  (let ((uu (sort (getmarks e :starttup) #'< :key #'second)))
 					    (conc-stringlist
 					     (loop for u in uu for r = (third u)
@@ -498,7 +499,7 @@
 								(or textnote-markup *lilypond-textnote-markup*))
 						 nconc (loop for (xxx di str) in (getmarks e x)
 							     collect (conc-strings
-								      (ecase di (:up "^") (:down "_"))
+								      (ecase di (:up "^") (:down "_") (:nopos "-"))
 								      (format nil m (lilypond-string-escape str))))))
 					  (let ((m (getmark e '(:starttext- 1))))
 					    (if m "\\startTextSpan" ""))

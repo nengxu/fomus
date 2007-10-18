@@ -605,13 +605,13 @@
 ;; Text
 
 (fomus
- :backend '((:data) #|(:lilypond :view t)|#)
+ :backend '((:data) (:lilypond :view t))
  :ensemble-type :orchestra
  :parts (list
 	 (make-part
 	  :name "Piano"
 	  :instr :piano
-	  :events (list (make-note :off 0 :dur 1 :note 72 :marks '((:text "Text")))
+	  :events (list (make-note :off 0 :dur 1 :note 72 :marks '((:text "Text" :nopos)))
 			(make-note :off 1 :dur 1 :note 72 :marks '((:textnote "nt")))
 			(make-note :off 2 :dur 1 :note 72 :marks '((:textdyn "dyn")))
 			(make-note :off 3 :dur 1 :note 72 :marks '((:texttempo "Tempo")))
