@@ -476,7 +476,7 @@
 						 (push (cons (first tx)
 							     (nconc
 							      (let ((x (find-if #'numberp tx))) (when x (list x)))
-							      (list (or (find :up tx) (find :down tx) (find :nopos tx)
+							      (list (or (find :up tx) (find :down tx) (find :nopos tx) (find :detached tx)
 									(or (lookup (first tx) +marks-defaultdir+)
 									    (if (>= (event-staff e) (instr-staves (part-instr p)))
 										:up :down)))

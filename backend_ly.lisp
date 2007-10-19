@@ -499,7 +499,7 @@
 								(or textnote-markup *lilypond-textnote-markup*))
 						 nconc (loop for (xxx di str) in (getmarks e x)
 							     collect (conc-strings
-								      (ecase di (:up "^") (:down "_") (:nopos "-"))
+								      (ecase di (:up "^") (:down "_") (:nopos "-") (:detached ""))
 								      (format nil m (lilypond-string-escape str))))))
 					  (let ((m (getmark e '(:starttext- 1))))
 					    (if m "\\startTextSpan" ""))
