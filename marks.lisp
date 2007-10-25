@@ -106,7 +106,7 @@
 		       do (loop with x = (make-hash-table) and xx ; x = hash-table indexed by level containing (off . list-of-start/cont-marks), used as temporary container
 				for e of-type (or noteex restex) in (sort v #'sort-offdur)
 				when (or (truep replsym) (keywordp replsym)) do	; if there is a replsym, do start/cont marks first
-				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (gethash (second m) x))))
+				(loop for m of-type cons in (getmarks e contsym) do (push m (cdr (or (gethash (second m) x) '(nil . nil)))))
 				(loop for m of-type cons in (getmarks e startsym) do (setf (gethash (second m) x) (cons (event-off e) (list m))))
 				do (loop for m of-type cons in (getmarks e endsym) do
 					 (let* ((n (second m))

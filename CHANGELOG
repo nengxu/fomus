@@ -1,3 +1,4 @@
+	Fixed a bug where spanners of certain types might cause errors (or SBCL to hang and eventually barf)
 	Also added a :DETACHED option for text marks (it will break LilyPond compiling, though, unless you override LilyPond's text markup strings)
 	Added :NOPOS option to text marks (can specify :UP, :DOWN or :NOPOS now)
 
