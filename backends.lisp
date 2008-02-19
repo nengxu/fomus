@@ -37,26 +37,27 @@
 (defun backend (backend filename dir parts options process play view)
   (declare (ignorable options process play view)
 	   (type symbol backend) (type list parts) (type list options) (type boolean process) (type boolean view))
-  (flet ((format-comment (cstr) (apply #'format nil cstr +title+ +version+)))
-    (unwind-protect
-	 (case backend
-	   ((:data :fomus))
-	   (:raw (save-raw filename parts))
-	   ((:none :chunk) nil)
-	   #-fomus-nocmn
-	   (:cmn (save-cmn parts (format-comment +cmn-comment+) filename options process view))
-	   #-fomus-nolilypond
-	   (:lilypond (save-lilypond parts (format-comment +lilypond-comment+) filename options process view))
-	   #-fomus-nomusicxml
-	   (:musicxml (save-xml parts (format-comment +xml-comment+) filename options))
-	   #-fomus-nomusicxml
-	   (:musicxml-sibelius (save-xmlsibelius parts (format-comment +xml-comment+) filename options))
-	   #-fomus-nomusicxml
-	   (:musicxml-finale (save-xmlfinale parts (format-comment +xml-comment+) filename options))
-	   #-fomus-nomidi (:midi (save-midi parts filename options play))
-	   (otherwise
-	    (load-fomus-module backend)
-	    (call-module backend '("Invalid backend ~S" backend) ; exported +title+ and +version+ so they can just be accessed as variables--seems redundant if they are passed as arguments
-			 parts filename options process view)))
-      (#+cmu unix:unix-chdir #+sbcl sb-posix:chdir #+openmcl ccl:cwd #+allegro excl:chdir #+lispworks hcl:change-directory #+clisp ext:cd (namestring dir)))))
+  (let ((*old-objects* nil))
+    (flet ((format-comment (cstr) (apply #'format nil cstr +title+ +version+)))
+      (unwind-protect
+	   (case backend
+	     ((:data :fomus))
+	     (:raw (save-raw filename parts))
+	     ((:none :chunk) nil)
+	     #-fomus-nocmn
+	     (:cmn (save-cmn parts (format-comment +cmn-comment+) filename options process view))
+	     #-fomus-nolilypond
+	     (:lilypond (save-lilypond parts (format-comment +lilypond-comment+) filename options process view))
+	     #-fomus-nomusicxml
+	     (:musicxml (save-xml parts (format-comment +xml-comment+) filename options))
+	     #-fomus-nomusicxml
+	     (:musicxml-sibelius (save-xmlsibelius parts (format-comment +xml-comment+) filename options))
+	     #-fomus-nomusicxml
+	     (:musicxml-finale (save-xmlfinale parts (format-comment +xml-comment+) filename options))
+	     #-fomus-nomidi (:midi (save-midi parts filename options play))
+	     (otherwise
+	      (load-fomus-module backend)
+	      (call-module backend '("Invalid backend ~S" backend) ; exported +title+ and +version+ so they can just be accessed as variables--seems redundant if they are passed as arguments
+			   parts filename options process view)))
+	(#+cmu unix:unix-chdir #+sbcl sb-posix:chdir #+openmcl ccl:cwd #+allegro excl:chdir #+lispworks hcl:change-directory #+clisp ext:cd (namestring dir))))))
 
