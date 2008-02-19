@@ -272,7 +272,7 @@
                                         (loop for x across (part-name p)
                                            when (alpha-char-p x)
                                            collect (string x)))))
-                    (string (code-char (+ 64 de)))))
+                    (conc-strings "Prt" (if (> de 26) (make-string 2 :initial-element (code-char (+ 64 (- de 26)))) (string (code-char (+ 64 de)))))))
 		 (lyclef (c)
 		   (lookup c +lilypond-clefs+)))
 	    (loop

@@ -46,7 +46,8 @@
  :output '((:lilypond :view t))
  :filename "/tmp/test.xxx"
  :verbose 1
- :global (list (make-timesig :off 0 :time '(5 8) :div '(3/2 1) :props '((:keysig :dmaj))))
+ :global (list (make-timesig :off 0 :time '(4 4) :props '((:keysig :dmaj))))
+ :LONG-EIGHTH-BEAMS nil
  :auto-cautionary-accs t
  :parts
  (list
