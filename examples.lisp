@@ -49,6 +49,10 @@
  :global (list (make-timesig :off 0 :time '(4 4) :props '((:keysig :dmaj))))
  :LONG-EIGHTH-BEAMS nil
  :auto-cautionary-accs t
+ :instr-groups
+ '((:quartet
+    (:group
+     (:group :violin :viola :cello))))
  :parts
  (list
   (make-part

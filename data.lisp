@@ -425,10 +425,10 @@ instrument)"
     (or (find sym *instruments* :key #'perc-sym) (find sym +instruments+ :key #'perc-sym))))
 
 (declaim (type cons +instr-group-tree-type-aux+ +instr-group-tree-type+))
-(defparameter +instr-group-tree-type-aux+
-  '(or* (satisfies is-instr) (list-of* (cons* (member :group :choirgroup :grandstaff) (list-of* +instr-group-tree-type-aux+)))))
+(defparameter +instr-group-tree-type-aux+    
+  '(or* (satisfies is-instr) (cons* (member :group :choirgroup :grandstaff) (list-of* (type* +instr-group-tree-type-aux+)))))
 (defparameter +instr-group-tree-type+
-  '(list-of* (cons* symbol (list-of* +instr-group-tree-type-aux+))))
+  '(list-of* (cons* symbol (list-of* (type* +instr-group-tree-type-aux+)))))
 
 (declaim (type list *instr-groups*) (type cons +instr-groups+))
 (defparameter *instr-groups* nil)
