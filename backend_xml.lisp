@@ -113,6 +113,9 @@
 ;; (defparameter *xml-heel-kludge* nil)
 ;; (defparameter *xml-toe-kludge* nil)
 
+;;; Currently, this function does not compile on sbcl. I could not yet
+;;; investigate why. --KS
+#-sbcl
 (defun save-xml (parts header filename options #|process view|#)
   (when (>= *verbose* 1) (out ";; Saving MusicXML file ~S...~%" filename))
   (destructuring-bind (&key (xml-1note-tremolo-kludge *xml-1note-tremolo-kludge*)
