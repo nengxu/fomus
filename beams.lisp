@@ -88,7 +88,7 @@
 				     (declare (type (rational 0) o))
 				     (loop while (and wll (>= o (the (rational (0)) (car wll)))) do (decf o (pop wll)) finally (return o))))
 			      (loop
-			       with ee = evs and o of-type (rational (0)) = 0 and re and rr ; re and rr should be in reverse order, re is group-list, rr is list of group-lists
+			       with ee = evs and o of-type (rational 0) = 0 and re and rr ; re and rr should be in reverse order, re is group-list, rr is list of group-lists
 			       #-clisp while #-clisp ee
 			       for e of-type (or noteex restex) = #-clisp (car ee) #+clisp (if ee (car ee) (loop-finish)) 
 			       do (if (not (equal (event-tupdurmult e) dmu)) ; different tuplet region
