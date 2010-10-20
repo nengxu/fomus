@@ -541,7 +541,7 @@
 ;; events sent to fun aren't in order
 (defun get-usermarks (events sym startsym contsym endsym fun name) ; extrasort distinguishes between :staff 1, :staff 2, etc.
   (declare (type list events) (type symbol sym startsym contsym endsym) (type (function ((or noteex restex) list) t) fun) (type (or string null) name))
-  (loop for ((o1 . me) (o2)) of-type (((rational 0) . list) . (rational 0))
+  (loop for ((o1 . me) (o2)) of-type (((rational 0) . list) ((rational 0)))
      on (mapcar #'cdr
 		(let ((xx (merge-linear
 			   (loop for e of-type cons in
